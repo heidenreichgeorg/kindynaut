@@ -1,0 +1,2 @@
+cmd1=npm install react-scripts
+cmd2=nvm install 18.17.0
