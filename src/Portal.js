@@ -2,8 +2,7 @@ import { Buffer } from 'buffer';
 import { dragOverHandler, dropHandler, handleArchive, load, receiveLetter, showLetter, SOME, strSymbol,symbol } from './util.js'
 import { useState } from 'react';
 
-const client = "MFR"
-const family = "IMAGING"
+const DOMAIN_DIAG_IMAGING = "DiagnosticImaging"
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
 
@@ -112,6 +111,11 @@ function arisIdentifier(jAris) {
     let i=symbol1(nowandthen(jAris.hazardousSituation));
     let result=c+f+a+h+o+i;
     return result;
+}
+
+function archiveHandler() {
+    handleArchive(repository[SCR_DOMAIN],
+        DOMAIN_DIAG_IMAGING)
 }
 
 function makeRiskTable() {
@@ -732,7 +736,7 @@ export function Portal({portalFileName, view}) {
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}
-                    <button key="Archive" className="BUTTON" onClick={(() => { return handleArchive();})}>Save as archive file
+                    <button key="Archive" className="BUTTON" onClick={(() => { return archiveHandler();})}>Save as archive file
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;&nbsp;&nbsp;

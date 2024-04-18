@@ -93,36 +93,35 @@ export function handleHBook(fileName) {
 }
 
 
-export function handleArchive() {    
-    console.log("0780 handleArchive  "+client+"/"+family);
-    const blob = new Blob([JSON.stringify(listAris, null, 2)], {
+export function handleArchive(jListAris,domain) {    
+    console.log("0780 handleArchive  "+domain);
+    const blob = new Blob([JSON.stringify(jListAris, null, 2)], {
         type: "application/json",
     });
     let url = URL.createObjectURL(blob);
-    makeArchiveButton(url,client,family)
+    makeArchiveButton(url,domain)
     console.log("0782 handleArchive EXIT");
 }
 
 
-export function makeArchiveButton(url,client,family) { 
+export function makeArchiveButton(url,domain) { 
     console.log("0740 makeArchiveButton "+url);
-    if(client) {
-        if(family) {
+    if(domain) {
 
-            let a = document.createElement('a');
-            a.setAttribute("id", "btnArchive");
-            a.href = url;
-            a.download = "ARCHIVE_"+client+'_'+family+".JSON";
-            a.style.display = 'none'; // was block
-            a.className = "key";
-            a.innerHTML = "Downloading...";
-    
-            replaceChild(a,"btnArchive");
+        let a = document.createElement('a');
+        a.setAttribute("id", "btnArchive");
+        a.href = url;
+        a.download = "ARCHIVE_"+domain+".JSON";
+        a.style.display = 'none'; // was block
+        a.className = "key";
+        a.innerHTML = "Downloading...";
 
-            a.click();
+        replaceChild(a,"btnArchive");
 
-        } else console.log("0766 makeArchiveButton XLSX client("+client+"), NO year");
-    } else console.log("0768 makeArchiveButton XLSX NO client");
+        a.click();
+
+        
+    } else console.log("0768 makeArchiveButton XLSX NO domain");
     return url;
 }
 
