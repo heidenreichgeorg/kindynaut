@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer';
 import { processHTML,startAPI } from './extract.js';
 
+import { openHBook } from './readXL.js'
+
 //import dotenv from 'dotenv'
 //dotenv.config({ path: './.env.local' })
 // npm install dotenv
@@ -64,7 +66,7 @@ export function symbol(temp) {
     return p[13]+p[17]+p[2]+p[5]+p[11]+p[3]+p[7]+p[19];
 }
 
-export function handleHBook(fileName) {        
+export function uploadHBook(fileName) {        
     let client="MFR";
     let family="IMAGING";
 
@@ -246,9 +248,15 @@ function makeJSONButton(idButton,url,fileName) {
     return url;
 }
 
+function handleHBook(filePath) { 
+
+    console.log("0692 handleHBook "+filePath)
+
+    openHBook(filePath);
+}
 
 
-export function showLetter(file,addTicket) {   
+export function showLetter(file,addTicket,clientDir) {   
     
     // security file.name
     //let strMessage="upload from "+file.name;    
@@ -396,7 +404,7 @@ export function dragOverHandler(ev) {
 }
 
 
-export function dropHandler(ev,addTicket,addProjAris,showLetter) {
+export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
     console.log('0670 File(s) dropped');        
@@ -425,8 +433,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter) {
                 } else {
                     console.log('0621 JSON OTHER=\n'+strDOSH);
                     if(jDOSH.env) {
-                        console.log('0626 FILE ENV=\n'+jDOSH.env);
-                        //setClientDir(jDOSH.env);
+                        console.log('0626 FILE ENV=\n'+jDOSH.env);                        
                     }
                 }
             } catch(e) {
@@ -471,7 +478,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter) {
                         let file = ev.dataTransfer.files[i];
                         console.log('0634 IMPORT-2 from file '+file.name );                            
                         
-                        showLetter(file,addTicket); // load file into base window's envelope
+                        showLetter(file,addTicket,clientDir); // load file into base window's envelope
                         // new letter will be identified by ticket
 
                     } else if (data.kind === "string" && data.type.match("^text/plain")) {

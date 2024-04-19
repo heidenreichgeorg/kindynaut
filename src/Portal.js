@@ -98,7 +98,11 @@ export function Portal({portalFileName, view}) {
     // filters and display/edit mode
     const [strFilter, setStrFilter] = useState("{}") // filter form buffer
     const [jEditor, setJEditor] = useState({}) // editor form buffer
-    const [jFile, setJFile] = useState({'project':'product','manufacturer':process.env.REACT_APP_MANUFACTURER,'domain':process.env.REACT_APP_DOMAIN}) // common file data buffer
+    const [jFile, setJFile] = useState(
+            {'project':'product',
+            'clientDir':process.env.REACT_APP_CLIENT_DIR,
+            'manufacturer':process.env.REACT_APP_MANUFACTURER,
+            'domain':process.env.REACT_APP_DOMAIN}) // common file data buffer
     const [mode, setMode ] = useState(MODE_SAVE);
     
     init();
@@ -497,6 +501,25 @@ export function Portal({portalFileName, view}) {
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
+    function setRawInput(comp,value) {
+        // onInput handler for edit controls
+        let result=JSON.stringify(jFile)
+        console.log("0780 setFileInput ENTER ("+comp+") set value="+result);
+
+        try {
+            let jContent=JSON.parse(result)
+            jContent[comp]=value.toString();
+            result=JSON.stringify(jContent);
+            setJFile(jContent);
+            console.log("0780 setFileInput LOAD editor="+result);
+
+        } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
+    }
+
+
+    function handleUpload(e) {
+        console.log("0778 handleUpload "+e.target.value);
+    }
 
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
@@ -644,15 +667,17 @@ export function Portal({portalFileName, view}) {
             (<div className="KNLINE NONE" key="landingzoneline">        
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
-                    {/* LOAD HBOOK Button */}
-                    <button key="HBook" className="BUTTON" onClick={(() => { return handleHBook();})}>Upload HBook
+                    {/* LOAD HBOOK Button onClick={(() => { return handleHBook();})} */}
+                    
+                    <button key="HBook" className="BUTTON" >Upload source
                         <input key="hidden" className="HIDE"></input>
+                        <input className="KNCOL" type="edit" value={getFile('clientDir')} onInput={e => setRawInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
                     &nbsp;&nbsp;
                 </div>    
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
-                        <div  key="landingzonebox" className="FLEX BOX" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter)}} >ADD FILE</div>                                
+                        <div  key="landingzonebox" className="FLEX BOX" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
                     </div>            
                 </div>                            
             </div>
@@ -673,7 +698,7 @@ export function Portal({portalFileName, view}) {
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
                                 Export as Risk Table for 
                         </div>
-                        <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
+                        <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>
                     </button>          
                     &nbsp;                   
                 </div>    

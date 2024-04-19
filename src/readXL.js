@@ -2,8 +2,13 @@
 // const fs = require('node:fs/promises');
 //import { writeFile } from 'node:fs/promises'
 
+
+/* on server/pages it looks like that:
 import pkg from 'xlsx'; // CommonJS
 const { readFile,utils } = pkg;
+*/
+
+import { readFile,utils } from 'xlsx'
 
 const SEP = ',';
 let tableMap={};
