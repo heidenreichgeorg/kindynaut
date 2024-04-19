@@ -502,8 +502,8 @@ export function Portal({portalFileName, view}) {
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
 
             <div id='caption' className="KNTABLE" key="caption">
-            <div className="KNSEP" key="sepc">&nbsp;</div><div className="FIELD" key="sepcm">{getFile('manufacturer')}</div>
-                <div className="KNSEP" key="sepc">&nbsp;</div><div className="FIELD" key="sepcd">{getFile('domain')}</div>
+            <div className="KNSEP" key="sepcm">&nbsp;</div><div className="FIELD" key="sepcmf">{getFile('manufacturer')}</div>
+                <div className="KNSEP" key="sepcd">&nbsp;</div><div className="FIELD" key="sepcdf">{getFile('domain')}</div>
             </div>
 
             <div id='selector' className="KNTABLE" key="selector">
@@ -660,7 +660,7 @@ export function Portal({portalFileName, view}) {
 
 
             { (focus!==FCS_FILES) ? // show SAVE buttons for DOMAIN / RISKS
-            (<div className="KNTABLE" key="caption">      
+            (<div className="KNTABLE" key="captionDOM">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}

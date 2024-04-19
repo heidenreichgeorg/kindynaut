@@ -3,7 +3,7 @@
 const HTTP_OK     = 200;
 const HTTP_WRONG  = 400;
 
-import { openHBook } from "./readXL.js"
+import { openHBook } from "../src/readXL.js/index.js"
 
 
 function getURLParams(req) {
