@@ -1,8 +1,7 @@
 import { Buffer } from 'buffer';
-import { dragOverHandler, dropHandler, handleArchive, load, receiveLetter, showLetter, SOME, strSymbol,symbol } from './util.js'
+import { dragOverHandler, dropHandler, handleArchive, load, makeRiskTable, receiveLetter, showLetter, SOME, strSymbol,symbol } from './util.js'
 import { useState } from 'react';
 
-const DOMAIN_DIAG_IMAGING = "DiagnosticImaging"
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
 
@@ -26,10 +25,14 @@ const KN_FILES = "KN_FILES"
 const T_DOMAIN = '["DOMAIN"]';
 
 
-
-const manufacturer="manufacturer"
-const project="project"
-const version="version"
+function sanitize(str) {
+    if(!str) return "0";
+    let nodir=str.replaceAll('/','_')
+    let nodos=nodir.replaceAll('\\','_')
+    let nostr=nodos.replaceAll('"','_')
+    str=nostr.replaceAll("'",'_')
+    return str;
+}
 
 
 
@@ -88,128 +91,14 @@ function addProjAris(jAris,strMessage) {
     }
 }
 
-function nowandthen(ins) {
-    let str=ins+(ins.split('').reverse().join(''));
-    let pos=[1,3,5,7,11,13,17,19,23,2,4,6,8,29];
-    let pat=str+str+str+str+str+str+str+str+str+str;
-    let result=''
-    for(let index=0;(index<pos.length&&pat.length>pos[index]);index++) {
-        let el=pat[pos[index]];
-        if(el && el!==' ') result=result+el;
-    }
-    return result;
-}
-
-function symbol1(s) { return s }
-
-function arisIdentifier(jAris) {
-    let c=symbol1(nowandthen(jAris.comp));
-    let f=symbol1(nowandthen(jAris.func));
-    let a=symbol1(nowandthen(jAris.cause));
-    let h=symbol1(nowandthen(jAris.harm));
-    let o=symbol1(nowandthen(jAris.code));
-    let i=symbol1(nowandthen(jAris.hazardousSituation));
-    let result=c+f+a+h+o+i;
-    return result;
-}
-
-function archiveHandler() {
-    handleArchive(repository[SCR_DOMAIN],
-        DOMAIN_DIAG_IMAGING)
-}
-
-function makeRiskTable() {
-    // create riskTable format
-    let functionId=1;
-    let harmId=1;
-    let idMar=1;
-
-    // list all risk in domain repository    
-    let arrListAris = repository[SCR_DOMAIN];
-
-
-
-    // separate DomainSpecificHazard from AnalyzedRisk structures
-    let jControlled={};
-    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)]=[]});
-    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)].push(jAris)});
-    
-    console.log("0760 makeRiskTable AnalyzedRisks="+JSON.stringify(jControlled))
-
-    let justification=Object.keys(jControlled).map((key,aris)=>({
-        'id':aris,
-        'name':'DomainSpecificHazard',
-        'component':jControlled[key][0].comp,
-        'function':{
-            'id':functionId,
-            'name':jControlled[key][0].func
-        },
-        'harm':{
-            'id':harmId++,
-            'name':jControlled[key][0].harm
-        },
-        'genericHazards':jControlled[key].map((dosh,did)=>(dosh.hazard)),
-        'managedRisks':[{
-            'id':idMar++, 
-            'name':(jControlled[key][0].hazardousSituation+';'+jControlled[key][0].cause+';'+jControlled[key][0].code)
-        }]
-    }))
-
-    let fileName="RISKTABLE"+manufacturer+project+version+".JSON";
-
-    let riskTable =  {
-        "id":1,
-        "name":"DeviceAssurance",
-        "justification":
-        {   "id":2,
-            "name":"Safety",
-            "file":fileName,
-            "manufacturer":manufacturer,
-            "project":project,
-            "version":version,
-            "justification":justification
-        }
-    }
-
-    const strTable  = JSON.stringify(riskTable);
-    console.log("0762 makeRiskTable riskTable="+strTable)
-
-    // create a link to download that object to some client system
-    const blobContent = new Blob([strTable], { type: 'text/plain' });
-    const url = URL.createObjectURL(blobContent);
-
-    console.log("0764 makeRiskTable created URL")
-
-    return makeJSONButton(url,fileName);
-}
-    
-
-function makeJSONButton(url,fileName) { 
-    console.log("0766 makeJSONButton "+url);
-    try {
-        const downloadButton=document.getElementById(KN_DOWNLOAD);
-        if(downloadButton) {
-            let a = document.createElement('a');
-            a.href = url
-            // file name security
-            a.download = fileName;
-            a.style.display = 'block'; // was none
-            a.className = "key";
-            a.innerHTML = "Download";
-            downloadButton.replaceChild(a, downloadButton.childNodes[0]);(a); 
-            console.log("0768 makeJSONButton");
-        } else console.log("0767 makeJSONButton file("+fileName+"), NO button control");
-    } catch(err) { console.log("0765 makeJSONButton:"+err);}
-    return url;
-}
-
 
 
 export function Portal({portalFileName, view}) {
 
     // filters and display/edit mode
-    const [strFilter, setStrFilter] = useState("{}")
-    const [jEditor, setJEditor] = useState({})
+    const [strFilter, setStrFilter] = useState("{}") // filter form buffer
+    const [jEditor, setJEditor] = useState({}) // editor form buffer
+    const [jFile, setJFile] = useState({'project':'product','manufacturer':process.env.REACT_APP_MANUFACTURER,'domain':process.env.REACT_APP_DOMAIN}) // common file data buffer
     const [mode, setMode ] = useState(MODE_SAVE);
     
     init();
@@ -369,7 +258,7 @@ export function Portal({portalFileName, view}) {
             </div>)
     }
     
-//  onLoad={(e)=>{startH(e.target,'comp')}} GH202040413 do not know how to load value to input control
+
 
     function filterLine(key,style,compH,funcH,hazardH,codeH,causeH,situationH,harmH) {
         return (
@@ -583,8 +472,39 @@ export function Portal({portalFileName, view}) {
     let jListAris = repository[SCR_DOMAIN];
     console.log("0810 DOMAIN shows "+(jListAris ? Object.keys(jListAris):"empty")+"# of risks.")
 
+
+
+// common file data
+    function getFile(attribute) {
+        if(jFile==null) return ''
+        let result= jFile[attribute]
+        if(result==null) return ''
+        return result;
+    }
+
+    function setFileInput(comp,value) {
+        // onInput handler for edit controls
+        let result=JSON.stringify(jFile)
+        console.log("0780 setFileInput ENTER ("+comp+") set value="+result);
+
+        try {
+            let jContent=JSON.parse(result)
+            jContent[comp]=sanitize(value);
+            result=JSON.stringify(jContent);
+            setJFile(jContent);
+            console.log("0780 setFileInput LOAD editor="+result);
+
+        } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
+    }
+
+
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
+
+            <div id='caption' className="KNTABLE" key="caption">
+            <div className="KNSEP" key="sepc">&nbsp;</div><div className="FIELD" key="sepcm">{getFile('manufacturer')}</div>
+                <div className="KNSEP" key="sepc">&nbsp;</div><div className="FIELD" key="sepcd">{getFile('domain')}</div>
+            </div>
 
             <div id='selector' className="KNTABLE" key="selector">
 
@@ -736,12 +656,16 @@ export function Portal({portalFileName, view}) {
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}
-                    <button key="Archive" className="BUTTON" onClick={(() => { return archiveHandler();})}>Save as archive file
+                    <button key="Archive" className="BUTTON" onClick={(() => { return handleArchive(repository[SCR_DOMAIN],getFile('domain'));})}>Save as archive file
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    <button key="Export" id={KN_DOWNLOAD} className="BUTTON" onClick={(() => { return makeRiskTable();})}>Export as Risk Table
-                        <input key="hidden" className="HIDE"></input>
+                    <button key="Export" id={KN_DOWNLOAD} className="BUTTON" >
+                        <div key="button" className="FIELD" 
+                            onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
+                                Export as Risk Table for 
+                        </div>
+                        <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
                     </button>          
                     &nbsp;                   
                 </div>    
@@ -749,4 +673,5 @@ export function Portal({portalFileName, view}) {
         </div>
     )
 }
+
 

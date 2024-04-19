@@ -125,6 +125,128 @@ export function makeArchiveButton(url,domain) {
     return url;
 }
 
+export 
+
+function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
+    // create riskTable format
+    let functionId=1;
+    let harmId=1;
+    let idMar=1;
+
+    // list all risk in domain repository    
+    //let arrListAris = repository[SCR_DOMAIN];
+
+    if(!arrListAris || arrListAris.length==0) return;
+
+    // separate DomainSpecificHazard from AnalyzedRisk structures
+    let jControlled={};
+    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)]=[]});
+    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)].push(jAris)});
+    
+    console.log("0760 makeRiskTable AnalyzedRisks="+JSON.stringify(jControlled))
+
+    let justification=Object.keys(jControlled).map((key,aris)=>({
+
+        'id':aris,
+
+        'name':'DomainSpecificHazard',
+
+        'component':jControlled[key][0].comp,
+
+        'function':{
+            'id':functionId,
+            'name':jControlled[key][0].func
+        },
+
+        'harm':{
+            'id':harmId++,
+            'name':jControlled[key][0].harm
+        },
+
+        'genericHazards':jControlled[key].map((dosh)=>(dosh.hazard)),
+        
+        'managedRisks':[{
+            'id':(idMar++), 
+            'name':(jControlled[key][0].hazardousSituation+';'+jControlled[key][0].cause+';'+jControlled[key][0].code)
+        }]
+    }))
+
+    let fileName="RISKTABLE"+rt_manufacturer+'_'+rt_project+".JSON";
+
+    let riskTable =  {
+        "id":1,
+        "name":"DeviceAssurance",
+        "justification":
+        {   "id":2,
+            "name":"Safety",
+            "file":fileName,
+            "manufacturer":rt_manufacturer,
+            "project":rt_project,
+            "version":"0.0",
+            "justification":justification
+        }
+    }
+
+    const strTable  = JSON.stringify(riskTable);
+    console.log("0762 makeRiskTable riskTable="+strTable)
+
+    // create a link to download that object to some client system
+    const blobContent = new Blob([strTable], { type: 'text/plain' });
+    const url = URL.createObjectURL(blobContent);
+
+    console.log("0764 makeRiskTable created URL")
+
+    return makeJSONButton(idButton,url,fileName);
+}
+ 
+function nowandthen(ins) {
+    let str=ins+(ins.split('').reverse().join(''))+ins;
+    let pos=[10,20,1,11,21,2,12,22,3,13,23,4,14,24,5,15,25,6,16,26];
+    let pat=str+str+str+str+str+str+str+str+str;
+    let result=''
+    for(let index=0;(index<pos.length&&pat.length>pos[index]);index++) {
+        let el=pat[pos[index]];
+        if(el && el!==' ') result=result+el;
+    }
+    return result;
+}
+
+function symbol1(s) { return s }
+
+
+
+function arisIdentifier(jAris) {
+    let c=symbol1(nowandthen(jAris.comp));
+    let f=symbol1(nowandthen(jAris.func));
+    let a=symbol1(nowandthen(jAris.cause));
+    let h=symbol1(nowandthen(jAris.harm));
+    let o=symbol1(nowandthen(jAris.code));
+    let i=symbol1(nowandthen(jAris.hazardousSituation));
+    let result=c+f+a+h+o+i;
+    return result;
+}
+
+
+function makeJSONButton(idButton,url,fileName) { 
+    console.log("0766 makeJSONButton "+url);
+    try {
+        const downloadButton=document.getElementById(idButton);
+        if(downloadButton) {
+            let a = document.createElement('a');
+            a.href = url
+            // file name security
+            a.download = fileName;
+            a.style.display = 'block'; // was none
+            a.className = "key";
+            a.innerHTML = "Download";
+            downloadButton.replaceChild(a, downloadButton.childNodes[0]);(a); 
+            console.log("0768 makeJSONButton");
+        } else console.log("0767 makeJSONButton file("+fileName+"), NO button control");
+    } catch(err) { console.log("0765 makeJSONButton:"+err);}
+    return url;
+}
+
+
 
 export function showLetter(file,addTicket) {   
     
