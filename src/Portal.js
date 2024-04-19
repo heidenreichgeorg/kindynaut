@@ -642,6 +642,14 @@ export function Portal({portalFileName, view}) {
 
             { (focus===FCS_FILES) ? // show drag-n-dop landing zone only for FILES
             (<div className="KNLINE NONE" key="landingzoneline">        
+                <div className="FIELD" key="buttonbox">
+                    <div className="FIELD MOAM" key="buttons"></div>
+                    {/* LOAD HBOOK Button */}
+                    <button key="HBook" className="BUTTON" onClick={(() => { return handleHBook();})}>Upload HBook
+                        <input key="hidden" className="HIDE"></input>
+                    </button>          
+                    &nbsp;&nbsp;
+                </div>    
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
                         <div  key="landingzonebox" className="FLEX BOX" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter)}} >ADD FILE</div>                                
@@ -651,8 +659,8 @@ export function Portal({portalFileName, view}) {
             ):""}
 
 
-            {/* Buttons */}
-            <div className="KNTABLE" key="caption">      
+            { (focus!==FCS_FILES) ? // show SAVE buttons for DOMAIN / RISKS
+            (<div className="KNTABLE" key="caption">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}
@@ -670,6 +678,8 @@ export function Portal({portalFileName, view}) {
                     &nbsp;                   
                 </div>    
             </div>
+            ):""}
+
         </div>
     )
 }
