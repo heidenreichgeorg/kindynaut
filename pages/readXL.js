@@ -1,14 +1,14 @@
 
 // const fs = require('node:fs/promises');
-//import { writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 
 
-/* on server/pages it looks like that:
+/* in NODE.JS it looks like that: */
 import pkg from 'xlsx'; // CommonJS
 const { readFile,utils } = pkg;
-*/
 
-import { readFile,utils } from 'xlsx'
+/* in REACT it looks like that: */
+//import { readFile,utils } from 'xlsx'
 
 const SEP = ',';
 let tableMap={};
@@ -73,6 +73,7 @@ export function openHBook(fileName) {
 
     }
 
+    // NODE ONLY
 
     // return one list of CSV-strings (one string per data line)
     // CSV support for ca 120 columns
@@ -111,11 +112,11 @@ export function openHBook(fileName) {
             } else console.log("0461 READ workbook from  "+fileName);
         })            
     } catch(err) {
-        console.log("0401 READ workbook from  "+fileName)
-        result.push("0401 Error opening "+fileName)
+        console.log("0401 READ workbook from  "+fileName+ "  "+err)
+        result.push("0401 Error opening workbook "+err)
     }
     console.log();
-    writeTable('c:/temp/csvTable.csv',result.join('\n'));
+//    writeTable('c:/temp/csvTable.csv',result.join('\n'));
     console.log();
     return result;
 }

@@ -1,7 +1,6 @@
 import { Buffer } from 'buffer';
 import { processHTML,startAPI } from './extract.js';
 
-import { openHBook } from './readXL.js'
 
 //import dotenv from 'dotenv'
 //dotenv.config({ path: './.env.local' })
@@ -12,7 +11,8 @@ export const HTTP_WRONG  = 400;
 
 export const SOME = 4;
 
-export const Slash = '/';
+const FILE_SLASH = '/';
+
 export const REACT_APP_API_HOST="/pages"
 
 
@@ -66,32 +66,40 @@ export function symbol(temp) {
     return p[13]+p[17]+p[2]+p[5]+p[11]+p[3]+p[7]+p[19];
 }
 
-export function uploadHBook(fileName) {        
+
+// need to start NODE server
+// node pages/server.js 
+export function handleHBook(fileName) {        
+    // SECURITY fileName may carry markup
     let client="MFR";
     let family="IMAGING";
 
-    console.log("0710 handleWorkbook  "+fileName);
+    console.log("0692 handleHBook "+fileName)
     
     const rqHeaders = {  'Accept': 'application/octet-stream',
                         'Access-Control-Allow-Origin':'*',
                         'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
 
 
-                        // SECURITY fileName may carry markup
     const rqOptions = { method: 'GET', headers: rqHeaders, mode:'no-cors'};
     try {                 
         let server=process.env.REACT_APP_NODE;
-        let s_port=process.env.REACT_APP_PORT;
-
+        let s_port=process.env.REACT_APP_SERVER;
         let url = `http://${server}:${s_port}/DOWNLOAD?file=`+fileName;
-        fetch(url, rqOptions)
-        .then((response) => response.text())
-        .then((text) => console.log("0712 "+text))
-        // arrList.forEach((line)=>{resourceLimits.push(line);console.log(line)})
-        //.then((url) => console.log("0712 handleHBook URL= "+ makeArchiveButton(url,client,family)))
-        .catch((err) => console.error("0711 handleHBook ERR "+err));           
-    } catch(err) { console.log("0713 GET /DOWNLOAD handleHBook:"+err);}
-    console.log("0730 handleHBook FETCH <HTML><A href='"+url+"'>"+fileName+"</A></HTML>");
+        console.log("0710 handleWorkbook  url="+url);
+
+        try {
+            fetch(url, rqOptions)
+            .then((response) => response.text())
+            .then((text) => console.log("0712 "+text))
+            // arrList.forEach((line)=>{resourceLimits.push(line);console.log(line)})
+            //.then((url) => console.log("0712 handleHBook URL= "+ makeArchiveButton(url,client,family)))
+            .catch((err) => console.error("0715 handleHBook ERR "+err));           
+        } catch(err) { console.log("0713 GET /DOWNLOAD handleHBook:"+err);}
+
+    } catch(err) { console.log("0711 GET /DOWNLOAD handleHBook:"+err);}
+
+    console.log("0730 handleHBook FETCH "+fileName);
 }
 
 
@@ -248,12 +256,8 @@ function makeJSONButton(idButton,url,fileName) {
     return url;
 }
 
-function handleHBook(filePath) { 
 
-    console.log("0692 handleHBook "+filePath)
 
-    openHBook(filePath);
-}
 
 
 export function showLetter(file,addTicket,clientDir) {   
@@ -301,7 +305,7 @@ export function showLetter(file,addTicket,clientDir) {
 
     } else if(strFile.endsWith(".xlsx")) {
         console.log('0648 IMPORT-2-X from XLSX file <'+fileName+'> FROM SERVER');
-        let filePath=clientDir+'/'+fileName;
+        let filePath=clientDir+FILE_SLASH+fileName;
         handleHBook(filePath);     
         
         

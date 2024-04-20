@@ -27,8 +27,9 @@ const T_DOMAIN = '["DOMAIN"]';
 
 function sanitize(str) {
     if(!str) return "0";
-    let nodir=str.replaceAll('/','_')
-    let nodos=nodir.replaceAll('\\','_')
+    let nocol=str.replaceAll(',','_')
+    let nosem=nocol.replaceAll(';','_')
+    let nodos=nosem.replaceAll('\\','_')
     let nostr=nodos.replaceAll('"','_')
     str=nostr.replaceAll("'",'_')
     return str;
@@ -501,26 +502,6 @@ export function Portal({portalFileName, view}) {
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
-    function setRawInput(comp,value) {
-        // onInput handler for edit controls
-        let result=JSON.stringify(jFile)
-        console.log("0780 setFileInput ENTER ("+comp+") set value="+result);
-
-        try {
-            let jContent=JSON.parse(result)
-            jContent[comp]=value.toString();
-            result=JSON.stringify(jContent);
-            setJFile(jContent);
-            console.log("0780 setFileInput LOAD editor="+result);
-
-        } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
-    }
-
-
-    function handleUpload(e) {
-        console.log("0778 handleUpload "+e.target.value);
-    }
-
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
 
@@ -671,7 +652,7 @@ export function Portal({portalFileName, view}) {
                     
                     <button key="HBook" className="BUTTON" >Upload source
                         <input key="hidden" className="HIDE"></input>
-                        <input className="KNCOL" type="edit" value={getFile('clientDir')} onInput={e => setRawInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
+                        <input className="KNCOL" type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
                     &nbsp;&nbsp;
                 </div>    

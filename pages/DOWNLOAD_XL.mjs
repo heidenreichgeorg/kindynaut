@@ -1,9 +1,14 @@
+
+
+// START FROM PROJECT ROOT WITH
+// node pages/server.js 
+
 // load an XLSX file from the server storage
 
 const HTTP_OK     = 200;
 const HTTP_WRONG  = 400;
 
-import { openHBook } from "../src/readXL.js/index.js"
+import { openHBook } from "./readXL.js"
 
 
 function getURLParams(req) {
