@@ -40,11 +40,11 @@ export function openHBook(fileName) {
             const jTable = utils.sheet_to_json(workbook.Sheets[name],s2j_options);  
             // each sheet in jTable is an array of line objects with markup defined in the first line
             if(jTable){
-                if(sheetNumber<8) { 
+                if(sheetNumber>=0) { 
                     jTable.forEach((jLine,row)=>{
                         //console.log("0406 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(jLine).substring(0,100));
                         const keyNames = Object.keys(jLine);
-                        const comps=keyNames.map((key)=>(jLine[key]))    
+                        const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
                         //console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
                         transferLine(comps);
                     });
@@ -56,7 +56,7 @@ export function openHBook(fileName) {
        
     }
     //console.log(result.join('\n\n'))
-//    writeTable('c:/temp/csvTable.csv',result.join('\n'));
+    writeTable('c:/temp/csvTable.csv',result.join('\n'));
     return result; // previous risk only
 
 
@@ -68,69 +68,57 @@ export function openHBook(fileName) {
     function transferLine(comps) {
         //console.log("  0420 RISK "+line)
         //const comps=line.split(SEP);
-        let type= '*';
+
         let first = comps[0];
+        //console.log("0422 "+comps.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));
 
-        console.log("0422 "+comps.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));
-
-        if(first  && first.length>0) {
+        if(isNaN(first)) {
+            // (A) sheet caption 
+            if(first.startsWith('F#')) {            
+                tableMap={};
+                comps.forEach((strColumn,col) => {
+                    let column=strColumn.trim();
+                // remember column index for each defined columns
+                    if(column==='F#') tableMap.FuncNum=col;
+                    if(column==='Function') tableMap.Function=col;
+                    if(column==='H#') tableMap.HarmNum=col;
+                    if(column==='Hazard') tableMap.Hazard=col;
+                    if(column==='C#') tableMap.CauseNum=col;
+                    if(column.startsWith('Hazardou')) tableMap.HazardousSituation=col;
+                    if(column==='Effect') tableMap.Target=col;
+                    if(column==='Pre/Post') tableMap.PrePost=col;
+                    if(column==='Initial') tableMap.Initial=col;
+                    if(column==='M#') tableMap.MeasNum=col;
+                    if(column==='Measures') tableMap.Measures=col;
+                    if(column==='Residual') tableMap.Residual=col;
+                });
+                // console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+            }
+            // (B) else other text line
+        }
+        else if(comps[1].length>0) {
+            // (C) new risk line
+            // get rid of previous risk data            
+            console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
+            result.push(colBuffer.join(';'));
             
-
-            try { type=parseInt(first); } catch(e) {}
-            if(isNaN(type)) {
-                // (A) sheet title line
-                type=(first.startsWith('F#') ? "#" : "T");
-            }
-            else {
-                riskNumber++;
-                // get rid of previous risk data
-                
-               // console.log("    0430 RISK "+riskNumber+"\n"+colBuffer.map((str)=>((str+'           ').substring(0,9))).join('|'))
-                
-                
-                result.push(colBuffer.join(';'));
-
-
-
-
-                // (B) numeric line - meaning new risk
-                type='*';
-                colBuffer=JSON.parse(JSON.stringify(columnsHBook))
-            }
+            riskNumber++;
+            colBuffer=JSON.parse(JSON.stringify(columnsHBook))
         }
+    
 
-        if(type=='#') {
-        
-
-            tableMap={};
-            comps.forEach((strColumn,col) => {
-                let column=strColumn.trim();
-// remember column index for defined columns
-                if(column==='F#') tableMap.FuncNum=col;
-                if(column==='Function') tableMap.Function=col;
-                if(column==='H#') tableMap.HarmNum=col;
-                if(column==='Hazard') tableMap.Hazard=col;
-                if(column==='C#') tableMap.CauseNum=col;
-                if(column.startsWith('Hazardou')) tableMap.HazardousSituation=col;
-                if(column==='Effect') tableMap.Target=col;
-                if(column==='Pre/Post') tableMap.PrePost=col;
-                if(column==='Initial') tableMap.Initial=col;
-                if(column==='M#') tableMap.MeasNum=col;
-                if(column==='Measures') tableMap.Measures=col;
-                if(column==='Residual') tableMap.Residual=col;
-            });
-
-        //    console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
-        }
-        
-
-
-        // sort line into colBuffer	   
+        let check=[];
+        // sort each line into colBuffer	   
         Object.keys(tableMap).forEach((key,index)=>{
             let col=tableMap[key];
             let prev = colBuffer[index];
             colBuffer[index]=comps[col]?prev+' '+comps[col]:prev+'#';
+
+            check[index]=comps[col]
         })
+
+        console.log("0424 "+grid(check))
+
     }
 
 }
@@ -164,7 +152,9 @@ async function writeTable(filePath,csvTable) {
   }
 }
 
-
+function grid(arrStr) {
+    return arrStr.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230);
+}
 
 // OLD
     // return one list of CSV-strings (one string per data line, CSV breaks columns for commas)
