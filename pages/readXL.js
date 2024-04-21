@@ -1,7 +1,8 @@
+    // NODE ONLY
+    // node pages/server.js
 
 // const fs = require('node:fs/promises');
 import { writeFile } from 'node:fs/promises'
-
 
 /* in NODE.JS it looks like that: */
 import pkg from 'xlsx'; // CommonJS
@@ -15,36 +16,102 @@ let tableMap={};
 
 export function openHBook(fileName) {
 
-    let result=[];
+    // colBuffer is the list of columns of the current RISK
+    const columnsHBook=['','','','','','','','','','','','','','','','','','']
+    let colBuffer=columnsHBook;
 
-    function transferLine(line) {
+    // list of consolidated colBuffer values
+    let result = []; 
+    let riskNumber=0;
 
-        const comps=line.split(SEP);
+    console.log("0400 READ openHBook "+fileName)
+    try { 
+        const workbook = readFile(fileName);
+        console.log("0402 READ workbook from  "+fileName)
+        const sheetNames = workbook.SheetNames;
+        console.log("0404 READ workbook with sheets:  "+sheetNames.join(','))
 
-        let type= ' ';
+
+        // digest one sheet, continue existing colBuffer
+
+        // show empty cells as empty string
+        const s2j_options={ 'blankrows':true, 'defval':'', 'skipHidden':false };
+        sheetNames.forEach((name,sheetNumber)=>{ 
+            const jTable = utils.sheet_to_json(workbook.Sheets[name],s2j_options);  
+            // each sheet in jTable is an array of line objects with markup defined in the first line
+            if(jTable){
+                if(sheetNumber<8) { 
+                    jTable.forEach((jLine,row)=>{
+                        //console.log("0406 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(jLine).substring(0,100));
+                        const keyNames = Object.keys(jLine);
+                        const comps=keyNames.map((key)=>(jLine[key]))    
+                        //console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
+                        transferLine(comps);
+                    });
+                }
+            } //else console.log("0403 READ workbook sheet("+i+")"");
+        })            
+    } catch(err) {
+        console.log("0401 READ workbook from  "+fileName+ "  "+err)
+       
+    }
+    //console.log(result.join('\n\n'))
+//    writeTable('c:/temp/csvTable.csv',result.join('\n'));
+    return result; // previous risk only
+
+
+
+
+
+
+
+    function transferLine(comps) {
+        //console.log("  0420 RISK "+line)
+        //const comps=line.split(SEP);
+        let type= '*';
         let first = comps[0];
+
+        console.log("0422 "+comps.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));
+
         if(first  && first.length>0) {
+            
 
-            type='*';
             try { type=parseInt(first); } catch(e) {}
-
             if(isNaN(type)) {
+                // (A) sheet title line
                 type=(first.startsWith('F#') ? "#" : "T");
             }
             else {
-                // number might be part of a longer text
+                riskNumber++;
+                // get rid of previous risk data
+                
+               // console.log("    0430 RISK "+riskNumber+"\n"+colBuffer.map((str)=>((str+'           ').substring(0,9))).join('|'))
+                
+                
+                result.push(colBuffer.join(';'));
+
+
+
+
+                // (B) numeric line - meaning new risk
                 type='*';
+                colBuffer=JSON.parse(JSON.stringify(columnsHBook))
             }
         }
 
         if(type=='#') {
-            tableMap={};
-            comps.forEach((column,col) => {
+        
 
+            tableMap={};
+            comps.forEach((strColumn,col) => {
+                let column=strColumn.trim();
+// remember column index for defined columns
                 if(column==='F#') tableMap.FuncNum=col;
                 if(column==='Function') tableMap.Function=col;
                 if(column==='H#') tableMap.HarmNum=col;
                 if(column==='Hazard') tableMap.Hazard=col;
+                if(column==='C#') tableMap.CauseNum=col;
+                if(column.startsWith('Hazardou')) tableMap.HazardousSituation=col;
                 if(column==='Effect') tableMap.Target=col;
                 if(column==='Pre/Post') tableMap.PrePost=col;
                 if(column==='Initial') tableMap.Initial=col;
@@ -53,45 +120,22 @@ export function openHBook(fileName) {
                 if(column==='Residual') tableMap.Residual=col;
             });
 
-            console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+        //    console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
         }
         
-	    let jLine=[];
-        Object.keys(tableMap).forEach((key)=>{
+
+
+        // sort line into colBuffer	   
+        Object.keys(tableMap).forEach((key,index)=>{
             let col=tableMap[key];
-
-            // FLAT NUMERIC FIRST COLUMN
-            if(col==0 && isNaN(first)) comps[0]=" ";
-
-            comps[col] ? jLine.push(comps[col]) : jLine.push('');
+            let prev = colBuffer[index];
+            colBuffer[index]=comps[col]?prev+' '+comps[col]:prev+'#';
         })
-
-
-        
-
-        result.push(jLine.join(';'));
-
     }
 
-    // NODE ONLY
-
-    // return one list of CSV-strings (one string per data line)
-    // CSV support for ca 120 columns
-    console.log("0400 READ openHBook "+fileName)
-    try { 
-        const workbook = readFile(fileName);
-        console.log("0410 READ workbook from  "+fileName)
-        const sheetNames = workbook.SheetNames;
-        sheetNames.forEach((name,i)=>{ 
-            console.log("0420 sheet #"+i+" = "+name)
+}
 
 
-// direct CSV works nicely,  
-// but randomly inserts columns over the whole tab
-// and also randomly inserts cells within the same column
-// meaning that per tab the columns are trustworthy
-// and the page headers represent the column use over the whole tab
-//
 // STEP 1 - map concepts to columns
 // so for each tab a column map is created and columns are translated
 //
@@ -105,22 +149,12 @@ export function openHBook(fileName) {
 // lines are not being received by the assigned Portal client
 
 
+
+// each line in RESULT is a consolidated block from Excel, 
+// for multiple lines referring to the same risk
             // EXAM-X
-            const cTable = utils.sheet_to_csv(workbook.Sheets[name]);          
-            if(cTable) {
-                cTable.split('\n').forEach((line)=>{transferLine(line)}); 
-            } else console.log("0461 READ workbook from  "+fileName);
-        })            
-    } catch(err) {
-        console.log("0401 READ workbook from  "+fileName+ "  "+err)
-        result.push("0401 Error opening workbook "+err)
-    }
-    console.log();
-//    writeTable('c:/temp/csvTable.csv',result.join('\n'));
-    console.log();
-    return result;
-}
-  
+
+
 async function writeTable(filePath,csvTable) {
   try {
     console.log("0470 writeTable to "+filePath);
@@ -130,3 +164,8 @@ async function writeTable(filePath,csvTable) {
   }
 }
 
+
+
+// OLD
+    // return one list of CSV-strings (one string per data line, CSV breaks columns for commas)
+    // CSV support for ca 120 columns

@@ -30,7 +30,7 @@ export function timeSymbol() {
 export function load(view) {
     
         let server=process.env.REACT_APP_NODE;
-        let s_port=process.env.REACT_APP_PORT;
+        let s_port=process.env.REACT_APP_UI;
         
         if(server && server.length > SOME && s_port && s_port.length> SOME)
             window.location.href = 'http://'+server+':'+s_port+'/?view='+view;
