@@ -37,6 +37,7 @@ export function openHBook(fileName) {
         // show empty cells as empty string
         const s2j_options={ 'blankrows':true, 'defval':'', 'skipHidden':false };
         sheetNames.forEach((name,sheetNumber)=>{ 
+            let definedColumns=false;
             const jTable = utils.sheet_to_json(workbook.Sheets[name],s2j_options);  
             // each sheet in jTable is an array of line objects with markup defined in the first line
             if(jTable){
@@ -46,7 +47,7 @@ export function openHBook(fileName) {
                         const keyNames = Object.keys(jLine);
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
                         //console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
-                        transferLine(comps);
+                        definedColumns=transferLine(comps,definedColumns);
                     });
                 }
             } //else console.log("0403 READ workbook sheet("+i+")"");
@@ -65,7 +66,7 @@ export function openHBook(fileName) {
 
 
 
-    function transferLine(comps) {
+    function transferLine(comps,definedColumns) {
         //console.log("  0420 RISK "+line)
         //const comps=line.split(SEP);
 
@@ -110,12 +111,13 @@ export function openHBook(fileName) {
                 riskNumber++;
                 colBuffer=JSON.parse(JSON.stringify(columnsHBook))
                 
+                definedColumns=true;
                 store(comps)
             }
         }
 
 
-        if(first.length==0 && (comps.join('').length>0)) {
+        if(first.length==0 && (comps.join('').length>0) && definedColumns) {
             // empty comps0
             // other text    
             store(comps);
@@ -125,6 +127,8 @@ export function openHBook(fileName) {
 
 
         function store(comps) {
+            if(!definedColumns) return;
+
             let check=[];
             // sort each line into colBuffer	   
             Object.keys(tableMap).forEach((key,index)=>{
@@ -135,6 +139,9 @@ export function openHBook(fileName) {
             })
             console.log("0424 "+grid(check))
         }
+
+
+        return definedColumns;
     }
 
 }
