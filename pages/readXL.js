@@ -72,53 +72,69 @@ export function openHBook(fileName) {
         let first = comps[0];
         //console.log("0422 "+comps.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));
 
-        if(isNaN(first)) {
-            // (A) sheet caption 
-            if(first.startsWith('F#')) {            
-                tableMap={};
-                comps.forEach((strColumn,col) => {
-                    let column=strColumn.trim();
-                // remember column index for each defined columns
-                    if(column==='F#') tableMap.FuncNum=col;
-                    if(column==='Function') tableMap.Function=col;
-                    if(column==='H#') tableMap.HarmNum=col;
-                    if(column==='Hazard') tableMap.Hazard=col;
-                    if(column==='C#') tableMap.CauseNum=col;
-                    if(column.startsWith('Hazardou')) tableMap.HazardousSituation=col;
-                    if(column==='Effect') tableMap.Target=col;
-                    if(column==='Pre/Post') tableMap.PrePost=col;
-                    if(column==='Initial') tableMap.Initial=col;
-                    if(column==='M#') tableMap.MeasNum=col;
-                    if(column==='Measures') tableMap.Measures=col;
-                    if(column==='Residual') tableMap.Residual=col;
-                });
-                // console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+        if(first) {
+            if(isNaN(first)) {
+                // (A) sheet caption 
+                if(first.startsWith('F#')) {            
+                    tableMap={};
+                    comps.forEach((strColumn,col) => {
+                        let column=strColumn.trim();
+                        // remember column index for each defined columns
+                        if(column.startsWith('F#')) tableMap.FuncNum=col;
+                        if(column.startsWith('Function')) tableMap.Function=col;
+                        if(column.startsWith('H#')) tableMap.HarmNum=col;
+                        if(column.startsWith('Hazard')) tableMap.Hazard=col;
+                        if(column.startsWith('C#')) tableMap.CauseNum=col;
+                        if(column.startsWith('Hazardou')) tableMap.HazardousSituation=col;
+                        if(column.startsWith('Effect')) tableMap.Target=col;
+                        if(column.startsWith('Pre/Post')) tableMap.PrePost=col;
+                        if(column.startsWith('Initial')) tableMap.Initial=col;
+                        if(column.startsWith('M#')) tableMap.MeasNum=col;
+                        if(column.startsWith('Measure')) tableMap.Measures=col;
+                        if(column.startsWith('Residual')) tableMap.Residual=col;
+                    });
+                    // console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+                }
+
+                // (B) else other text line
+                // comps0 is text--> don't use this
+
+
+            } else {
+                // (C) new risk line
+                // numeric comps0
+                // get rid of previous risk data            
+                console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
+                result.push(colBuffer.join(';'));
+                
+                riskNumber++;
+                colBuffer=JSON.parse(JSON.stringify(columnsHBook))
+                
+                store(comps)
             }
-            // (B) else other text line
         }
-        else if(comps[1].length>0) {
-            // (C) new risk line
-            // get rid of previous risk data            
-            console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
-            result.push(colBuffer.join(';'));
-            
-            riskNumber++;
-            colBuffer=JSON.parse(JSON.stringify(columnsHBook))
+
+
+        if(first.length==0 && (comps.join('').length>0)) {
+            // empty comps0
+            // other text    
+            store(comps);
         }
     
 
-        let check=[];
-        // sort each line into colBuffer	   
-        Object.keys(tableMap).forEach((key,index)=>{
-            let col=tableMap[key];
-            let prev = colBuffer[index];
-            colBuffer[index]=comps[col]?prev+' '+comps[col]:prev+'#';
 
-            check[index]=comps[col]
-        })
 
-        console.log("0424 "+grid(check))
-
+        function store(comps) {
+            let check=[];
+            // sort each line into colBuffer	   
+            Object.keys(tableMap).forEach((key,index)=>{
+                let col=tableMap[key];
+                let prev = colBuffer[index]+' ';
+                colBuffer[index]=comps[col]?prev+comps[col]:prev;
+                check[index]=comps[col]
+            })
+            console.log("0424 "+grid(check))
+        }
     }
 
 }
