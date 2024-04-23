@@ -1,3 +1,8 @@
+
+
+// START FROM PROJECT ROOT WITH
+// node pages/server.js 
+
 // load an XLSX file from the server storage
 
 const HTTP_OK     = 200;

@@ -4,7 +4,7 @@
 
 import * as http from 'http';
 
-import { handler } from './DOWNLOAD.mjs';
+import { handler } from './DOWNLOAD_XL.mjs';
 
 import { put } from './fs_client.js'
 

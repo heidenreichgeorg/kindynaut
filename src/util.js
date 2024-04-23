@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { processHTML,startAPI } from './extract.js';
 
+
 //import dotenv from 'dotenv'
 //dotenv.config({ path: './.env.local' })
 // npm install dotenv
@@ -10,7 +11,8 @@ export const HTTP_WRONG  = 400;
 
 export const SOME = 4;
 
-export const Slash = '/';
+const FILE_SLASH = '/';
+
 export const REACT_APP_API_HOST="/pages"
 
 
@@ -28,7 +30,7 @@ export function timeSymbol() {
 export function load(view) {
     
         let server=process.env.REACT_APP_NODE;
-        let s_port=process.env.REACT_APP_PORT;
+        let s_port=process.env.REACT_APP_UI;
         
         if(server && server.length > SOME && s_port && s_port.length> SOME)
             window.location.href = 'http://'+server+':'+s_port+'/?view='+view;
@@ -64,32 +66,40 @@ export function symbol(temp) {
     return p[13]+p[17]+p[2]+p[5]+p[11]+p[3]+p[7]+p[19];
 }
 
+
+// need to start NODE server
+// node pages/server.js 
 export function handleHBook(fileName) {        
+    // SECURITY fileName may carry markup
     let client="MFR";
     let family="IMAGING";
 
-    console.log("0710 handleWorkbook  "+fileName);
+    console.log("0692 handleHBook "+fileName)
     
     const rqHeaders = {  'Accept': 'application/octet-stream',
                         'Access-Control-Allow-Origin':'*',
                         'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
 
 
-                        // SECURITY fileName may carry markup
     const rqOptions = { method: 'GET', headers: rqHeaders, mode:'no-cors'};
     try {                 
         let server=process.env.REACT_APP_NODE;
-        let s_port=process.env.REACT_APP_PORT;
-
+        let s_port=process.env.REACT_APP_SERVER;
         let url = `http://${server}:${s_port}/DOWNLOAD?file=`+fileName;
-        fetch(url, rqOptions)
-        .then((response) => response.text())
-        .then((text) => console.log("0712 "+text))
-        // arrList.forEach((line)=>{resourceLimits.push(line);console.log(line)})
-        //.then((url) => console.log("0712 handleHBook URL= "+ makeArchiveButton(url,client,family)))
-        .catch((err) => console.error("0711 handleHBook ERR "+err));           
-    } catch(err) { console.log("0713 GET /DOWNLOAD handleHBook:"+err);}
-    console.log("0730 handleHBook FETCH <HTML><A href='"+url+"'>"+fileName+"</A></HTML>");
+        console.log("0710 handleWorkbook  url="+url);
+
+        try {
+            fetch(url, rqOptions)
+            .then((response) => response.text())
+            .then((text) => console.log("0712 "+text))
+            // arrList.forEach((line)=>{resourceLimits.push(line);console.log(line)})
+            //.then((url) => console.log("0712 handleHBook URL= "+ makeArchiveButton(url,client,family)))
+            .catch((err) => console.error("0715 handleHBook ERR "+err));           
+        } catch(err) { console.log("0713 GET /DOWNLOAD handleHBook:"+err);}
+
+    } catch(err) { console.log("0711 GET /DOWNLOAD handleHBook:"+err);}
+
+    console.log("0730 handleHBook FETCH "+fileName);
 }
 
 
@@ -248,7 +258,9 @@ function makeJSONButton(idButton,url,fileName) {
 
 
 
-export function showLetter(file,addTicket) {   
+
+
+export function showLetter(file,addTicket,clientDir) {   
     
     // security file.name
     //let strMessage="upload from "+file.name;    
@@ -293,7 +305,7 @@ export function showLetter(file,addTicket) {
 
     } else if(strFile.endsWith(".xlsx")) {
         console.log('0648 IMPORT-2-X from XLSX file <'+fileName+'> FROM SERVER');
-        let filePath=clientDir+'/'+fileName;
+        let filePath=clientDir+FILE_SLASH+fileName;
         handleHBook(filePath);     
         
         
@@ -396,7 +408,7 @@ export function dragOverHandler(ev) {
 }
 
 
-export function dropHandler(ev,addTicket,addProjAris,showLetter) {
+export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
     console.log('0670 File(s) dropped');        
@@ -425,8 +437,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter) {
                 } else {
                     console.log('0621 JSON OTHER=\n'+strDOSH);
                     if(jDOSH.env) {
-                        console.log('0626 FILE ENV=\n'+jDOSH.env);
-                        //setClientDir(jDOSH.env);
+                        console.log('0626 FILE ENV=\n'+jDOSH.env);                        
                     }
                 }
             } catch(e) {
@@ -471,7 +482,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter) {
                         let file = ev.dataTransfer.files[i];
                         console.log('0634 IMPORT-2 from file '+file.name );                            
                         
-                        showLetter(file,addTicket); // load file into base window's envelope
+                        showLetter(file,addTicket,clientDir); // load file into base window's envelope
                         // new letter will be identified by ticket
 
                     } else if (data.kind === "string" && data.type.match("^text/plain")) {
