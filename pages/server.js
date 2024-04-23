@@ -6,6 +6,7 @@ import * as http from 'http';
 
 import { handler } from './DOWNLOAD.mjs';
 
+import { put } from './fs_client.js'
 
 const SERVER_PORT= 8080;
 
@@ -15,6 +16,7 @@ const server = http.createServer((request, response) => {
   if(request.url) {
     console.log("0500 Server URL "+JSON.stringify(request.url));
     if(request.url.startsWith('/DOWNLOAD?')) handler(request,response);
+    else if(request.url.startsWith('/PUT?')) put(request,response);
     return;
   }
   else {

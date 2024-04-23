@@ -2,6 +2,7 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "dotenv": "^16.4.5",
+    "firebase-admin": "^12.1.0",
     "fs": "^0.0.1-security",
     "next": "^14.1.2",
     "nvm": "^0.0.4",
