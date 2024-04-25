@@ -17,6 +17,8 @@ async function put(request,response) {
   // TODO: Replace the following with your app's Firebase project configuration
   // See: https://support.google.com/firebase/answer/7015592
    const firebaseConfig = {
+    database:'kindynaut',
+    dbId:'praxis-practice',
     credential: fs.credential.cert(serviceAccount)
   }
 
