@@ -651,7 +651,7 @@ export function Portal({portalFileName, view}) {
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* LOAD HBOOK Button onClick={(() => { return handleHBook();})} */}
                     
-                    <button key="HBook" className="FILEBOX" >Upload from&nbsp;&nbsp;
+                    <button key="HBook" className="FILEBOX" >Upload from&nbsp;&nbsp;</button>
                     {/* LOAD HBOOK Button */}
                     <button key="HBook" className="BUTTON" onClick={(() => { return handleHBook();})}>Upload HBook
                         <input key="hidden" className="HIDE"></input>
