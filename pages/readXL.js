@@ -105,7 +105,7 @@ export function openHBook(fileName) {
                 // (C) new risk line
                 // numeric comps0
                 // get rid of previous risk data            
-                console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
+                //console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
                 result.push(colBuffer.join(';'));
                 
                 riskNumber++;
