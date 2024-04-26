@@ -1,75 +1,87 @@
-const projectId = 'praxis-practice-368022'
 
-//const fs = require('firebase-admin')
-import pkg from 'firebase-admin';
-const {fs} = pkg;
+import {initializeApp} from "firebase/app";
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getURLParams, timeSymbol } from './node_utils.js'
 
-import { timeSymbol } from './node_utils.js'
 
 export async function store(request,response) {
 
   let strTimeSymbol = timeSymbol();
-  console.log("\n\n0650 PUT at "+strTimeSymbol);
 
-  const params = getURLParams(req);
-  console.log("0652 app.post PUT with "+JSON.stringify(params));
+  const params = getURLParams(request);
+  console.log("0650 app.post PUT with "+JSON.stringify(params));
    
-  const serviceAccount = process.env.GCP_FS_KEY;
+  const serviceAccountKey = process.env.GCP_FS_KEY;
   
   // TODO: Replace the following with your app's Firebase project configuration
   // See: https://support.google.com/firebase/answer/7015592
    const firestoreConfig = {
     database:'kindynaut',
-    dbId:projectId,
-    credential: fs.credential.cert(serviceAccount)
+    projectId:'praxis-practice-368022',
+    accountKey:serviceAccountKey,
+    apiKey:17
   }
 
-  console.log("0654 app.post PUT defined config "+JSON.stringify(firestoreConfig));
-  
+  console.log("0652 app.post PUT defined config "+JSON.stringify(firestoreConfig));
+
   try {
-    // Initialize Firebase
-    const app = initializeApp(firestoreConfig);
-    console.log("0656 app.post PUT initializeApp OK")
-    
+  
+    //firestoreConfig.credential=fs.credential.cert(serviceAccountKey);
+    //console.log("0656 app.post PUT fs.credential.cert OK")
+
     try {
+      // Initialize Firebase
+      const app = initializeApp(firestoreConfig,"kindynaut");
+      if(app) console.log("0656 app.post PUT initializeApp OK")
+      else console.log("0657 app.post PUT initializeApp FAILED.")
       
-      // Initialize Cloud Firestore and get a reference to the service
-      const db = getFirestore(app);
-      console.log("0658 app.post PUT getFirestore(app) OK")
-      
+      try {
+        
+        // Initialize Cloud Firestore and get a reference to the service
+        const db = getFirestore(app);
+        if(db) console.log("0658 app.post PUT getFirestore(app) OK")
+        else console.log("0659 app.post PUT getFirestore(app) FAILED")
 
 
-      // open a collection
-      const dosh = db.collection('/DiagnosticImaging/DomainSpecificHazard/dosh'); 
+        // open a collection, uneven number of segments
+        const dosh = collection(db, '/DiagnosticImaging/DomainSpecificHazard/dosh'); 
+        if(dosh) console.log("065A app.post PUT collection returns dosh="+JSON.stringify(dosh))
+        else console.log("065B app.post PUT collection FAILED")
 
-      const physical_system_crash = dosh.doc('physical_system_crash'); 
 
-      await physical_system_crash.set({
-        comp: 'Static System',
-        func: 'General',
-        hazard: 'Suspending parts',
-        cause: 'Wear, aging, deterioration',
-        code: 'HK_1',
-        hazardousSituation:'Parts may fall onto the user',
-        harm:'Physical injury'
-      });
-    } catch(err) { console.log("0653 cannot initialzeApp with firestoreConfig "+err) }
-  } catch(err) { console.log("0653 cannot initialzeApp with firestoreConfig "+err) }
+        getDocs('physical_system_crash').then((doc)=>{
+
+          console.log("065C app.post PUT getDocs finds "+JSON.stringify(doc))
+/*
+          physical_system_crash.set({
+            comp: 'Static System',
+            func: 'General',
+            hazard: 'Suspending parts',
+            cause: 'Wear, aging, deterioration',
+            code: 'HK_1',
+            hazardousSituation:'Parts may fall onto the user',
+            harm:'Physical injury'
+          });
+*/
+        }); 
+      } catch(err) { console.log("0655 cannot getFirestore "+err) }
+    } catch(err) { console.log("0653 cannot initializeApp "+err) }
+  } catch(err) { console.log("0651 cannot get credentials "+err) }
 }
+
+
 /*------------
+  const admin = require('firebase-admin');
+  const serviceAccount = require('../path/to/service-account.json');
 
-const {Firestore} = require('@google-cloud/firestore');
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+  const firebaseAdmin = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: "dB_URL"
+  });
 
-const firestore = new Firestore();
 
-  // Create a new client
-  //const db = fs.firestore(); 
 
-async function fs_create() {
-  // Obtain a document reference.
-  const document = firestore.doc('posts/intro-to-firestore');
+
 
   // Enter new data into the document.
   await document.set({

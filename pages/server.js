@@ -17,8 +17,8 @@ const server = http.createServer((request, response) => {
   
   if(request.url) {
     console.log("0500 Server URL "+JSON.stringify(request.url));
-    if(request.url.startsWith('/DOWNLOAD?')) handler(request,response);
-    else if(request.url.startsWith('/STORE?')) store(request,response);
+    if(request.method==='GET' && request.url.startsWith('/DOWNLOAD?')) handler(request,response);
+    else if(request.method==='POST' && request.url.startsWith('/STORE?')) store(request,response);
     return;
   }
   else {

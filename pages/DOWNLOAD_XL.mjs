@@ -10,15 +10,7 @@ const HTTP_WRONG  = 400;
 
 import { openHBook } from "./readXL.js"
 
-import { timeSymbol } from './node_utils.js'
-
-function getURLParams(req) {
-  let result={};
-  let url = JSON.stringify(req.url).replace(/[\",;]/g, '');
-  console.log("0210 DOWNLOAD getParams from "+url);
-  if(url && url.length>0) (url.split('?')[1]).split('&').forEach((entry,i)=>{let aE=entry.split('=');result[aE[0]]=aE[1]});
-  return result;
-}
+import { getURLParams, timeSymbol } from './node_utils.js'
 
 
 

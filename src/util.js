@@ -107,32 +107,32 @@ export function handleHBook(fileName) {
 export function handleStore(fileName) {        
     // SECURITY fileName may carry markup
 
-    console.log("0692 handleUpload "+fileName)
+    console.log("0692 handleStore "+fileName)
     
     const rqHeaders = {  'Accept': 'application/octet-stream',
                         'Access-Control-Allow-Origin':'*',
                         'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
 
 
-    const rqOptions = { method: 'GET', headers: rqHeaders, mode:'no-cors'};
+    const rqOptions = { method: 'POST', headers: rqHeaders, mode:'no-cors'};
     try {                 
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
-        let url = `http://${server}:${s_port}/UPLOAD?file=`+fileName;
-        console.log("0710 handleUpload  url="+url);
+        let url = `http://${server}:${s_port}/STORE?file=`+fileName;
+        console.log("0710 handleStore  url="+url);
 
         try {
             fetch(url, rqOptions)
             .then((response) => response.text())
             .then((text) => console.log("0712 "+text))
             // arrList.forEach((line)=>{resourceLimits.push(line);console.log(line)})
-            //.then((url) => console.log("0712 handleHBook URL= "+ makeArchiveButton(url,client,family)))
-            .catch((err) => console.error("0715 handleHBook ERR "+err));           
-        } catch(err) { console.log("0713 GET /DOWNLOAD handleHBook:"+err);}
+            //.then((url) => console.log("0712 handleStore URL= "+ makeArchiveButton(url,client,family)))
+            .catch((err) => console.error("0715 handleStore ERR "+err));           
+        } catch(err) { console.log("0713 POST /STORE handleStore:"+err);}
 
-    } catch(err) { console.log("0711 GET /DOWNLOAD handleHBook:"+err);}
+    } catch(err) { console.log("0711  POST /STORE handleStore:"+err);}
 
-    console.log("0730 handleHBook FETCH "+fileName);
+    console.log("0730 handleStore FETCH "+fileName);
 }
 
 

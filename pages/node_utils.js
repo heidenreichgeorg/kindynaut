@@ -1,5 +1,14 @@
 
 
+export function getURLParams(req) {
+    let result={};
+    let url = JSON.stringify(req.url).replace(/[\",;]/g, '');
+    console.log("0210 getURLParams from "+url);
+    if(url && url.length>0) (url.split('?')[1]).split('&').forEach((entry)=>{let aE=entry.split('=');result[aE[0]]=aE[1]});
+    return result;
+}
+
+
 export function timeSymbol() { 
     var u = new Date(Date.now()); 
     return ''+ u.getUTCFullYear()+

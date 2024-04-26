@@ -651,7 +651,7 @@ export function Portal({portalFileName, view}) {
                     <div className="FIELD MOAM" key="buttons"></div>
 
                     {/* STORE Button */}
-                    <button key="TESTPUT" className="FILEBOX" onClick={(() => { return handleStore();})}>Store in Domain &nbsp;&nbsp;
+                    <button key="TESTPUT" className="FILEBOX" onClick={(() => { return handleStore(jFile.clientDir);})}>Store in Domain &nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
                         <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
