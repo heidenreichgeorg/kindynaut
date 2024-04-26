@@ -10,7 +10,7 @@ const HTTP_WRONG  = 400;
 
 import { openHBook } from "./readXL.js"
 
-import { timeSymbol } from './node_utils'
+import { timeSymbol } from './node_utils.js'
 
 function getURLParams(req) {
   let result={};

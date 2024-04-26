@@ -1,10 +1,12 @@
 const projectId = 'praxis-practice-368022'
 
-import {fs}  from 'firebase-admin'
+//const fs = require('firebase-admin')
+import pkg from 'firebase-admin';
+const {fs} = pkg;
 
-import { timeSymbol } from './node_utils'
+import { timeSymbol } from './node_utils.js'
 
-async function put(request,response) {
+export async function store(request,response) {
 
   let strTimeSymbol = timeSymbol();
   console.log("\n\n0650 PUT at "+strTimeSymbol);
@@ -16,35 +18,43 @@ async function put(request,response) {
   
   // TODO: Replace the following with your app's Firebase project configuration
   // See: https://support.google.com/firebase/answer/7015592
-   const firebaseConfig = {
+   const firestoreConfig = {
     database:'kindynaut',
-    dbId:'praxis-practice',
+    dbId:projectId,
     credential: fs.credential.cert(serviceAccount)
   }
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
+  console.log("0654 app.post PUT defined config "+JSON.stringify(firestoreConfig));
   
-  
-  // Initialize Cloud Firestore and get a reference to the service
-  const db = getFirestore(app);
-  
+  try {
+    // Initialize Firebase
+    const app = initializeApp(firestoreConfig);
+    console.log("0656 app.post PUT initializeApp OK")
+    
+    try {
+      
+      // Initialize Cloud Firestore and get a reference to the service
+      const db = getFirestore(app);
+      console.log("0658 app.post PUT getFirestore(app) OK")
+      
 
 
-  // open a collection
-  const dosh = db.collection('/DiagnosticImaging/DomainSpecificHazard/dosh'); 
+      // open a collection
+      const dosh = db.collection('/DiagnosticImaging/DomainSpecificHazard/dosh'); 
 
-  const physical_system_crash = dosh.doc('physical_system_crash'); 
+      const physical_system_crash = dosh.doc('physical_system_crash'); 
 
-  await physical_system_crash.set({
-    comp: 'Static System',
-    func: 'General',
-    hazard: 'Suspending parts',
-    cause: 'Wear, aging, deterioration',
-    code: 'HK_1',
-    hazardousSituation:'Parts may fall onto the user',
-    harm:'Physical injury'
-  });
+      await physical_system_crash.set({
+        comp: 'Static System',
+        func: 'General',
+        hazard: 'Suspending parts',
+        cause: 'Wear, aging, deterioration',
+        code: 'HK_1',
+        hazardousSituation:'Parts may fall onto the user',
+        harm:'Physical injury'
+      });
+    } catch(err) { console.log("0653 cannot initialzeApp with firestoreConfig "+err) }
+  } catch(err) { console.log("0653 cannot initialzeApp with firestoreConfig "+err) }
 }
 /*------------
 

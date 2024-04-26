@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { dragOverHandler, dropHandler, handleArchive, load, makeRiskTable, receiveLetter, showLetter, SOME, strSymbol,symbol } from './util.js'
+import { dragOverHandler, dropHandler, handleArchive, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 import { useState } from 'react';
 
 
@@ -506,7 +506,7 @@ export function Portal({portalFileName, view}) {
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
 
-            <div id='caption' className="KNTABLE" key="caption">
+            <div id='caption' className="KNTABLE" key="infoCaption">
             <div className="KNSEP" key="sepcm">&nbsp;</div><div className="FIELD" key="sepcmf">{getFile('manufacturer')}</div>
                 <div className="KNSEP" key="sepcd">&nbsp;</div><div className="FIELD" key="sepcdf">{getFile('domain')}</div>
             </div>
@@ -649,11 +649,16 @@ export function Portal({portalFileName, view}) {
             (<div className="KNLINE NONE" key="landingzoneline">        
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
-                    {/* LOAD HBOOK Button onClick={(() => { return handleHBook();})} */}
-                    
-                    <button key="HBook" className="FILEBOX" >Upload from&nbsp;&nbsp;</button>
-                    {/* LOAD HBOOK Button */}
-                    <button key="HBook" className="BUTTON" onClick={(() => { return handleHBook();})}>Upload HBook
+
+                    {/* STORE Button */}
+                    <button key="TESTPUT" className="FILEBOX" onClick={(() => { return handleStore();})}>Store in Domain &nbsp;&nbsp;
+                        <input key="hidden" className="HIDE"></input>
+                        <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
+                    </button>          
+                   
+
+                    {/* UPLOAD HBOOK Button */}
+                    <button key="HBook" className="FILEBOX" onClick={(() => { return handleHBook();})}>Upload HBook &nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
                         <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
@@ -662,7 +667,6 @@ export function Portal({portalFileName, view}) {
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
                         <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
-                        <div  key="landingzonebox" className="FLEX BOX" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter)}} >ADD FILE</div>                                
                     </div>            
                 </div>                            
             </div>
@@ -670,7 +674,7 @@ export function Portal({portalFileName, view}) {
 
 
             { (focus!==FCS_FILES) ? // show SAVE buttons for DOMAIN / RISKS
-            (<div className="KNTABLE" key="caption">      
+            (<div className="KNTABLE" key="buttonCaption">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}

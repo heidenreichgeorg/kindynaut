@@ -1,6 +1,6 @@
 
 
-function timeSymbol() { 
+export function timeSymbol() { 
     var u = new Date(Date.now()); 
     return ''+ u.getUTCFullYear()+
       ('0' + (1+u.getUTCMonth())).slice(-2) +
