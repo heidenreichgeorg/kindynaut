@@ -246,35 +246,35 @@ export function Portal({portalFileName, view}) {
     console.log("0704 Portal finds env with "+Object.keys(process.env).map((key)=>(key+'->'+process.env[key])))
     
 
-    function portalLine(comp,func,hazard,code,cause,hazardousSituation,harm,removeLine,editStart,clickH) {
+    function portalLine(color,comp,func,hazard,code,cause,hazardousSituation,harm,removeLine,editStart,clickH) {
         // line for a DOMAIN-related ARIS: no drag, but edit,delete,copy
         return (
             <div className="KNLINE NONE"  onClick={clickH} key="workbench">                                     
-                <div className="FIELD TRASH" key="sep">&nbsp;</div>
-                <div className="FIELD NAME" key="com">{comp}</div>
-                <div className="FIELD NAME" key="fun">{func}</div>
-                <div className="FIELD NAME" key="haz">{hazard}</div>
-                <div className="FIELD NAME" key="cod">{code}</div>
-                <div className="FIELD NAME" key="cau">{cause}</div>
-                <div className="FIELD NAME" key="hsi">{hazardousSituation}</div>
-                <div className="FIELD NAME" key="har">{harm}</div>
-                {removeLine ? (<div className="FIELD SEP" key="kill" onClick={removeLine}>&#128465;</div>) : ""} 
-                {editStart ?   (<div className="FIELD SEP" key="edit" onClick={editStart}>&#9998;</div>) : ""}  
+                <div className={color+" FIELD TRASH"} key="sep">&nbsp;</div>
+                <div className={color+" FIELD NAME"} key="com">{comp}</div>
+                <div className={color+" FIELD NAME"} key="fun">{func}</div>
+                <div className={color+" FIELD NAME"} key="haz">{hazard}</div>
+                <div className={color+" FIELD NAME"} key="cod">{code}</div>
+                <div className={color+" FIELD NAME"} key="cau">{cause}</div>
+                <div className={color+" FIELD NAME"} key="hsi">{hazardousSituation}</div>
+                <div className={color+" FIELD NAME"} key="har">{harm}</div>
+                {removeLine ? (<div className={color+" FIELD SEP"} key="kill" onClick={removeLine}>&#128465;</div>) : ""} 
+                {editStart ?  (<div className={color+" FIELD SEP"} key="edit" onClick={editStart}>&#9998;</div>) : ""}  
             </div>)
     }
     
 
 
-    function filterLine(key,style,compH,funcH,hazardH,codeH,causeH,situationH,harmH) {
+    function filterLine(key,color,style,compH,funcH,hazardH,codeH,causeH,situationH,harmH) {
         return (
-            <div className={style} key={key}>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={compH}  key="com"/></div>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={funcH}  key="fun"/></div>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={hazardH}  key="haz"/></div>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={codeH}  key="cod"/></div>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={causeH}  key="cau"/></div>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={situationH}  key="hsi"/></div>
-                <div className="NOTE NAME" ><input className="FIELD" type="edit" onChange={harmH}  key="har"/></div>                           
+            <div className={color+" "+style} key={key}>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={compH}  key="com"/></div>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={funcH}  key="fun"/></div>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={hazardH}  key="haz"/></div>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={codeH}  key="cod"/></div>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={causeH}  key="cau"/></div>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={situationH}  key="hsi"/></div>
+                <div className={color+" NOTE NAME"} ><input className={color+" FIELD"} type="edit" onChange={harmH}  key="har"/></div>                           
             </div>)
     }
     
@@ -501,7 +501,15 @@ export function Portal({portalFileName, view}) {
 
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
+/*
+DROPZONE=#CED1D3
+FILES=#77825E
 
+BUTTONS=#B8C690
+RISKS=#333A2D
+DOMAIN=#0D0E12
+
+*/
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
 
@@ -514,55 +522,55 @@ export function Portal({portalFileName, view}) {
 
                 <div className="KNSEP" key="sep0">&nbsp;</div>    
 
-                <div id='column1' className={focus===FCS_DOMAIN?"KNCOL":"KNBUTTON"}  key="column1">
+                <div id='column1' className={focus===FCS_DOMAIN?"DOMCOLOR KNBUTTON":"KNBUTTON"}  key="column1">
                 <a href="?view=DOMAIN">DOMAIN</a></div>    
                 
-                <div id='column2' className={focus===FCS_RISKS?"KNCOL":"KNBUTTON"}  key="column2">
+                <div id='column2' className={focus===FCS_RISKS?"RISKCOLOR KNBUTTON":"KNBUTTON"}  key="column2">
                 <a href="?view=RISKS">RISKS</a></div>
 
-                <div id='column3' className={focus===FCS_FILES?"KNCOL":"KNBUTTON"}  key="column3">
+                <div id='column3' className={focus===FCS_FILES?"FILECOLOR KNBUTTON":"KNBUTTON"}  key="column3">
                 <a href="?view=FILES">FILES</a></div>
             </div>
 
             <div id='table0' className={view===FCS_DOMAIN?"KNMAIN":"NOTABLE"}  key="table0">
                 <div id='column0' className="KNSEP0"  key="column0">
-                    <div id='header0' className="KNCOL">Component</div> 
-                    <div id='header1' className="KNCOL">Function</div> 
-                    <div id='header2' className="KNCOL">Hazard</div> 
-                    <div id='header3' className="KNCOL">Code</div> 
-                    <div id='header4' className="KNCOL">Cause</div> 
-                    <div id='header6' className="KNCOL">HazardousSituation</div> 
-                    <div id='header7' className="KNCOL">Harm</div> 
+                    <div id='header0' className="DOMCOLOR KNBUTTON">Component</div> 
+                    <div id='header1' className="DOMCOLOR KNBUTTON">Function</div> 
+                    <div id='header2' className="DOMCOLOR KNBUTTON">Hazard</div> 
+                    <div id='header3' className="DOMCOLOR KNBUTTON">Code</div> 
+                    <div id='header4' className="DOMCOLOR KNBUTTON">Cause</div> 
+                    <div id='header6' className="DOMCOLOR KNBUTTON">HazardousSituation</div> 
+                    <div id='header7' className="DOMCOLOR KNBUTTON">Harm</div> 
                 </div></div>
 
                 { (jListAris && view==FCS_DOMAIN) ? (
                     <div id='table1' className={view===FCS_DOMAIN?"KNMAIN":"NOTABLE"} key="table1">
 
-                        <div id='column1' className="KNCOL"  key="column1">
+                        <div id='column1' className="DOMCOLOR KNBUTTON"  key="column1">
                         {jListAris.map((aris,line)=>(testComp(aris)?(<div key={"domain1"+line}>&bull;{aris.comp}</div>):""))}
                         </div>
 
-                        <div id='column2' className="KNCOL"  key="column2">
+                        <div id='column2' className="DOMCOLOR KNBUTTON"  key="column2">
                         {jListAris.map((aris,line)=>(testFunc(aris)?(<div  key={"domain2"+line}>&bull;{aris.func}</div>):""))}
                         </div>
 
-                        <div id='column3' className="KNCOL"  key="column3">
+                        <div id='column3' className="DOMCOLOR KNBUTTON"  key="column3">
                         {jListAris.map((aris,line)=>(testHazd(aris)?(<div key={"domain3"+line}>&bull;{aris.hazard}</div>):""))}
                         </div>
 
-                        <div id='column4' className="KNCOL"  key="column4">
+                        <div id='column4' className="DOMCOLOR KNBUTTON"  key="column4">
                         {jListAris.map((aris,line)=>(testCode(aris)?(<div key={"domain4"+line}>&bull;{aris.code}</div>):""))}
                         </div>
 
-                        <div id='column5' className="KNCOL"  key="column5">
+                        <div id='column5' className="DOMCOLOR KNBUTTON"  key="column5">
                         {jListAris.map((aris,line)=>(testCaus(aris)?(<div key={"domain5"+line}>&bull;{aris.cause}</div>):""))}
                         </div>
 
-                        <div id='column6' className="KNCOL"  key="column6">
+                        <div id='column6' className="DOMCOLOR KNBUTTON"  key="column6">
                         {jListAris.map((aris,line)=>(testSitu(aris)?(<div key={"domain6"+line}>&bull;{aris.hazardousSituation}</div>):""))}
                         </div>
 
-                        <div id='column7' className="KNCOL"  key="column7">
+                        <div id='column7' className="DOMCOLOR KNBUTTON"  key="column7">
                         {jListAris.map((aris,line)=>(testHarm(aris)?(<div key={"domain7"+line}>&bull;{aris.harm}</div>):""))}
                         </div>
                     </div>
@@ -581,21 +589,21 @@ export function Portal({portalFileName, view}) {
                         <div  key={"sep0"+area} className="FLEX RIM" ></div>                            
                         <div className="KNLINE NONE"  key={"sep1row"+area}>
                             <div className="KNLINE"  key={"sep0div"+area}>
-                            <div className="FIELD LTXT">{arrFileNames[area]}</div>
+                            <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
                             { (ticket===SCR_DOMAIN) ? "":
-                                (<div className="FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
+                                (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
                         </div>
                     </div>
 
 
                     <div className="KNLINE NONE">
-                            {portalLine('Component','Function','Hazard','Code','Cause','HazardousSituation','Harm')}
+                            {portalLine( (area==0)?'RISKCOLOR':'FILECOLOR', 'Component','Function','Hazard','Code','Cause','HazardousSituation','Harm')}
                     </div>
 
 
                     
                     { (mode>MODE_EDIT) ?  // also check if (mode==0) for EDITOR &&(focus===FCS_DOMAIN) for DOMAIN view 
-                        filterLine('filter',"KNLINE BRIGHT",
+                        filterLine('filter', (area==0)?'RISKCOLOR':'FILECOLOR', "KNLINE BRIGHT",
                             (e)=>(filterARIS("comp",e.target.value)),
                             (e)=>(filterARIS("func",e.target.value)),
                             (e)=>(filterARIS("hazard",e.target.value)),
@@ -607,13 +615,13 @@ export function Portal({portalFileName, view}) {
                     
 
                     { (ticket===SCR_DOMAIN)&&(mode==MODE_EDIT) ?  // also check if (mode==0) for EDITOR &&(focus===FCS_DOMAIN) for DOMAIN view
-                        editLine('editor',"KNLINE HEAVY",editStop):""}
+                        editLine('editor',"KNLINE RISKEDIT",editStop):""}
 
 
                     { (ticket===SCR_DOMAIN) ? 
                         filterInstance(ticket,area).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line}>    
-                                {portalLine(
+                                {portalLine( "RISKCOLOR",
                                     aris.comp,
                                     aris.func,
                                     aris.hazard,
@@ -628,7 +636,7 @@ export function Portal({portalFileName, view}) {
                         :
                         filterInstance(ticket,area).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"filerisk"+area+line}>    
-                                {portalLine(
+                                {portalLine( "FILECOLOR",
                                     aris.comp,
                                     aris.func,
                                     aris.hazard,
@@ -650,15 +658,15 @@ export function Portal({portalFileName, view}) {
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* LOAD HBOOK Button onClick={(() => { return handleHBook();})} */}
                     
-                    <button key="HBook" className="BUTTON" >Upload source
+                    <button key="HBook" className="FILEBOX" >Upload from&nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
-                        <input className="KNCOL" type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
+                        <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
                     &nbsp;&nbsp;
                 </div>    
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
-                        <div  key="landingzonebox" className="FLEX BOX" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
+                        <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
                     </div>            
                 </div>                            
             </div>
@@ -670,11 +678,11 @@ export function Portal({portalFileName, view}) {
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}
-                    <button key="Archive" className="BUTTON" onClick={(() => { return handleArchive(repository[SCR_DOMAIN],getFile('domain'));})}>Save as archive file
+                    <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return handleArchive(repository[SCR_DOMAIN],getFile('domain'));})}>Save as archive file
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    <button key="Export" id={KN_DOWNLOAD} className="BUTTON" >
+                    <button key="Export" id={KN_DOWNLOAD} className="RISKBACK BUTTON" >
                         <div key="button" className="FIELD" 
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
                                 Export as Risk Table for 
