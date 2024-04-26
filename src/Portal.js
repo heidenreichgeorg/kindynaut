@@ -501,15 +501,8 @@ export function Portal({portalFileName, view}) {
 
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
-/*
-DROPZONE=#CED1D3
-FILES=#77825E
 
-BUTTONS=#B8C690
-RISKS=#333A2D
-DOMAIN=#0D0E12
 
-*/
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
 
@@ -659,6 +652,8 @@ DOMAIN=#0D0E12
                     {/* LOAD HBOOK Button onClick={(() => { return handleHBook();})} */}
                     
                     <button key="HBook" className="FILEBOX" >Upload from&nbsp;&nbsp;
+                    {/* LOAD HBOOK Button */}
+                    <button key="HBook" className="BUTTON" onClick={(() => { return handleHBook();})}>Upload HBook
                         <input key="hidden" className="HIDE"></input>
                         <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
@@ -667,6 +662,7 @@ DOMAIN=#0D0E12
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
                         <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
+                        <div  key="landingzonebox" className="FLEX BOX" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter)}} >ADD FILE</div>                                
                     </div>            
                 </div>                            
             </div>
@@ -674,7 +670,7 @@ DOMAIN=#0D0E12
 
 
             { (focus!==FCS_FILES) ? // show SAVE buttons for DOMAIN / RISKS
-            (<div className="KNTABLE" key="captionDOM">      
+            (<div className="KNTABLE" key="caption">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}
@@ -687,7 +683,7 @@ DOMAIN=#0D0E12
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
                                 Export as Risk Table for 
                         </div>
-                        <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>
+                        <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
                     </button>          
                     &nbsp;                   
                 </div>    
