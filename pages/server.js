@@ -30,6 +30,14 @@ const server = http.createServer((request, response) => {
 
 server.listen(SERVER_PORT, () => {
   console.log("0510 Server is running on Port "+SERVER_PORT);
+  
+  console.log("0512 Server is running using: ");
+  
+  Object.keys(process.env).forEach((key)=>
+      { if(key.startsWith('GCP_'))  console.log(key+"="+process.env[key])})
+   
 });
 
-// node pages/server.js
+
+
+// node --env-file .\pages\.env  .\pages\server.js 

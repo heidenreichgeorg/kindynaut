@@ -9,17 +9,15 @@ export async function store(request,response) {
   let strTimeSymbol = timeSymbol();
 
   const params = getURLParams(request);
-  console.log("0650 app.post PUT with "+JSON.stringify(params));
+  console.log("0650 app.post PUT with "+JSON.stringify(params))
    
-  const serviceAccountKey = process.env.GCP_FS_KEY;
-  
-  // TODO: Replace the following with your app's Firebase project configuration
-  // See: https://support.google.com/firebase/answer/7015592
-   const firestoreConfig = {
-    database:'kindynaut',
-    projectId:'praxis-practice-368022',
-    accountKey:serviceAccountKey,
-    apiKey:17
+  const firestoreConfig = {
+      "apiKey": process.env.GCP_APIKEY,
+      "authDomain": process.env.GCP_AUTHDOMAIN,
+      "projectId": process.env.GCP_PROJECTID,
+      "storageBucket": process.env.GCP_STORAGEBUCKET,
+      "messagingSenderId": process.env.GCP_MESSAGINGSENDERID,
+      "appId": process.env.APPID
   }
 
   console.log("0652 app.post PUT defined config "+JSON.stringify(firestoreConfig));
@@ -42,6 +40,18 @@ export async function store(request,response) {
         if(db) console.log("0658 app.post PUT getFirestore(app) OK")
         else console.log("0659 app.post PUT getFirestore(app) FAILED")
 
+        let collectionRef = collection(db,'/DiagnosticImaging');
+        if(collectionRef) console.log("0658 app.post PUT collection(/DiagnosticImaging) OK")
+        else console.log("0659 app.post PUT collection(/DiagnosticImaging) FAILED")
+
+
+        doc(db,'kindynaut','DomainSpecificHazard').then((doc)=>{
+
+          console.log("065A app.post PUT getDocs finds "+JSON.stringify(doc))
+        })
+
+/*
+        console.log("0658 DiagnosticImaging="+JSON.stringify(collectionRef));
 
         // open a collection, uneven number of segments
         const dosh = collection(db, '/DiagnosticImaging/DomainSpecificHazard/dosh'); 
@@ -52,7 +62,7 @@ export async function store(request,response) {
         getDocs('physical_system_crash').then((doc)=>{
 
           console.log("065C app.post PUT getDocs finds "+JSON.stringify(doc))
-/*
+
           physical_system_crash.set({
             comp: 'Static System',
             func: 'General',
@@ -62,8 +72,9 @@ export async function store(request,response) {
             hazardousSituation:'Parts may fall onto the user',
             harm:'Physical injury'
           });
-*/
         }); 
+*/
+
       } catch(err) { console.log("0655 cannot getFirestore "+err) }
     } catch(err) { console.log("0653 cannot initializeApp "+err) }
   } catch(err) { console.log("0651 cannot get credentials "+err) }
