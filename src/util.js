@@ -130,11 +130,47 @@ export function handleStore(fileName) {
             .catch((err) => console.error("0715 handleStore ERR "+err));           
         } catch(err) { console.log("0713 POST /STORE handleStore:"+err);}
 
-    } catch(err) { console.log("0711  POST /STORE handleStore:"+err);}
+    } catch(err) { console.log("0711 POST /STORE handleStore:"+err);}
 
     console.log("0730 handleStore FETCH "+fileName);
 }
 
+
+export function updateDomain(jListAris,domain) {   
+    
+    // from DOMAIN list to NODE JS GCP_DOMAINROOT/domain
+    // SECURITY fileName may carry markup
+
+    console.log("0780 updateDomain into server-side domain "+domain)
+    
+    const rqHeaders = { 'Accept': 'application/octet-stream',
+                        'Access-Control-Allow-Origin':'*',
+                        'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
+
+
+    const rqOptions = { method: 'POST', headers: rqHeaders, mode:'no-cors', 
+    body:JSON.stringify(jListAris) };
+    try {                 
+        let server=process.env.REACT_APP_NODE;
+        let s_port=process.env.REACT_APP_SERVER;
+        let url = `http://${server}:${s_port}/UPDATE?domain=`+domain;
+        console.log("0782 updateDomain UPDATE url="+url);
+
+        try {
+            fetch(url, rqOptions) // AND BLAST jListARis INTO POST call
+            .then((response) => response.text())
+            .then((text) => console.log("0712 "+text))
+            .catch((err) => console.error("0785 updateDomain ERR "+err));           
+        } catch(err) { console.log("0783 POST /UPDATE updateDomain:"+err);}
+
+    } catch(err) { console.log("0781  POST /UPDATE updateDomain:"+err);}
+
+    console.log("0784 updateDomain fetch "+domain);
+}
+
+/*
+CLIENT FILE DOWNLOAD FUNCTIONS 
+will create a download button and attach the file as a blob to it
 
 export function handleArchive(jListAris,domain) {    
     console.log("0780 handleArchive  "+domain);
@@ -167,6 +203,7 @@ export function makeArchiveButton(url,domain) {
     } else console.log("0768 makeArchiveButton XLSX NO domain");
     return url;
 }
+*/
 
 export 
 

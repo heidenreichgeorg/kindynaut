@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { dragOverHandler, dropHandler, handleArchive, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { dragOverHandler, dropHandler, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 import { useState } from 'react';
 
 
@@ -645,13 +645,13 @@ export function Portal({portalFileName, view}) {
             ))}
 
 
-            { (focus===FCS_FILES) ? // show drag-n-dop landing zone only for FILES
+            { (focus===FCS_FILES) ? // show drag-n-drop landing zone only for FILES
             (<div className="KNLINE NONE" key="landingzoneline">        
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
 
                     {/* STORE Button */}
-                    <button key="TESTPUT" className="FILEBOX" onClick={(() => { return handleStore(jFile.clientDir);})}>Store in Domain &nbsp;&nbsp;
+                    <button key="TESTPUT" className="FILEBOX" onClick={(() => { return handleStore(jFile.clientDir);})}>Store on client &nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
                         <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
@@ -678,7 +678,7 @@ export function Portal({portalFileName, view}) {
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
                     {/* SAVE Button */}
-                    <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return handleArchive(repository[SCR_DOMAIN],getFile('domain'));})}>Save as archive file
+                    <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return updateDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Update domain
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;&nbsp;&nbsp;

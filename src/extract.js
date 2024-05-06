@@ -16,7 +16,7 @@ var filename=null;
 
 let report = null;
 
-function startFORM() {
+function obsolete_startFORM() {
      console.log("Start entered");
      report = { 'header':[], 'syntax':[], 'elements':{}, 'inst':[], 'html':[], 'tree':[], 'htmlusage':[], 'rdfausage':[] };
      document.getElementById('filechoice').addEventListener('change', loadAndValidate);

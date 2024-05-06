@@ -1,5 +1,6 @@
 
 import {initializeApp} from "firebase/app";
+//import { collection, doc, addDoc, setDoc } from "firebase/firestore"
 import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import { getURLParams, timeSymbol } from './node_utils.js'
 
@@ -40,40 +41,33 @@ export async function store(request,response) {
         if(db) console.log("0658 app.post PUT getFirestore(app) OK")
         else console.log("0659 app.post PUT getFirestore(app) FAILED")
 
-        let collectionRef = collection(db,'/DiagnosticImaging');
-        if(collectionRef) console.log("0658 app.post PUT collection(/DiagnosticImaging) OK")
-        else console.log("0659 app.post PUT collection(/DiagnosticImaging) FAILED")
 
+        let physical_system_crash={
+          comp: 'Static System',
+          func: 'General',
+          hazard: 'Suspending parts',
+          cause: 'Wear, aging, deterioration',
+          code: 'HK_1',
+          hazardousSituation:'Parts may fall onto the user',
+          harm:'Physical injury'
+        }
 
-        doc(db,'kindynaut','DomainSpecificHazard').then((doc)=>{
+        
+        // DOMAIN-PORTAL ID external to the concept itself
+        var dosh_id = '01';
 
-          console.log("065A app.post PUT getDocs finds "+JSON.stringify(doc))
+        collection(db,'DiagnosticImaging').add({    
+              domainHazards: [{
+                id: dosh_id, info: physical_system_crash 
+              }]
         })
 
-/*
-        console.log("0658 DiagnosticImaging="+JSON.stringify(collectionRef));
-
-        // open a collection, uneven number of segments
-        const dosh = collection(db, '/DiagnosticImaging/DomainSpecificHazard/dosh'); 
-        if(dosh) console.log("065A app.post PUT collection returns dosh="+JSON.stringify(dosh))
-        else console.log("065B app.post PUT collection FAILED")
 
 
-        getDocs('physical_system_crash').then((doc)=>{
+        // first argument needs to be a CollectionReference
+        // Add a new document in collection "DiagnosticImaging"
+        // await addDoc(db,  physical_system_crash  );
 
-          console.log("065C app.post PUT getDocs finds "+JSON.stringify(doc))
-
-          physical_system_crash.set({
-            comp: 'Static System',
-            func: 'General',
-            hazard: 'Suspending parts',
-            cause: 'Wear, aging, deterioration',
-            code: 'HK_1',
-            hazardousSituation:'Parts may fall onto the user',
-            harm:'Physical injury'
-          });
-        }); 
-*/
 
       } catch(err) { console.log("0655 cannot getFirestore "+err) }
     } catch(err) { console.log("0653 cannot initializeApp "+err) }

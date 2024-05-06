@@ -1,3 +1,10 @@
+
+// extract all DOSHs from VDE SPEC 90025 file
+
+// nodeJS JSON.parse is a bit careful 
+// so we have an issue with [ ] in pay load
+
+
 const KIMEDS_CORI='riskman:ControlledRisk';
 const KIMEDS_DOSH='riskman:DomainSpecificHazard';
 const KIMEDS_ID='riskman:id';
@@ -35,7 +42,7 @@ function loadAndValidate() {
                         console.log('DRF device '+JSON.stringify(device));
                         console.log('DRF risk table '+JSON.stringify(Object.keys(risKNTABLE)));
 
-            derive(risKNTABLE,'RISKMANAGEMENT',{'children':{}},'FILE','ROOT');
+                        derive(risKNTABLE,'RISKMANAGEMENT',{'children':{}},'FILE','ROOT');
 
                         // convert object back to HTML
                         let hNode = makeHTML(jQueue,'','ROOT',null,null);

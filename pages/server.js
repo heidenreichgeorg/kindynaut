@@ -1,6 +1,9 @@
 
+// Needs env constant DOMAINROOT as the root of all domains
+
+
 // START FROM PROJECT ROOT WITH
-// node pages/server.js 
+// node --env-file .\pages\.env  .\pages\server.js 
 
 import * as http from 'http';
 
@@ -19,6 +22,7 @@ const server = http.createServer((request, response) => {
     console.log("0500 Server URL "+JSON.stringify(request.url));
     if(request.method==='GET' && request.url.startsWith('/DOWNLOAD?')) handler(request,response);
     else if(request.method==='POST' && request.url.startsWith('/STORE?')) store(request,response);
+    else if(request.method==='POST' && request.url.startsWith('/UPDATE?')) update(request,response);
     return;
   }
   else {
@@ -40,4 +44,3 @@ server.listen(SERVER_PORT, () => {
 
 
 
-// node --env-file .\pages\.env  .\pages\server.js 

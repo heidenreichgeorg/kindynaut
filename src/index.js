@@ -4,6 +4,7 @@ import './index.css';
 
 import { Portal } from './Portal.js'
 
+// npm start index
 
 function getURLParams(query) {
     let result={};
