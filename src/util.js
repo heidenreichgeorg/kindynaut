@@ -42,7 +42,7 @@ export function strSymbol(pat) {
     let seed = process.env.REACT_APP_ENCODING_SEED;
 
     let cypher = seed;
-    if(!seed) cypher = "kindynautahotprojectforviewingzoomingquickdigitaldeviceboxes";
+    if(!seed) cypher = "kindynaut8ho1pr0jec72f45wygzmq9dlvbx3s6";
 
     let base=cypher.length;
     var res = 0;
@@ -61,14 +61,12 @@ export function strSymbol(pat) {
     return out.join('');
 }
 
-export function symbol(temp) {
-    let p=strSymbol(temp);
-    return p[13]+p[17]+p[2]+p[5]+p[11]+p[3]+p[7]+p[19];
-}
 
 
-// need to start NODE server
-// node pages/server.js 
+// read and obtain XL file from server
+// need to start NODE server first
+// node --env-file .\pages\.env  .\pages\server.js 
+
 export function handleHBook(fileName) {        
     // SECURITY fileName may carry markup
 
@@ -141,23 +139,26 @@ export function updateDomain(jListAris,domain) {
     // from DOMAIN list to NODE JS GCP_DOMAINROOT/domain
     // SECURITY fileName may carry markup
 
-    console.log("0780 updateDomain into server-side domain "+domain)
-    
-    const rqHeaders = { 'Accept': 'application/octet-stream',
+    console.log("0780 updateDomain into server-side domain "+domain); 
+    let postBody = JSON.stringify(jListAris);
+    console.log("0782 updateDomain with ARIS #"+jListAris.length);
+
+    const rqHeaders = { 'Content-Type':'application/json',
+
+                        'Accept':'application/json',
                         'Access-Control-Allow-Origin':'*',
                         'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
 
-
     const rqOptions = { method: 'POST', headers: rqHeaders, mode:'no-cors', 
-    body:JSON.stringify(jListAris) };
+            body:postBody };
     try {                 
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
         let url = `http://${server}:${s_port}/UPDATE?domain=`+domain;
-        console.log("0782 updateDomain UPDATE url="+url);
+        console.log("0784 updateDomain UPDATE url="+url);
 
         try {
-            fetch(url, rqOptions) // AND BLAST jListARis INTO POST call
+            fetch(url, rqOptions) // AND BLAST jListAris INTO POST body
             .then((response) => response.text())
             .then((text) => console.log("0712 "+text))
             .catch((err) => console.error("0785 updateDomain ERR "+err));           
@@ -165,7 +166,7 @@ export function updateDomain(jListAris,domain) {
 
     } catch(err) { console.log("0781  POST /UPDATE updateDomain:"+err);}
 
-    console.log("0784 updateDomain fetch "+domain);
+    console.log("0786 updateDomain fetch "+domain);
 }
 
 /*

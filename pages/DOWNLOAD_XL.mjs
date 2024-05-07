@@ -14,7 +14,7 @@ import { getURLParams, timeSymbol } from './node_utils.js'
 
 
 
-export async function handler(
+export async function downloadHBook(
     req, //: NextApiRequest,
     res//: NextApiResponse<any>
   ) {

@@ -1,11 +1,10 @@
 
 import {initializeApp} from "firebase/app";
-//import { collection, doc, addDoc, setDoc } from "firebase/firestore"
 import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import { getURLParams, timeSymbol } from './node_utils.js'
 
 
-export async function store(request,response) {
+export async function storeFile(request,response) {
 
   let strTimeSymbol = timeSymbol();
 

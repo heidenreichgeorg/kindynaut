@@ -19,6 +19,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/DOWNLOAD_XL.mjs"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/DOWNLOAD_XL.mjs", "pages/UPDATE.js"],
   "exclude": ["node_modules"]
 }

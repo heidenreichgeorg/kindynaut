@@ -69,7 +69,6 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .CNAMF    { width: 7.3rem; text-align: center;  }
 .IDNT     { width: 8rem; text-align: right; }
 .LNAM     { width: 9rem; text-align: left;}
-.XFER     { width: 9rem; text-align: left;  }
 .L280     { width:12rem; text-align: left;} 
 .LTXT     { width:14rem; text-align: left;}
 .FLEX     { width:52rem; text-align: left; } 
