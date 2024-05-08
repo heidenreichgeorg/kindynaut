@@ -6,30 +6,22 @@ export async function updateDomain(req,res) {
     let strDateSymbol = dateSymbol();
     console.log("\n\n0900 UPDATE at "+strTimeSymbol+" on "+strDateSymbol);
 
-
     let rawData=req.body;
     if(rawData) {
+        console.log("0912 app.post UPDATE receives "+rawData);
 
-        console.log("0914 app.post UPDATE receives "+rawData);
-
-        
         const params = getURLParams(req);
-        console.log("0912 app.post DOWNLOAD with "+JSON.stringify(params));
+        console.log("0914 app.post DOWNLOAD with "+JSON.stringify(params));
         const domain = params.domain;
-           
-        
+                   
         // server must be exclusive owner of DOMAINROOT content
-
         // BODY IS INTEGRATED into what the server already had loaded
-
         try {
             // assume this is an array of dosh
             // must create keys like simpleKey harm x simpleKey hazard 
-            
+            let sessionData = JSON.parse(rawData)
 
-            let sessionData = JSON.stringify(rawData);
-
-            console.log("0916 sessionData="+sessionData)
+            console.log("0916 sessionData= #"+sessionData.length)
 
             let domainRoot = process.env.GCP_DOMAINROOT;
 
@@ -42,7 +34,6 @@ export async function updateDomain(req,res) {
                 );
             res.end();
             
-
         } catch(err) { console.log ( "0913 UPDATE VOID "+err); }
 
         return;

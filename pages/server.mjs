@@ -11,8 +11,9 @@ import { updateDomain } from './UPDATE.js';
 import { storeFile } from './fs_client.js'
 
 const app = express()
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
+// content-type1 app.use(express.urlencoded({ extended: true }));
+// content-type2 app.use(express.json({type: 'application/json', strict: false }))
+app.use(express.text({ 'defaultCharset':'utf-8' }))
 
 app.get('/DOWNLOAD', downloadHBook );
 

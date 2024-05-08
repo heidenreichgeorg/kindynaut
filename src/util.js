@@ -142,14 +142,16 @@ export function updateDomain(jListAris,domain) {
     // SECURITY fileName may carry markup
 
     console.log("0780 updateDomain into server-side domain "+domain); 
-    let postBody = JSON.stringify(jListAris);
-    console.log("0782 updateDomain with ARIS #"+jListAris.length);
+    let postBody = JSON.stringify(jListAris)
+    console.log("0782 updateDomain with ARIS #"+postBody);
 
     const rqOptions = { method: 'POST', 
-                        headers: {  'Content-Type':'application/x-www-form-urlencoded;charset=utf-8',
-                                    'Accept':'text/plain'},                         
-                        mode:'no-cors', 
-                        body:postBody };
+                        headers: {  //  content-type1 'Content-Type':'application/x-www-form-urlencoded;charset=utf-8',
+                                    // content-type 2 'content-type':'application/json',
+                            'content-type':'text/plain',
+                            'accept':'application/json'},                         
+                            mode:'no-cors', 
+                            body:postBody };
     try {                 
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
