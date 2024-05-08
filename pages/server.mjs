@@ -11,13 +11,12 @@ import { updateDomain } from './UPDATE.js';
 import { storeFile } from './fs_client.js'
 
 const app = express()
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json());
-
-app.post('/DOWNLOAD', downloadHBook );
+app.get('/DOWNLOAD', downloadHBook );
 
 app.post('/UPDATE', updateDomain );
-
 app.post('/STORE', storeFile );
 
 app.listen(SERVER_PORT, () => {

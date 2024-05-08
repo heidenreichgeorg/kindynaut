@@ -1,19 +1,23 @@
-import { getURLParams, timeSymbol } from './node_utils.js'
+import { getURLParams, dateSymbol, timeSymbol } from './node_utils.js'
 
 
 export async function updateDomain(req,res) {
     let strTimeSymbol = timeSymbol();
-    console.log("\n\n0900 UPDATE at "+strTimeSymbol);
+    let strDateSymbol = dateSymbol();
+    console.log("\n\n0900 UPDATE at "+strTimeSymbol+" on "+strDateSymbol);
 
-    const params = getURLParams(req);
-    console.log("0912 app.post DOWNLOAD with "+JSON.stringify(params));
-    const domain = params.domain;
 
     let rawData=req.body;
     if(rawData) {
-       
-        console.dir("0914 app.post UPDATE receives "+rawData);
 
+        console.log("0914 app.post UPDATE receives "+rawData);
+
+        
+        const params = getURLParams(req);
+        console.log("0912 app.post DOWNLOAD with "+JSON.stringify(params));
+        const domain = params.domain;
+           
+        
         // server must be exclusive owner of DOMAINROOT content
 
         // BODY IS INTEGRATED into what the server already had loaded
@@ -23,9 +27,9 @@ export async function updateDomain(req,res) {
             // must create keys like simpleKey harm x simpleKey hazard 
             
 
-            let sessionData = rawData;
+            let sessionData = JSON.stringify(rawData);
 
-            console.log("0916 sessionData="+JSON.stringify(sessionData))
+            console.log("0916 sessionData="+sessionData)
 
             let domainRoot = process.env.GCP_DOMAINROOT;
 

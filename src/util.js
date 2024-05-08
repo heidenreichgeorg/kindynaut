@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer';
 import { processHTML,startAPI } from './extract.js';
 
+// read and write
+// https://www.geeksforgeeks.org/how-to-read-and-write-json-file-using-node-js/
 
 //import dotenv from 'dotenv'
 //dotenv.config({ path: './.env.local' })
@@ -143,14 +145,11 @@ export function updateDomain(jListAris,domain) {
     let postBody = JSON.stringify(jListAris);
     console.log("0782 updateDomain with ARIS #"+jListAris.length);
 
-    const rqHeaders = { 'Content-Type':'application/json',
-
-                        'Accept':'application/json',
-                        'Access-Control-Allow-Origin':'*',
-                        'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
-
-    const rqOptions = { method: 'POST', headers: rqHeaders, mode:'no-cors', 
-            body:postBody };
+    const rqOptions = { method: 'POST', 
+                        headers: {  'Content-Type':'application/x-www-form-urlencoded;charset=utf-8',
+                                    'Accept':'text/plain'},                         
+                        mode:'no-cors', 
+                        body:postBody };
     try {                 
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
@@ -158,7 +157,7 @@ export function updateDomain(jListAris,domain) {
         console.log("0784 updateDomain UPDATE url="+url);
 
         try {
-            fetch(url, rqOptions) // AND BLAST jListAris INTO POST body
+            fetch(url, rqOptions) // AND BLAST jListAris via POST body
             .then((response) => response.text())
             .then((text) => console.log("0712 "+text))
             .catch((err) => console.error("0785 updateDomain ERR "+err));           
