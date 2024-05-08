@@ -29,7 +29,7 @@ export function timeSymbol() {
   
 export function simpleKey(pat) {
 
-    const cypher = "kindynaut8ho1pr0jec72f45wygzmq9dlvbx3s6";
+    const cypher = "192837465091827364529630741857";
 
     let base=cypher.length;
     var res = 0;
@@ -48,5 +48,17 @@ export function simpleKey(pat) {
         return out.join('');
     }
     else return "defaultKey";    
+}
+
+export function makeKey(pat) {
+    let simple=simpleKey(pat);
+    let key = simpleKey.length;
+    try { 
+        key+= 3*parseInt(simple.slice( 0, 3));
+        key+= 7*parseInt(simple.slice( 4, 7));
+        key+=11*parseInt(simple.slice( 8,11));
+        key+=17*parseInt(simple.slice(12,15));
+    } catch(e) {}
+    return key;
 }
 

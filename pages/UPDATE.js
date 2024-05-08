@@ -1,4 +1,4 @@
-import { getURLParams, dateSymbol, timeSymbol } from './node_utils.js'
+import { getURLParams, dateSymbol, makeKey, simpleKey, timeSymbol } from './node_utils.js'
 
 
 export async function updateDomain(req,res) {
@@ -19,15 +19,35 @@ export async function updateDomain(req,res) {
         try {
             // assume this is an array of dosh
             // must create keys like simpleKey harm x simpleKey hazard 
-            let sessionData = JSON.parse(rawData)
+            let domainData = JSON.parse(rawData)
 
-            console.log("0916 sessionData= #"+sessionData.length)
+            let total = domainData.length;
+            console.log("0916 domainData= #"+total)
+
+            let domainObject={};
+            domainData.forEach((dosh,i)=>{
+                let key = makeKey(dosh.harm)+"0"+makeKey(dosh.hazard)+"0"+makeKey(dosh.hazardousSituation);
+                if(domainObject[key]==null) domainObject[key]=[];
+                domainObject[key].push(dosh);
+            })
 
             let domainRoot = process.env.GCP_DOMAINROOT;
 
+            console.log("0918 domainData#-domainObject#="+(total-Object.keys(domainObject).length))
+
+            
+
+            Object.keys(domainObject).forEach((key)=>{
+                let arrDOSH=domainObject[key];
+                console.log("  0920 "+key+" "+arrDOSH.length+
+                    arrDOSH.map((dosh)=>("\n      "+dosh.hazard+"/"+dosh.harm+"/"+dosh.hazardousSituation)).join(' '))
+            })
+          
+
+
             res.write('<DIV class="attrRow"><H1>KindyNaut&nbsp;&nbsp;</H1>'
                 +'<DIV class="KNLINE">'
-                    +'<DIV class="FIELD LNAM">'+sessionData.length+'</DIV></DIV>'
+                    +'<DIV class="FIELD LNAM">'+domainData.length+'</DIV></DIV>'
                     +'<DIV class="FIELD LNAM">'+domainRoot+'</DIV></DIV>'
                     +'<DIV class="FIELD LNAM">'+domain+'</DIV></DIV>'
                 +'</DIV>'
