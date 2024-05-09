@@ -8,7 +8,8 @@ export async function updateDomain(req,res) {
 
     let rawData=req.body;
     if(rawData) {
-        console.log("0912 app.post UPDATE receives "+rawData);
+        
+        console.log("0912 app.post UPDATE receives req.body #"+rawData.length);
 
         const params = getURLParams(req);
         console.log("0914 app.post DOWNLOAD with "+JSON.stringify(params));
@@ -50,6 +51,7 @@ export async function updateDomain(req,res) {
                     +'<DIV class="FIELD LNAM">'+domainData.length+'</DIV></DIV>'
                     +'<DIV class="FIELD LNAM">'+domainRoot+'</DIV></DIV>'
                     +'<DIV class="FIELD LNAM">'+domain+'</DIV></DIV>'
+                    +'<DIV class="FIELD LNAM">'+Object.keys(domainObject).length+'</DIV></DIV>'
                 +'</DIV>'
                 );
             res.end();

@@ -37,7 +37,7 @@ export function simpleKey(pat) {
     if(pat)
     {
         let tap = pat.split('').reverse().join('');        
-        var sequence = tap+pat+tap+pat;
+        var sequence = tap+pat+tap+pat+tap+pat;
 
         let factor = 33;
         for(let p=0;p<sequence.length && p<128;p++) {
@@ -51,14 +51,16 @@ export function simpleKey(pat) {
 }
 
 export function makeKey(pat) {
-    let simple=simpleKey(pat);
-    let key = simpleKey.length;
-    try { 
-        key+= 3*parseInt(simple.slice( 0, 3));
-        key+= 7*parseInt(simple.slice( 4, 7));
-        key+=11*parseInt(simple.slice( 8,11));
-        key+=17*parseInt(simple.slice(12,15));
-    } catch(e) {}
+    let net=simpleKey(pat);
+    let simple=net+(net.split('').reverse().join(''));
+    let len = simple.length;
+    let key = len;
+
+    if(len> 5) key+=  3*parseInt(simple.slice( 0, 5));
+    if(len> 6) key+=101*parseInt(simple.slice( -6));        
+    if(len>21) key+= 11*parseInt(simple.slice(18,21));
+    if(len>39) key+= 37*parseInt(simple.slice(36,39));
+    
     return key;
 }
 
