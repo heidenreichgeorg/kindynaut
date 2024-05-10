@@ -12,11 +12,9 @@ export const HTTP_OK     = 200;
 export const HTTP_WRONG  = 400;
 
 export const SOME = 4;
-
 const FILE_SLASH = '/';
 
 export const REACT_APP_API_HOST="/pages"
-
 
 export function timeSymbol() { 
     var u = new Date(Date.now()); 

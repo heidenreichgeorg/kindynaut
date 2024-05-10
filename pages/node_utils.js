@@ -1,3 +1,4 @@
+export const FILE_SLASH = '/';
 
 
 export function getURLParams(req) {

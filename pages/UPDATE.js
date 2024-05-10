@@ -1,5 +1,6 @@
-import { getURLParams, dateSymbol, makeKey, simpleKey, timeSymbol } from './node_utils.js'
+import { getURLParams, dateSymbol, FILE_SLASH, makeKey,  timeSymbol } from './node_utils.js'
 
+import fs from "node:fs"
 
 export async function updateDomain(req,res) {
     let strTimeSymbol = timeSymbol();
@@ -32,11 +33,9 @@ export async function updateDomain(req,res) {
                 domainObject[key].push(dosh);
             })
 
-            let domainRoot = process.env.GCP_DOMAINROOT;
+            let domainPath = process.env.GCP_DOMAINROOT + FILE_SLASH + domain + FILE_SLASH + "base.json";
 
             console.log("0918 domainData#-domainObject#="+(total-Object.keys(domainObject).length))
-
-            
 
             Object.keys(domainObject).forEach((key)=>{
                 let arrDOSH=domainObject[key];
@@ -44,12 +43,20 @@ export async function updateDomain(req,res) {
                     arrDOSH.map((dosh)=>("\n      "+dosh.hazard+"/"+dosh.harm+"/"+dosh.hazardousSituation)).join(' '))
             })
           
-
+           
+            const content = JSON.stringify(domainObject);
+            fs.writeFile(domainPath, content, err => {
+              if (err) {
+                console.error("  0921 writing file "+domainPath+":"+err);
+              } else {
+                console.log("  0922 file "+domainPath+" written successfully.");
+              }
+            });
 
             res.write('<DIV class="attrRow"><H1>KindyNaut&nbsp;&nbsp;</H1>'
                 +'<DIV class="KNLINE">'
                     +'<DIV class="FIELD LNAM">'+domainData.length+'</DIV></DIV>'
-                    +'<DIV class="FIELD LNAM">'+domainRoot+'</DIV></DIV>'
+                    +'<DIV class="FIELD LNAM">'+domainPath+'</DIV></DIV>'
                     +'<DIV class="FIELD LNAM">'+domain+'</DIV></DIV>'
                     +'<DIV class="FIELD LNAM">'+Object.keys(domainObject).length+'</DIV></DIV>'
                 +'</DIV>'
