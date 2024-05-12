@@ -135,7 +135,7 @@ export function handleStore(fileName) {
 
 
 
-export function initDomain(jListAris,domain) {   
+export function initDomain(repository,target,domain) {   
     
     // GET  DOMAIN from NODE JS GCP_DOMAINROOT/domain
     // SECURITY fileName may carry markup
@@ -147,8 +147,14 @@ export function initDomain(jListAris,domain) {
     const rqOptions = { method: 'GET', 
                         headers: {
                             'content-type':'text/plain;charset=utf-8',
-                            'accept':'text/plain;charset=utf-8'},                         
-                            mode:'no-cors'};
+                            'accept':'application/json;charset=utf-8'},                         
+                            //'accept':'text/plain;charset=utf-8'}                         
+                            'Access-Control-Allow-Origin':'*',
+                            'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+                        };
+
+    if(!repository[target]) repository[target];
+
     try {                 
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
@@ -157,11 +163,18 @@ export function initDomain(jListAris,domain) {
 
         try {
             fetch(url, rqOptions) 
-            .then((response) => response.text())
-            .then((text) => console.log("0306 "+text))
+            .then((response) => response.json())
+            .then((json) => {Object.keys(json).forEach((index)=>{ 
+                try {   
+                        console.log("0306 initDomain:"+index+" "+json[index]); 
+                        repository[target].push(json[index]) 
+                } 
+                catch(e){}   })})
             .catch((err) => console.error("0305 initDomain ERR "+err));       
             
-            // put response inti jListAris
+            // put response into repository
+            console.log(" 0308 result="+JSON.stringify(repository[target]))
+            
 
         } catch(err) { console.log("0303 GET /INIT initDomain:"+err);}
 

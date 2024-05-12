@@ -677,7 +677,8 @@ export function Portal({portalFileName, view}) {
             (<div className="KNTABLE" key="buttonCaption">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
-                    <button key="Archive" className="RISKBACK" onClick={(() => { return initDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Init
+                    { /* set reposiotry[SCR_DOMAIN] and force showing fresh window */ }
+                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(repository,SCR_DOMAIN,getFile('domain')); return setMode(MODE_SAVE)})}>Init
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;&nbsp;&nbsp;

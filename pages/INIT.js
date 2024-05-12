@@ -57,14 +57,15 @@ export async function initDomain(
 
         let arrLines = arrDOSH.map((dosh)=>(JSON.stringify(dosh)));
         
-        let body = arrLines.join('\n');
+        let body = JSON.stringify(arrLines)
 
         res.writeHead(HTTP_OK,{
-            "Content-Type": "text/plain;charset=utf-8",
-            "Content-Length":Buffer.byteLength(body)
+            "Content-Type": "application/json;charset=utf-8",
+            "Content-Length":Buffer.byteLength(body),
+            "Access-Control-Allow-Origin": "*"
         });
 
-        res.end(body);
+        res.end(body); // JSON
         
         console.dir ( "0632 INIT FILE with "+arrLines.length+" lines.");
 
