@@ -1,11 +1,16 @@
-import { getURLParams, dateSymbol, FILE_SLASH, makeKey,  timeSymbol } from './node_utils.js'
+import { BASE_FILE, getURLParams, dateSymbol, FILE_SLASH, makeKey,  timeSymbol } from './node_utils.js'
 
-import fs from "node:fs"
+import { writeFile } from "fs/promises"
+
+
 
 export async function updateDomain(req,res) {
     let strTimeSymbol = timeSymbol();
     let strDateSymbol = dateSymbol();
     console.log("\n\n0900 UPDATE at "+strTimeSymbol+" on "+strDateSymbol);
+
+    let domainRoot = process.env.GCP_DOMAINROOT;
+    if(domainRoot.slice(-1)===FILE_SLASH) {} else domainRoot=domainRoot+FILE_SLASH;
 
     let rawData=req.body;
     if(rawData) {
@@ -33,9 +38,10 @@ export async function updateDomain(req,res) {
                 domainObject[key].push(dosh);
             })
 
-            let domainPath = process.env.GCP_DOMAINROOT + FILE_SLASH + domain + FILE_SLASH + "base.json";
 
             console.log("0918 domainData#-domainObject#="+(total-Object.keys(domainObject).length))
+
+
 
             Object.keys(domainObject).forEach((key)=>{
                 let arrDOSH=domainObject[key];
@@ -44,15 +50,25 @@ export async function updateDomain(req,res) {
             })
           
            
-            const content = JSON.stringify(domainObject);
-            fs.writeFile(domainPath, content, err => {
-              if (err) {
-                console.error("  0921 writing file "+domainPath+":"+err);
-              } else {
-                console.log("  0922 file "+domainPath+" written successfully.");
-              }
-            });
 
+            const domainPath = domainRoot + domain + BASE_FILE;
+            const content = JSON.stringify(domainObject);
+            try {
+                await writeFile(domainPath, content, { encoding:'utf-8'} )
+                    
+                console.log("0924 File written successfully"); 
+                console.log("0926 The written file has"
+                    + " the following contents:"); 
+        
+                console.log("0928 " +  
+                    readFileSync(domainPath)); 
+        
+            } catch (err) { 
+                console.error(err); 
+            } 
+
+            console.log("  0930 writeFile completed.");
+            
             res.write('<DIV class="attrRow"><H1>KindyNaut&nbsp;&nbsp;</H1>'
                 +'<DIV class="KNLINE">'
                     +'<DIV class="FIELD LNAM">'+domainData.length+'</DIV></DIV>'

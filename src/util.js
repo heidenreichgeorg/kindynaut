@@ -134,6 +134,43 @@ export function handleStore(fileName) {
 }
 
 
+
+export function initDomain(jListAris,domain) {   
+    
+    // GET  DOMAIN from NODE JS GCP_DOMAINROOT/domain
+    // SECURITY fileName may carry markup
+
+    console.log("0780 initDomain into server-side domain "+domain); 
+    
+    console.log("0782 initDomain "+domain);
+
+    const rqOptions = { method: 'GET', 
+                        headers: {
+                            'content-type':'text/plain',
+                            'accept':'application/json'},                         
+                            mode:'no-cors'};
+    try {                 
+        let server=process.env.REACT_APP_NODE;
+        let s_port=process.env.REACT_APP_SERVER;
+        let url = `http://${server}:${s_port}/INIT?domain=`+domain;
+        console.log("0784 updateDomain INIT url="+url);
+
+        try {
+            fetch(url, rqOptions) 
+            .then((response) => response.text())
+            .then((text) => console.log("0712 "+text))
+            .catch((err) => console.error("0785 initDomain ERR "+err));       
+            
+            // put response inti jListAris
+
+        } catch(err) { console.log("0783 GET /INIT initDomain:"+err);}
+
+    } catch(err) { console.log("0781  GET /INIT initDomain:"+err);}
+
+    console.log("0786 initDomain fetch "+domain);
+}
+
+
 export function updateDomain(jListAris,domain) {   
     
     // from DOMAIN list to NODE JS GCP_DOMAINROOT/domain
@@ -144,9 +181,7 @@ export function updateDomain(jListAris,domain) {
     console.log("0782 updateDomain with ARIS #"+postBody);
 
     const rqOptions = { method: 'POST', 
-                        headers: {  //  content-type1 'Content-Type':'application/x-www-form-urlencoded;charset=utf-8',
-                                    // content-type 2 'content-type':'application/json',
-                            'content-type':'text/plain',
+                        headers: { 'content-type':'text/plain',
                             'accept':'application/json'},                         
                             mode:'no-cors', 
                             body:postBody };

@@ -1,5 +1,8 @@
 export const FILE_SLASH = '/';
 
+export const BASE_FILE = "/base.txt"
+
+
 
 export function getURLParams(req) {
     let result={};

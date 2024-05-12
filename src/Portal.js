@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { dragOverHandler, dropHandler, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 import { useState } from 'react';
 
 
@@ -677,6 +677,11 @@ export function Portal({portalFileName, view}) {
             (<div className="KNTABLE" key="buttonCaption">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
+                    <button key="Archive" className="RISKBACK" onClick={(() => { return initDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Init
+                        <input key="hidden" className="HIDE"></input>
+                    </button>          
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    
                     {/* SAVE Button */}
                     <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return updateDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Update domain
                         <input key="hidden" className="HIDE"></input>
