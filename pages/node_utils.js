@@ -1,7 +1,11 @@
 export const FILE_SLASH = '/';
 
+export const HTTP_OK     = 200;
+export const HTTP_WRONG  = 400;
+
 export const BASE_FILE = "/base.txt"
 
+export var arrDOSH=[];
 
 
 export function getURLParams(req) {

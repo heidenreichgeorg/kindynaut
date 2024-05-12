@@ -1,8 +1,8 @@
-import { BASE_FILE, getURLParams, dateSymbol, FILE_SLASH, timeSymbol } from './node_utils.js'
+import { arrDOSH, BASE_FILE, getURLParams, HTTP_OK, HTTP_WRONG, dateSymbol, FILE_SLASH, timeSymbol } from './node_utils.js'
 
 import { readFileSync } from "fs"
 
-// READA base.txt in <domain> specified in URL and blat it down to the clalling client
+// READ base.txt in <domain> folder specified in URL and blast it down to the calling client
 
 export async function initDomain(
     req, //: NextApiRequest,
@@ -25,18 +25,19 @@ export async function initDomain(
     try {    
         let domainData = readFileSync(domainPath); 
 
-        console.log("0606 reading " +  domainData);
+        console.log("0606 reading #" +  Object.keys(domainData).length);
     
         try {
             let jDomainList = JSON.parse(domainData); 
-            let arrDOSH=[];
-
+           
             // not quite...
             Object.keys(jDomainList).forEach((key)=>{
-                arrDOSH.push(jDomainList[key]);
+                
+                let localList=jDomainList[key];
 
-                console.log("  610 "+key+" "+arrDOSH.length+
-                    arrDOSH.map((dosh)=>("\n      "+dosh.hazard+"/"+dosh.harm+"/"+dosh.hazardousSituation)).join(' '))
+                console.log("  610 "+key+" "+JSON.stringify(localList));
+                
+                localList.forEach((dosh)=>{arrDOSH.push(dosh);})
             })
            
         } catch (err) { 
@@ -48,31 +49,30 @@ export async function initDomain(
         console.error(err); 
     } 
 
-    console.log(" 0620 reading completed.");
+    console.log(" 0620 reading "+arrDOSH.length+" completed.");
 
     
     
-    if(arrDOSH.length) {
+    if(arrDOSH.length>0) {
 
-        res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
-
+        let arrLines = arrDOSH.map((dosh)=>(JSON.stringify(dosh)));
         
-        res.write(arrLines.join('\n'));
+        let body = arrLines.join('\n');
 
-        /* EXAM-X
-        arrLines.forEach((line,n)=>{
-          num++;
-          if(num<60) console.log(line); // EXAM-X
-        });      
-        */
+        res.writeHead(HTTP_OK,{
+            "Content-Type": "text/plain;charset=utf-8",
+            "Content-Length":Buffer.byteLength(body)
+        });
+
+        res.end(body);
+        
         console.dir ( "0632 INIT FILE with "+arrLines.length+" lines.");
 
     } else {
-      console.dir ( "0631 INIT EMPTY FILE "+file);
+      console.dir ( "0631 INIT EMPTY FILE "+domainPath);
       res.writeHead(HTTP_WRONG, {"Content-Type": "text/html"});
+      res.end("EMPTY FILE"); 
     }
 
-    res.write('\n\n');
-    res.write('\n\n');
-    res.end(); 
+   
 }
