@@ -2,6 +2,7 @@ import { Buffer } from 'buffer';
 import { dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 import { useState } from 'react';
 
+const LEARN_DOMAIN = true;
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
 
@@ -577,15 +578,19 @@ export function Portal({portalFileName, view}) {
                     (view===FCS_RISKS)&&(ticket===SCR_DOMAIN)||
                     (view===FCS_FILES)&&(ticket!==SCR_DOMAIN)?"":"NOTABLE"}>        
 
-
+                    
                    <div className="KNTABLE" key={"header"+area}>                                 
                         <div  key={"sep0"+area} className="FLEX RIM" ></div>                            
-                        <div className="KNLINE NONE"  key={"sep1row"+area}>
+
+                        
+                        <div className="{ LEARN_DOMAIN ? 'KNLINE NONE' : 'NOTABLE' }"  key={"sep1row"+area}>
                             <div className="KNLINE"  key={"sep0div"+area}>
                             <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
                             { (ticket===SCR_DOMAIN) ? "":
                                 (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
                         </div>
+
+
                     </div>
 
 
@@ -683,11 +688,19 @@ export function Portal({portalFileName, view}) {
                     </button>          
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     
-                    {/* SAVE Button */}
-                    <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return updateDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Update domain
-                        <input key="hidden" className="HIDE"></input>
-                    </button>          
-                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {
+                    /* SAVE To DOMAIN Button */
+                    (LEARN_DOMAIN) ?
+                        (<div>
+                        <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return updateDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Update domain
+                            <input key="hidden" className="HIDE"></input>
+                        </button>          
+                        &nbsp;&nbsp;
+                        </div>
+                    ):''
+                    }
+
+                    &nbsp;&nbsp;
                     <button key="Export" id={KN_DOWNLOAD} className="RISKBACK BUTTON" >
                         <div key="button" className="FIELD" 
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
