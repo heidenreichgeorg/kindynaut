@@ -1,4 +1,4 @@
-import { arrDOSH, BASE_FILE, getURLParams, HTTP_OK, HTTP_WRONG, dateSymbol, FILE_SLASH, timeSymbol } from './node_utils.js'
+import { arrDOSH, BASE_FILE, clearDOSH, dosh, getURLParams, HTTP_OK, HTTP_WRONG, dateSymbol, FILE_SLASH, timeSymbol } from './node_utils.js'
 
 import { readFileSync } from "fs"
 
@@ -17,56 +17,41 @@ export async function initDomain(
 
     const params = getURLParams(req);
     console.log("0602 app.post INIT with "+JSON.stringify(params));
-
     const domain = params.domain;
     console.log("0604 app.post INIT for "+domain);
     
     const domainPath = domainRoot + domain + BASE_FILE;
     try {    
         let domainData = readFileSync(domainPath); 
-
         console.log("0606 reading #" +  Object.keys(domainData).length);
-    
         try {
             let jDomainList = JSON.parse(domainData); 
-           
-            // not quite...
+
+            // CLEAR THE SERVER'S DOSH LIST
+            clearDOSH();
             Object.keys(jDomainList).forEach((key)=>{
                 
                 let localList=jDomainList[key];
-
                 console.log("  610 "+key+" "+JSON.stringify(localList));
-                
-                localList.forEach((dosh)=>{arrDOSH.push(dosh);})
+                localList.forEach((jDosh)=>{arrDOSH.push(dosh(jDosh));})
             })
-           
         } catch (err) { 
             console.error(err); 
         } 
-              
-           
     } catch (err) { 
         console.error(err); 
     } 
-
     console.log(" 0620 reading "+arrDOSH.length+" completed.");
-
-    
     
     if(arrDOSH.length>0) {
-
         let arrLines = arrDOSH.map((dosh)=>(JSON.stringify(dosh)));
-        
         let body = JSON.stringify(arrLines)
-
         res.writeHead(HTTP_OK,{
             "Content-Type": "application/json;charset=utf-8",
             "Content-Length":Buffer.byteLength(body),
             "Access-Control-Allow-Origin": "*"
         });
-
         res.end(body); // JSON
-        
         console.dir ( "0632 INIT FILE with "+arrLines.length+" lines.");
 
     } else {

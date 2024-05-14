@@ -1,8 +1,9 @@
 import { Buffer } from 'buffer';
 import { dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
-import { useState } from 'react';
 
-const LEARN_DOMAIN = true;
+import { useState, useEffect } from 'react';
+
+const LEARN_DOMAIN = false;
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
 
@@ -96,6 +97,27 @@ function addProjAris(jAris,strMessage) {
 
 
 export function Portal({portalFileName, view}) {
+
+    const MINUTE_MS = 60000;
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        console.log('Logs every minute');
+
+
+        if(repository[SCR_DOMAIN] && repository[SCR_DOMAIN].length>2) {
+            console.log('Logs every minute and  finds '+(repository[SCR_DOMAIN].length)+' dosh');
+            setMode(MODE_SAVE);
+
+        } else initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(MODE_SAVE);})
+
+
+      }, MINUTE_MS);
+    
+      return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+    }, [])
+
+
 
     // filters and display/edit mode
     const [strFilter, setStrFilter] = useState("{}") // filter form buffer
@@ -503,6 +525,7 @@ export function Portal({portalFileName, view}) {
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
+    
 
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
@@ -682,11 +705,14 @@ export function Portal({portalFileName, view}) {
             (<div className="KNTABLE" key="buttonCaption">      
                 <div className="FIELD" key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
-                    { /* set reposiotry[SCR_DOMAIN] and force showing fresh window */ }
-                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(repository,SCR_DOMAIN,getFile('domain')); return setMode(MODE_SAVE)})}>Init
+
+
+                    { /* set repository[SCR_DOMAIN] and force showing fresh window  }
+                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(MODE_SAVE);}); return setMode(MODE_SAVE)})}>Init
                         <input key="hidden" className="HIDE"></input>
                     </button>          
-                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;
+                    { &nbsp;&nbsp; */ }
                     
                     {
                     /* SAVE To DOMAIN Button */

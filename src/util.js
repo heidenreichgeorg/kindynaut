@@ -135,8 +135,10 @@ export function handleStore(fileName) {
 
 
 
-export function initDomain(repository,target,domain) {   
-    
+export function initDomain(domain,notifyCB) {   
+
+    let result=[];
+
     // GET  DOMAIN from NODE JS GCP_DOMAINROOT/domain
     // SECURITY fileName may carry markup
 
@@ -153,8 +155,6 @@ export function initDomain(repository,target,domain) {
                             'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization'
                         };
 
-    if(!repository[target]) repository[target];
-
     try {                 
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
@@ -166,21 +166,26 @@ export function initDomain(repository,target,domain) {
             .then((response) => response.json())
             .then((json) => {Object.keys(json).forEach((index)=>{ 
                 try {   
-                        console.log("0306 initDomain:"+index+" "+json[index]); 
-                        repository[target].push(json[index]) 
+                        console.log("0308 initDomain:"+index+" "+json[index]); 
+                        result.push(json[index]) 
                 } 
-                catch(e){}   })})
+                catch(e){console.log("0309 initDomain:"+index+" in "+JSON.stringify(json)+"   "+e); }   });
+
+                // put response into repository
+                console.log(" 0310 result #"+result.length)
+
+                notifyCB(result);
+
+            })
             .catch((err) => console.error("0305 initDomain ERR "+err));       
             
-            // put response into repository
-            console.log(" 0308 result="+JSON.stringify(repository[target]))
-            
+            // unreachable
 
         } catch(err) { console.log("0303 GET /INIT initDomain:"+err);}
 
     } catch(err) { console.log("0301  GET /INIT initDomain:"+err);}
 
-    console.log("0308 initDomain fetch "+domain);
+    // returns before results from server
 }
 
 
