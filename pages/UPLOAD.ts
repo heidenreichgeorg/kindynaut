@@ -1,12 +1,8 @@
 
-import { PORT,timeSymbol, strSymbol } from '../src/util'
+import { timeSymbol, strSymbol } from '../src/util'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-//import * as os from 'os';
-//const os = require('os');
 // had to nmp install --save-dev @types/node
-
-var nets;
 
 export default async function handler(
     req: NextApiRequest,
@@ -30,11 +26,8 @@ export default async function handler(
     let rawData = req.body;
     console.dir("0910 app.post UPLOAD with "+rawData);
 
-    //nets = os.networkInterfaces();
-
     if(rawData && rawData.client && rawData.year) {
-
-       
+ 
         let clientFunction=rawData.clientFunction.split('_')[0];    
         
         let computed = timeSymbol();
@@ -42,13 +35,7 @@ export default async function handler(
         if(clientFunction) {
             console.dir("0914 app.post UPLOAD with function="+clientFunction+" ---> "+computed);
          
-            let sessionData = rawData;
-
-                        
-
             console.dir("0920 app.post UPLOAD starts offline");
-            
-
             
             let cmdLogin = "http://localhost:"+PORT;
             // should not set a sesssion.id because id not known while async save2bucket is not finished       
@@ -60,13 +47,11 @@ export default async function handler(
                 );
             res.end();
             
-
         } else console.log ( "0913 UPLOAD VOID");
 
         return;
     } else {
         console.error ( "0909 UPLOAD EMPTY JSON "+JSON.stringify(Object.keys(rawData)));
-
     }
     // send back sessionId to client browser or file
     //res.writeHead(HTTP_WRONG, {"Content-Type": "text/html"});

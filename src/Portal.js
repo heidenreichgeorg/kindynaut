@@ -3,6 +3,8 @@ import { dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, ha
 
 import { useState, useEffect } from 'react';
 
+const UP_ARROW = '&#x21d1';
+
 const LEARN_DOMAIN = false;
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
@@ -26,7 +28,6 @@ const KN_FILES = "KN_FILES"
 
 const T_DOMAIN = '["DOMAIN"]';
 
-
 function sanitize(str) {
     if(!str) return "0";
     let nocol=str.replaceAll(',','_')
@@ -37,8 +38,6 @@ function sanitize(str) {
     return str;
 }
 
-
-
 function init() {
     let check=window.sessionStorage.getItem(KN_TICKETS);
     if(check && check.length>SOME) return;
@@ -47,11 +46,9 @@ function init() {
     store(SCR_DOMAIN,JSON.parse("[]"));
 }
 
-
 // repository mirrors the json-lists stored in sessionStorage for the domain and also for all files
 let repository={};
 let repFiles=[];
-
 
 function store(ticket,arrList)  {
     try {
@@ -106,10 +103,9 @@ export function Portal({portalFileName, view}) {
 
 
         if(repository[SCR_DOMAIN] && repository[SCR_DOMAIN].length>2) {
-            console.log('Logs every minute and  finds '+(repository[SCR_DOMAIN].length)+' dosh');
-            setMode(MODE_SAVE);
+            console.log('Logs every minute and  finds '+(repository[SCR_DOMAIN].length)+' dosh');            
 
-        } else initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(MODE_SAVE);})
+        } else initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(mode+1)})
 
 
       }, MINUTE_MS);
@@ -373,6 +369,7 @@ export function Portal({portalFileName, view}) {
         console.log("0770 removeLine ENTER remove element at index="+index);        
         if(index>=0)  jListAris.splice(index,1);
         store(SCR_DOMAIN,jListAris);
+        setMode(mode+1); // trigger redraw
         console.log("0770 removeLine EXIT with remaining "+jListAris.length+" entries.");        
     }
     
@@ -610,7 +607,7 @@ export function Portal({portalFileName, view}) {
                             <div className="KNLINE"  key={"sep0div"+area}>
                             <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
                             { (ticket===SCR_DOMAIN) ? "":
-                                (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
+                                (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>{UP_ARROW}</div>)}
                         </div>
 
 
@@ -708,7 +705,7 @@ export function Portal({portalFileName, view}) {
 
 
                     { /* set repository[SCR_DOMAIN] and force showing fresh window  }
-                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(MODE_SAVE);}); return setMode(MODE_SAVE)})}>Init
+                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(mode+1);}); return setMode(MODE_SAVE)})}>Init
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;

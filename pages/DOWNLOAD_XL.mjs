@@ -1,5 +1,3 @@
-
-
 // START FROM PROJECT ROOT WITH
 // node pages/server.js 
 
@@ -12,8 +10,6 @@ import { openHBook } from "./readXL.js"
 
 import { getURLParams, timeSymbol } from './node_utils.js'
 
-
-
 export async function downloadHBook(
     req, //: NextApiRequest,
     res//: NextApiResponse<any>
@@ -25,23 +21,15 @@ export async function downloadHBook(
     console.log("0620 app.post DOWNLOAD with "+JSON.stringify(params));
     const file = params.file;
     
-
     console.log("0630 app.post DOWNLOAD with "+file);
     
-    let num=0;
     if(file && file.length>3) {
 
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
         let arrLines = openHBook(file);
-        res.write(arrLines.join('\n'));
-
-        /* EXAM-X
-        arrLines.forEach((line,n)=>{
-          num++;
-          if(num<60) console.log(line); // EXAM-X
-        });      
-        */
+        res.write(arrLines.join('\n')); // better put it all in req.end in one go 
+     
         console.dir ( "0632 DOWNLOAD FILE with "+arrLines.length+" lines.");
 
     } else {
@@ -69,7 +57,7 @@ function handleJSONSave(jContent) {
   }
   */
   const manufacturer="manufacturer";
-  const product="peoduct";
+  const product="product";
   const version="version"
 
   const rqHeaders = {  'Accept': 'application/octet-stream',

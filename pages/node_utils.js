@@ -9,19 +9,25 @@ export function clearDOSH() {
     arrDOSH=[];
 }
 
+export function sane(input){
+    let str=input.toString();
+    str = str.replace(/[^a-z0-9/äöüß:\.,_-]/gim,"");
+    return str.trim();
+}
+
 export function dosh(jDOSH) {
-    return { comp:jDOSH.comp,
-             func:jDOSH.func,
-             hazard:jDOSH.hazard,
-             harm:jDOSH.harm,
-             hazardousSituation:jDOSH.hazardousSituation};
+    return { comp:sane(jDOSH.comp),
+             func:sane(jDOSH.func),
+             hazard:sane(jDOSH.hazard),
+             harm:sane(jDOSH.harm),
+             hazardousSituation:sane(jDOSH.hazardousSituation)};
 }
 
 export function getURLParams(req) {
     let result={};
     let url = JSON.stringify(req.url).replace(/[\",;]/g, '');
     console.log("0210 getURLParams from "+url);
-    if(url && url.length>0) (url.split('?')[1]).split('&').forEach((entry)=>{let aE=entry.split('=');result[aE[0]]=aE[1]});
+    if(url && url.length>0) (url.split('?')[1]).split('&').forEach((entry)=>{let aE=entry.split('=');result[sane(aE[0])]=sane(aE[1])});
     return result;
 }
 
@@ -41,8 +47,9 @@ export function timeSymbol() {
       (u.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5);
 }
   
-export function simpleKey(pat) {
+export function simpleKey(input) {
 
+    let pat = sane(input);
     const cypher = "192837465091827364529630741857";
 
     let base=cypher.length;
@@ -64,7 +71,9 @@ export function simpleKey(pat) {
     else return "defaultKey";    
 }
 
-export function makeKey(pat) {
+export function makeKey(input) {
+    let pat = sane(input);
+
     let net=simpleKey(pat);
     let simple=net+(net.split('').reverse().join(''));
     let len = simple.length;
@@ -77,3 +86,4 @@ export function makeKey(pat) {
     
     return key;
 }
+

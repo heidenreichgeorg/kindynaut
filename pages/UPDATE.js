@@ -9,10 +9,10 @@ export async function updateDomain(req,res) {
     let strDateSymbol = dateSymbol();
     console.log("\n\n0900 UPDATE at "+strTimeSymbol+" on "+strDateSymbol);
 
-    let domainRoot = process.env.GCP_DOMAINROOT;
+    let domainRoot = sane(process.env.GCP_DOMAINROOT);
     if(domainRoot.slice(-1)===FILE_SLASH) {} else domainRoot=domainRoot+FILE_SLASH;
 
-    let rawData=req.body;
+    let rawData=req.body; // NO sane(req.body) this will have JSON format
     if(rawData) {
         
         console.log("0912 app.post UPDATE receives req.body #"+rawData.length);

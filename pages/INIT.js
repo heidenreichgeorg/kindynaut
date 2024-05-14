@@ -1,8 +1,10 @@
-import { arrDOSH, BASE_FILE, clearDOSH, dosh, getURLParams, HTTP_OK, HTTP_WRONG, dateSymbol, FILE_SLASH, timeSymbol } from './node_utils.js'
+import { arrDOSH, BASE_FILE, clearDOSH, dateSymbol, dosh, getURLParams, HTTP_OK, HTTP_WRONG, FILE_SLASH, sane, timeSymbol } from './node_utils.js'
 
 import { readFileSync } from "fs"
 
-// READ base.txt in <domain> folder specified in URL and blast it down to the calling client
+// READ base.txt in <domain> folder specified in URL and respond it down to the calling client
+
+// sane() to sanitize external strings
 
 export async function initDomain(
     req, //: NextApiRequest,
@@ -12,7 +14,7 @@ export async function initDomain(
     let strDateSymbol = dateSymbol();
     console.log("\n\n0600 INIT at "+strTimeSymbol+" on "+strDateSymbol);
 
-    let domainRoot = process.env.GCP_DOMAINROOT;
+    let domainRoot = sane(process.env.GCP_DOMAINROOT);
     if(domainRoot.slice(-1)===FILE_SLASH) {} else domainRoot=domainRoot+FILE_SLASH;
 
     const params = getURLParams(req);

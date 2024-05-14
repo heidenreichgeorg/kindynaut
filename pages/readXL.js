@@ -16,6 +16,10 @@ let tableMap={};
 
 export function openHBook(fileName) {
 
+    // does not sanitize XLSX file content
+
+    let saneFileName=sane(fileName);
+
     // colBuffer is the list of columns of the current RISK
     const columnsHBook=['','','','','','','','','','','','','','','','','','']
     let colBuffer=columnsHBook;
@@ -24,10 +28,10 @@ export function openHBook(fileName) {
     let result = []; 
     let riskNumber=0;
 
-    console.log("0400 READ openHBook "+fileName)
+    console.log("0400 READ openHBook "+saneFileName)
     try { 
         const workbook = readFile(fileName);
-        console.log("0402 READ workbook from  "+fileName)
+        console.log("0402 READ workbook from  "+saneFileName)
         const sheetNames = workbook.SheetNames;
         console.log("0404 READ workbook with sheets:  "+sheetNames.join(','))
 
@@ -53,7 +57,7 @@ export function openHBook(fileName) {
             } //else console.log("0403 READ workbook sheet("+i+")"");
         })            
     } catch(err) {
-        console.log("0401 READ workbook from  "+fileName+ "  "+err)
+        console.log("0401 READ workbook from  "+saneFileName+ "  "+err)
        
     }
     //console.log(result.join('\n\n'))
@@ -106,7 +110,7 @@ export function openHBook(fileName) {
                 // numeric comps0
                 // get rid of previous risk data            
                 //console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
-                result.push(colBuffer.join(';'));
+                result.push(colBuffer.join(';')); // GH20240514 sane() function ??
                 
                 riskNumber++;
                 colBuffer=JSON.parse(JSON.stringify(columnsHBook))
