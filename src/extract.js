@@ -1,53 +1,17 @@
 // nodeJS JSON.parse is a bit careful 
 // so we have an issue with [ ] in pay load
 
-
 import { Buffer } from 'buffer';
 
-
 const KIMEDS_CORI='riskman:ControlledRisk';
-const KIMEDS_DOSH='riskman:DomainSpecificHazard';
-const KIMEDS_ID='riskman:id';
-const NBSP = 'Â '; // U+00a0
 const DISPLAY_ERR = 300;
 
 let rdfaUsage={};
-var filename=null;
-
 let report = null;
 
-function obsolete_startFORM() {
-     console.log("Start entered");
-     report = { 'header':[], 'syntax':[], 'elements':{}, 'inst':[], 'html':[], 'tree':[], 'htmlusage':[], 'rdfausage':[] };
-     document.getElementById('filechoice').addEventListener('change', loadAndValidate);
-     console.log("Start added event listener");
-}
-
-export function startAPI() {
+export function getFrom90025() {
     console.log("0500 StartAPI entered");
     report = { 'header':[], 'syntax':[], 'elements':{}, 'inst':[], 'html':[], 'tree':[], 'htmlusage':[], 'rdfausage':[] };
-}
-
-function loadAndValidate() {
-
-    console.log("loadAndValidate entered");
-
-    var fr = new FileReader();
-    
-    fr.onload = (ev2,file)=>{            
-          let aLines = this.result.split('\n');       
-          let summary=processHTML(aLines);
-          save(summary,'json');
-     }
-
-    console.log("loadAndValidate() defined file reader");
-
-    filename=this.files[0].name;
-    report.header.push('reading from file='+filename);
-    console.log('loadAndValidate() will read from '+filename);
-    document.getElementById('fileButton').innerHTML=filename;
-    fr.readAsText(this.files[0]);
-
 }
 
 export function processHTML(aLines) {
@@ -82,16 +46,7 @@ export function processHTML(aLines) {
           } catch(e) {
                console.log("0511 reading error\n"+e); 
                console.log(report.inst.join('\n'));
-               console.log("0511 ************************"); 
-/*
-               const STEP=100;
-               const filler ="                                                                                                                                                 ";
-               let slen=strInstances.length;
-               let sut=strInstances+filler+filler 
-               for(let j=0;j<slen;j+=STEP) {
-                    console.log(j+ " "+sut.substring(j,j+STEP));
-               }
-*/               
+               console.log("0511 ************************");              
           }
 
          aCollection=[];
@@ -132,7 +87,14 @@ export function processHTML(aLines) {
                                    let jHAZD=jDOSH['riskman:hasHazard'];
                                    let strHazd=jHAZD?jHAZD.cMDNodeValue:"Func?";
 
-                                   aCollection.push('{ "func":"'+strFunc+'", "comp":"'+strComp+'",  "hazard":"'+strHazd+'", "hazardousSituation":"'+strCOR+'", "harm":"'+strHarm+'", "ControlledRisk":"'+key+'", "'+strARIS+'":"'+strARID+'"}');
+                                   aCollection.push('{ "func":"'+strFunc+
+                                                  '", "comp":"'+strComp+
+                                                  '",  "hazard":"'+strHazd+
+                                                  '", "hazardousSituation":"'+strCOR+
+                                                  '", "harm":"'+strHarm+
+                                                  '", "ControlledRisk":"'+key.toString()+
+                                                  '", "'+strARIS+'":"'+strARID+
+                                                  '"}');
                               }
                          })
 
@@ -254,7 +216,6 @@ function findValue(table,value) {
      let result=[];
      Object.keys(table).forEach((key)=>{
            if(table[key].value==value) result.push(key);
-           /*console.log('findValue '+table[key].value+'??'+value)*/
      });
      return result;
 }

@@ -3,9 +3,9 @@ import { dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, ha
 
 import { useState, useEffect } from 'react';
 
-const UP_ARROW = '&#x21d1';
+// UP_ARROW &#x21d1;
 
-const LEARN_DOMAIN = false;
+const LEARN_DOMAIN = true;
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
 
@@ -105,7 +105,7 @@ export function Portal({portalFileName, view}) {
         if(repository[SCR_DOMAIN] && repository[SCR_DOMAIN].length>2) {
             console.log('Logs every minute and  finds '+(repository[SCR_DOMAIN].length)+' dosh');            
 
-        } else initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(mode+1)})
+        } else initDomain(getFile('domain'),updateDomainWindow)
 
 
       }, MINUTE_MS);
@@ -170,14 +170,17 @@ export function Portal({portalFileName, view}) {
     let setCode = {};
     let setSitu = {};
     let setHarm = {};
-    
-    function testComp(e) { console.log("0720 "+JSON.stringify(setComp)); if(setComp[e.comp]) return false;               return setComp[e.comp]=1;}
-    function testFunc(e) { console.log("0722 "+JSON.stringify(setFunc)); if(setFunc[e.func]) return false;               return setFunc[e.func]=1;}
-    function testHazd(e) { console.log("0724 "+JSON.stringify(setHazd)); if(setHazd[e.hazard]) return false;             return setHazd[e.hazard]=1;}
-    function testCaus(e) { console.log("0726 "+JSON.stringify(setCaus)); if(setCaus[e.cause]) return false;              return setCaus[e.cause]=1;}
-    function testCode(e) { console.log("0728 "+JSON.stringify(setCode)); if(setCode[e.code]) return false;               return setCode[e.code]=1;}
-    function testSitu(e) { console.log("0730 "+JSON.stringify(setSitu)); if(setSitu[e.hazardousSituation]) return false; return setSitu[e.hazardousSituation]=1;}
-    function testHarm(e) { console.log("0732 "+JSON.stringify(setHarm)); if(setHarm[e.harm]) return false;               return setHarm[e.harm]=1;}
+
+    // GH20240514 data coming from initDomain -- e is a string already
+
+
+    function testComp(e) { console.log("0720 "+JSON.stringify(setComp)+"+"+JSON.stringify(e)); if(setComp[e.comp]) return false;               return setComp[e.comp]=1;}
+    function testFunc(e) { console.log("0722 "+JSON.stringify(setFunc)+"+"+JSON.stringify(e)); if(setFunc[e.func]) return false;               return setFunc[e.func]=1;}
+    function testHazd(e) { console.log("0724 "+JSON.stringify(setHazd)+"+"+JSON.stringify(e)); if(setHazd[e.hazard]) return false;             return setHazd[e.hazard]=1;}
+    function testCaus(e) { console.log("0726 "+JSON.stringify(setCaus)+"+"+JSON.stringify(e)); if(setCaus[e.cause]) return false;              return setCaus[e.cause]=1;}
+    function testCode(e) { console.log("0728 "+JSON.stringify(setCode)+"+"+JSON.stringify(e)); if(setCode[e.code]) return false;               return setCode[e.code]=1;}
+    function testSitu(e) { console.log("0730 "+JSON.stringify(setSitu)+"+"+JSON.stringify(e)); if(setSitu[e.hazardousSituation]) return false; return setSitu[e.hazardousSituation]=1;}
+    function testHarm(e) { console.log("0732 "+JSON.stringify(setHarm)+"+"+JSON.stringify(e)); if(setHarm[e.harm]) return false;               return setHarm[e.harm]=1;}
 
 
 
@@ -202,13 +205,7 @@ export function Portal({portalFileName, view}) {
                 try { 
                     jRawList.forEach((aris)=>{arrDomain.push(aris)});
 
-                    let strTransfer=JSON.stringify(arrDomain);
-                    console.log("0886 Portal.addDOMAINRisk new DOMAIN risks="+strTransfer);
-
-                    let transfer64 = Buffer.from(strTransfer,'utf8').toString('base64');
-                    window.sessionStorage.setItem(SCR_DOMAIN,transfer64);
-
-                    setMode(mode+1); // trigger redraw
+                    updateDomainWindow(arrDomain);
 
                 } catch(err) { console.log("0881 Portal.addDOMAINRisk DOMAIN push failed "+err);}
             } catch(err) { console.log("0883 Portal.addDOMAINRisk DOMAIN decoding/parsing failed "+err);} 
@@ -216,6 +213,15 @@ export function Portal({portalFileName, view}) {
 
         return ticket;
     }
+
+    function updateDomainWindow(arrDomain) {                    
+        let strTransfer=JSON.stringify(arrDomain);
+        console.log("0886 Portal.updateDomainWindow new DOMAIN risks="+strTransfer);
+        let transfer64 = Buffer.from(strTransfer,'utf8').toString('base64');
+        window.sessionStorage.setItem(SCR_DOMAIN,transfer64);
+        setMode(mode+1); // trigger redraw
+    }
+
 
     console.log("0800 Portal for "+focus);
 
@@ -442,6 +448,7 @@ export function Portal({portalFileName, view}) {
         jFiles=JSON.parse(strFiles);
     } catch(err) { console.log("0803 Portal failed in KN_FILES "+err);}
 
+    
     function backTrans(jAris) {
         let result={};
         if(jAris) {
@@ -470,7 +477,10 @@ export function Portal({portalFileName, view}) {
                             jRawList=JSON.parse(strList);
                             console.log("0806 Portal.update finds strList with length=="+jRawList.length);
                         } catch(err) { console.log("0805 Portal parse failed "+err);}
-                        jList = jRawList.map((risk,index)=>((risk.key=index)?risk:risk))
+                        
+                        // GH20240514 key with number jList = jRawList.map((risk,index)=>((risk.key=index)?risk:risk))
+                        jList=jRawList;
+
                         fileName=jFiles[line];
                     } catch(err) { console.log("0807 Portal base64 decoding failed "+err);}
 
@@ -601,16 +611,12 @@ export function Portal({portalFileName, view}) {
                     
                    <div className="KNTABLE" key={"header"+area}>                                 
                         <div  key={"sep0"+area} className="FLEX RIM" ></div>                            
-
-                        
                         <div className="{ LEARN_DOMAIN ? 'KNLINE NONE' : 'NOTABLE' }"  key={"sep1row"+area}>
                             <div className="KNLINE"  key={"sep0div"+area}>
                             <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
                             { (ticket===SCR_DOMAIN) ? "":
-                                (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>{UP_ARROW}</div>)}
+                                (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
                         </div>
-
-
                     </div>
 
 
@@ -705,7 +711,7 @@ export function Portal({portalFileName, view}) {
 
 
                     { /* set repository[SCR_DOMAIN] and force showing fresh window  }
-                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(getFile('domain'),(a)=>{store(SCR_DOMAIN,a);setMode(mode+1);}); return setMode(MODE_SAVE)})}>Init
+                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(getFile('domain'), updateDomainWindow }); return setMode(MODE_SAVE)})}>Init
                         <input key="hidden" className="HIDE"></input>
                     </button>          
                     &nbsp;&nbsp;

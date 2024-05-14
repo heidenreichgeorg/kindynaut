@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { processHTML,startAPI } from './extract.js';
+import { getFrom90025,processHTML } from './extract.js';
 
 // read and write
 // https://www.geeksforgeeks.org/how-to-read-and-write-json-file-using-node-js/
@@ -137,7 +137,6 @@ export function handleStore(fileName) {
 
 export function initDomain(domain,notifyCB) {   
 
-    let result=[];
 
     // GET  DOMAIN from NODE JS GCP_DOMAINROOT/domain
     // SECURITY fileName may carry markup
@@ -159,6 +158,8 @@ export function initDomain(domain,notifyCB) {
         let server=process.env.REACT_APP_NODE;
         let s_port=process.env.REACT_APP_SERVER;
         let url = `http://${server}:${s_port}/INIT?domain=`+domain;
+        let result=[];
+
         console.log("0304 initDomain INIT url="+url);
 
         try {
@@ -446,7 +447,7 @@ export function showLetter(file,addTicket,clientDir) {
                 let aLines=fr.result.split('\n');
                 console.log("0684-LOAD: READ FILE CONTENT WITH "+aLines.length+ " LINES.");                          
                 
-                startAPI();
+                getFrom90025();
 
                 let summary=processHTML(fr.result.split('\n'));
                 console.log("0686 LOAD: PROCESSED HTML FILE CONTENT ");  
@@ -527,7 +528,7 @@ export function dragARIS(ev,jAris) {
 export function dragOverHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
-    console.log('0610 File(s) in drop zone'); //+JSON.stringify(ev.dataTransfer.items[0]));
+    console.log('0618 File(s) in drop zone'); //+JSON.stringify(ev.dataTransfer.items[0]));
 }
 
 
