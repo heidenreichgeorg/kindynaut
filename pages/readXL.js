@@ -1,15 +1,13 @@
     // NODE ONLY
-    // node pages/server.js
 
-// const fs = require('node:fs/promises');
 import { writeFile } from 'node:fs/promises'
+
+import { sane } from './node_utils.js'
 
 /* in NODE.JS it looks like that: */
 import pkg from 'xlsx'; // CommonJS
 const { readFile,utils } = pkg;
 
-/* in REACT it looks like that: */
-//import { readFile,utils } from 'xlsx'
 
 const SEP = ',';
 let tableMap={};
@@ -175,12 +173,12 @@ async function writeTable(filePath,csvTable) {
     console.log("0470 writeTable to "+filePath);
     await writeFile(filePath, csvTable);
   } catch (err) {
-        console.log("0471 writeTable "+err);
+        console.log("0471 writeTable to "+filePath+":"+err);
   }
 }
 
 function grid(arrStr) {
-    return arrStr.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230);
+    return arrStr.map((col)=>((col+'               ').substring(0,14))).join('|').substring(0,255);
 }
 
 // OLD

@@ -70,7 +70,7 @@ export function strSymbol(pat) {
 export function handleHBook(fileName) {        
     // SECURITY fileName may carry markup
 
-    console.log("0692 handleHBook "+fileName)
+    console.log("0692 handleHBook file="+fileName)
     
     const rqHeaders = {  'Accept': 'application/octet-stream',
                         'Access-Control-Allow-Origin':'*',

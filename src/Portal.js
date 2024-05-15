@@ -689,7 +689,7 @@ export function Portal({portalFileName, view}) {
                    
 
                     {/* UPLOAD HBOOK Button */}
-                    <button key="HBook" className="FILEBOX" onClick={(() => { return handleHBook();})}>Upload HBook &nbsp;&nbsp;
+                    <button key="HBook" className="FILEBOX">Upload HBook &nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
                         <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
                     </button>          
