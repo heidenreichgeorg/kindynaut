@@ -168,7 +168,11 @@ export function initDomain(domain,notifyCB) {
             .then((json) => {Object.keys(json).forEach((index)=>{ 
                 try {   
                         console.log("0308 initDomain:"+index+" "+json[index]); 
-                        result.push(json[index]) 
+                        try {
+                            
+                            result.push(JSON.parse(json[index]));
+
+                        } catch(e) { console.err("0307 initDomain Cannot parse "+json[index]+ "+err"); }
                 } 
                 catch(e){console.log("0309 initDomain:"+index+" in "+JSON.stringify(json)+"   "+e); }   });
 
