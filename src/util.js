@@ -62,6 +62,15 @@ export function strSymbol(pat) {
 }
 
 
+export  function jGrid(jThing) {
+    let arrStr=Object.keys(jThing).map((k)=>(jThing[k]));
+    let result = arrStr.map((col)=>((col+'                ').substring(0,16))).join('|').substring(0,300);
+    console.log("jGRID="+result);
+    return result;
+}
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // read and obtain XL file from server
 // need to start NODE server first
@@ -284,25 +293,18 @@ function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
     console.log("0760 makeRiskTable AnalyzedRisks="+JSON.stringify(jControlled))
 
     let justification=Object.keys(jControlled).map((key,aris)=>({
-
         'id':aris,
-
         'name':'DomainSpecificHazard',
-
         'component':jControlled[key][0].comp,
-
         'function':{
             'id':functionId,
             'name':jControlled[key][0].func
         },
-
         'harm':{
             'id':harmId++,
             'name':jControlled[key][0].harm
         },
-
-        'genericHazards':jControlled[key].map((dosh)=>(dosh.hazard)),
-        
+        'genericHazards':jControlled[key].map((dosh)=>(dosh.hazard)),        
         'managedRisks':[{
             'id':(idMar++), 
             'name':(jControlled[key][0].hazardousSituation+';'+jControlled[key][0].cause+';'+jControlled[key][0].code)

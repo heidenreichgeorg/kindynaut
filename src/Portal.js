@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { arisIdentifier,dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { arisIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 
 import { useState, useEffect } from 'react';
 
@@ -218,8 +218,8 @@ export function Portal({portalFileName, view}) {
 
 
     function compare(ticket,area) {
-    }
-    /*
+    
+    
         // add risk in FILE to DOMAIN risks    
         console.log("0880 Portal.compare "+ticket+ "  "+area); 
 
@@ -228,15 +228,15 @@ export function Portal({portalFileName, view}) {
 
         // FILE list content for each key
         let fileKeys = {}        
-        jRawList.forEach((risk)=>{let id=arisIdentifier(risk); if(fileKeys[id].length>0) fileKeys[id].push(risk); else fileKeys[id]=[risk] })
-        console.log("0888 "+JSON.stringify(fileKeys));
+        jRawList.forEach((risk)=>{let id=arisIdentifier(risk); if(fileKeys[id] && fileKeys[id].length>0) fileKeys[id].push(risk); else fileKeys[id]=[risk] })
+        console.log("0888\n"+Object.keys(fileKeys).map((key)=>(fileKeys[key].map((d)=>jGrid(d)))).join('\n'));
         
-
+    
         // DOMAIN list domain content for each key
 
         return ticket;
     }
-*/
+
 
     function updateDomainWindow(arrDomain) {                    
         let strTransfer=JSON.stringify(arrDomain);
