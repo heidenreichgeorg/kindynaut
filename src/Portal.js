@@ -710,16 +710,11 @@ export function Portal({portalFileName, view}) {
                     <div className="FIELD MOAM" key="buttons"></div>
 
 
-                    { /* set repository[SCR_DOMAIN] and force showing fresh window  }
-                    <button key="Init" className="RISKBACK" onClick={(() => {  initDomain(getFile('domain'), updateDomainWindow }); return setMode(MODE_SAVE)})}>Init
-                        <input key="hidden" className="HIDE"></input>
-                    </button>          
-                    &nbsp;&nbsp;
-                    { &nbsp;&nbsp; */ }
-                    
+
+
                     {
-                    /* SAVE To DOMAIN Button */
-                    (LEARN_DOMAIN) ?
+                    /* ONLY in DOMAIN mode: UPDATE = SAVE To DOMAIN Button */
+                    (LEARN_DOMAIN && focus==FCS_DOMAIN) ?
                         (<div>
                         <button key="Archive" className="RISKBACK BUTTON" onClick={(() => { return updateDomain(repository[SCR_DOMAIN],getFile('domain'));})}>Update domain
                             <input key="hidden" className="HIDE"></input>
@@ -730,6 +725,9 @@ export function Portal({portalFileName, view}) {
                     }
 
                     &nbsp;&nbsp;
+
+                    { (focus==FCS_RISKS) ?
+                    (
                     <button key="Export" id={KN_DOWNLOAD} className="RISKBACK BUTTON" >
                         <div key="button" className="FIELD" 
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
@@ -737,6 +735,10 @@ export function Portal({portalFileName, view}) {
                         </div>
                         <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
                     </button>          
+                    ):''
+                    }
+
+
                     &nbsp;                   
                 </div>    
             </div>
