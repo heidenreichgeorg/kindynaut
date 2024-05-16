@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { arisIdentifier,dragOverHandler, dropHandler, initDomain, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 
 import { useState, useEffect } from 'react';
 
@@ -186,7 +186,7 @@ export function Portal({portalFileName, view}) {
 
 
     function addDOMAINRisk(ticket,area) {
-        // add risk to DOMAIN list    
+        // add risk in this FILE to DOMAIN list    
         console.log("0880 Portal.addDOMAINRisk "+ticket+ "  "+area); 
 
         let jRawList=filterInstance(ticket,area);
@@ -213,6 +213,30 @@ export function Portal({portalFileName, view}) {
 
         return ticket;
     }
+
+
+
+
+    function compare(ticket,area) {
+    }
+    /*
+        // add risk in FILE to DOMAIN risks    
+        console.log("0880 Portal.compare "+ticket+ "  "+area); 
+
+        let jRawList=filterInstance(ticket,area);
+
+
+        // FILE list content for each key
+        let fileKeys = {}        
+        jRawList.forEach((risk)=>{let id=arisIdentifier(risk); if(fileKeys[id].length>0) fileKeys[id].push(risk); else fileKeys[id]=[risk] })
+        console.log("0888 "+JSON.stringify(fileKeys));
+        
+
+        // DOMAIN list domain content for each key
+
+        return ticket;
+    }
+*/
 
     function updateDomainWindow(arrDomain) {                    
         let strTransfer=JSON.stringify(arrDomain);
@@ -613,11 +637,18 @@ export function Portal({portalFileName, view}) {
                         <div  key={"sep0"+area} className="FLEX RIM" ></div>                            
                         <div className="{ LEARN_DOMAIN ? 'KNLINE NONE' : 'NOTABLE' }"  key={"sep1row"+area}>
                             <div className="KNLINE"  key={"sep0div"+area}>
-                            <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
-                            { (ticket===SCR_DOMAIN) ? "":
-                                (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
+                                <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
+                                { (ticket===SCR_DOMAIN) ? "":
+                                        (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
+                                </div>
+                            </div>
+
+                            <div className="{ LEARN_DOMAIN ? 'KNLINE NONE' : 'NOTABLE' }"  key={"sep2row"+area}>
+                                <div className="KNLINE"  key={"sep0div"+area}>
+                                { (ticket===SCR_DOMAIN) ? "":
+                                        (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{compare(ticket,area);}}>Compare</div>)}
+                            </div>
                         </div>
-                    </div>
 
 
                     <div className="KNLINE NONE">

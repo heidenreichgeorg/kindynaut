@@ -353,7 +353,7 @@ function symbol1(s) { return s }
 
 
 
-function arisIdentifier(jAris) {
+export function arisIdentifier(jAris) {
     let c=symbol1(nowandthen(jAris.comp));
     let f=symbol1(nowandthen(jAris.func));
     let a=symbol1(nowandthen(jAris.cause));

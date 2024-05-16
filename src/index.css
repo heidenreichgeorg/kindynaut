@@ -45,7 +45,7 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .SWITCH   {                   padding: 1px; border: none; font-size: 1em; font-weight:400;  } 
 .BIGCELL  {                   padding: 1px;               float: left; color:inherit;min-height: 48px; font-family: inherit; font-size: 0.8em; font-weight:400; text-align: center; background-color: inherit; } 
 .BUTTON   { color: white; border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); padding: 2px; border: solid 2px; font-size : 1.1em;
-			text-align: center;	width : 328px; height : 30px; }
+			text-align: center;	width : 255px; height : 30px; }
 .HIDE	  { display:none; }
 .FONT24   { font-size: 24px; }
 .PAGE     { break-before: always;  page-break-before: always; display: block; } 
