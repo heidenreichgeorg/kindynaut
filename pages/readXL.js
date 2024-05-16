@@ -8,6 +8,31 @@ import { sane } from './node_utils.js'
 import pkg from 'xlsx'; // CommonJS
 const { readFile,utils } = pkg;
 
+/* EXAMPLE output
+
+0406 READ workbook line1/(162) 
+
+    {"Evaluation of Functions, Hazards, Risks and Measures":"F#",
+     "__EMPTY":"Function",
+     "__EMPTY_1":"",
+     "__EMPTY_2":"H#",
+     "__EMPTY_3":"Hazard", // prefix of Hazardous
+     "__EMPTY_4":"C#",
+     "__EMPTY_5":"Effect",
+     "__EMPTY_6":"Hazardous",
+     "Denali, VA1XX":"",
+     "__EMPTY_7":"Pre/Post",
+     "__EMPTY_8":"Initial",
+     "__EMPTY_9":"M#",
+     "__EMPTY_10":"",
+     "__EMPTY_11":"Measures",
+     "__EMPTY_12":"Residual",
+     "__EMPTY_13":""}
+
+*/
+
+// ISSUE page-break within the same risk crashes the column assignment
+
 
 const SEP = ',';
 let tableMap={};
@@ -18,8 +43,9 @@ export function openHBook(fileName) {
 
     let saneFileName=sane(fileName);
 
+    // colBuffer represents the current logical line, may span across pages
     // colBuffer is the list of columns of the current RISK
-    const columnsHBook=['','','','','','','','','','','','','','','','','','']
+    const columnsHBook=['','','','','','','','','','','','','','','','','','','']
     let colBuffer=columnsHBook;
 
     // list of consolidated colBuffer values
@@ -45,8 +71,8 @@ export function openHBook(fileName) {
             if(jTable){
                 if(sheetNumber>=0) { 
                     jTable.forEach((jLine,row)=>{
-                        //console.log("0406 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(jLine).substring(0,100));
                         const keyNames = Object.keys(jLine);
+                        //console.log("0406 READ workbook line"+row+"/("+sheetNumber+") ["+keyNames.join(' ')+"] "+JSON.stringify(jLine));
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
                         //console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
                         definedColumns=transferLine(comps,definedColumns);
@@ -58,7 +84,7 @@ export function openHBook(fileName) {
         console.log("0401 READ workbook from  "+saneFileName+ "  "+err)
        
     }
-    //console.log(result.join('\n\n'))
+    
     writeTable('c:/temp/csvTable.csv',result.join('\n'));
     return result; // previous risk only
 
@@ -85,10 +111,13 @@ export function openHBook(fileName) {
                         // remember column index for each defined columns
                         if(column.startsWith('F#')) tableMap.FuncNum=col;
                         if(column.startsWith('Function')) tableMap.Function=col;
-                        if(column.startsWith('H#')) tableMap.HarmNum=col;
-                        if(column.startsWith('Hazard')) tableMap.Hazard=col;
+                        if(column.startsWith('H#')) tableMap.HarmNum=col;                        
                         if(column.startsWith('C#')) tableMap.CauseNum=col;
-                        if(column.startsWith('Hazardou')) tableMap.HazardousSituation=col;
+
+                        if(column.startsWith('Hazardous')) tableMap.HazardousSituation=col;
+                        else // prefix
+                            if(column.startsWith('Hazard')) tableMap.Hazard=col; 
+
                         if(column.startsWith('Effect')) tableMap.Target=col;
                         if(column.startsWith('Pre/Post')) tableMap.PrePost=col;
                         if(column.startsWith('Initial')) tableMap.Initial=col;
@@ -96,7 +125,7 @@ export function openHBook(fileName) {
                         if(column.startsWith('Measure')) tableMap.Measures=col;
                         if(column.startsWith('Residual')) tableMap.Residual=col;
                     });
-                    // console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+                     console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
                 }
 
                 // (B) else other text line
@@ -105,9 +134,8 @@ export function openHBook(fileName) {
 
             } else {
                 // (C) new risk line
-                // numeric comps0
-                // get rid of previous risk data            
-                //console.log("0430 "+colBuffer.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));            
+                // comps[0] is numeric
+                // get rid of previous risk data, save existing colBuffer, count new risk, initialize colBuffer with value of columnsHBook 
                 result.push(colBuffer.join(';')); // GH20240514 sane() function ??
                 
                 riskNumber++;
@@ -130,7 +158,7 @@ export function openHBook(fileName) {
 
         function store(comps) {
             if(!definedColumns) return;
-
+            
             let check=[];
             // sort each line into colBuffer	   
             Object.keys(tableMap).forEach((key,index)=>{
