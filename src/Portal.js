@@ -219,20 +219,36 @@ export function Portal({portalFileName, view}) {
 
     function compare(ticket,area) {
     
-    
         // add risk in FILE to DOMAIN risks    
         console.log("0880 Portal.compare "+ticket+ "  "+area); 
 
-        let jRawList=filterInstance(ticket,area);
-
+    
 
         // FILE list content for each key
+        // fileKeys{} is a list of risks for each key
+        // fileIndex is a sorted array of keys into alls risks (pre-arranged by keys in fileKeys)
+        let jRawList=filterInstance(ticket,area);
         let fileKeys = {}        
         jRawList.forEach((risk)=>{let id=arisIdentifier(risk); if(fileKeys[id] && fileKeys[id].length>0) fileKeys[id].push(risk); else fileKeys[id]=[risk] })
-        console.log("0888\n"+Object.keys(fileKeys).map((key)=>(fileKeys[key].map((d)=>jGrid(d)))).join('\n'));
-        
-    
+        let fileIndex = Object.keys(fileKeys).sort();
+
+
+        console.log("0888A\n"+fileIndex.map((key)=>(key+":\n"+(fileKeys[key].map((d)=>(jGrid(d)))).join('\n')   )).join('\n'));
+
+
+        let jListAris = repository[SCR_DOMAIN];
+        let domainKeys = {}        
+        jListAris.forEach((risk)=>{let id=arisIdentifier(risk); if(domainKeys[id] && domainKeys[id].length>0) domainKeys[id].push(risk); else domainKeys[id]=[risk] })
+            console.log("0888B\n"+JSON.stringify(domain));
+        let domainIndex = Object.keys(domainKeys).sort();
+
+        console.log("0888C\n"+domainIndex.map((key)=>(key+":\n"+(domainIndex[key].map((d)=>(jGrid(d)))).join('\n')   )).join('\n'));
         // DOMAIN list domain content for each key
+        // do the same for DOMAIN and merge the sorted key lists.
+        // then play the joint index file and tell whats here and whats there
+
+
+
 
         return ticket;
     }

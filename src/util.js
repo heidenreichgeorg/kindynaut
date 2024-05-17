@@ -27,15 +27,18 @@ export function timeSymbol() {
       (u.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5);
 }
 
-export function load(view) {
-    
-        let server=process.env.REACT_APP_NODE;
-        let s_port=process.env.REACT_APP_UI;
-        
-        if(server && server.length > SOME && s_port && s_port.length> SOME)
-            window.location.href = 'http://'+server+':'+s_port+'/?view='+view;
+
+export function arisIdentifier(jAris) {
+    let c=symbol1(nowandthen(jAris.comp));
+    let f=symbol1(nowandthen(jAris.func));
+    let a=symbol1(nowandthen(jAris.cause));
+    let h=symbol1(nowandthen(jAris.harm));
+    let o=symbol1(nowandthen(jAris.code));
+    let i=symbol1(nowandthen(jAris.hazardousSituation));
+    let result=c+f+a+h+o+i;
+    return result;
 }
-    
+
 
 export function strSymbol(pat) {
 
@@ -341,7 +344,7 @@ function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
  
 function nowandthen(ins) {
     let str=ins+(ins.split('').reverse().join(''))+ins;
-    let pos=[10,20,1,11,21,2,12,22,3,13,23,4,14,24,5,15,25,6,16,26];
+    let pos=[1,8,2,9,3,10,4,11,5,12,6,13,7,15];
     let pat=str+str+str+str+str+str+str+str+str;
     let result=''
     for(let index=0;(index<pos.length&&pat.length>pos[index]);index++) {
@@ -351,20 +354,19 @@ function nowandthen(ins) {
     return result;
 }
 
-function symbol1(s) { return s }
+function symbol1(s) { 
 
+    let sl=s.length
+    let result=""+s.charAt(sl/2);
 
+    for(let i=0;i<s.length-4;i+=2) {
+        let sum = (s.charCodeAt(i)+s.charCodeAt(i+1)+s.charCodeAt(i+2)+s.charCodeAt(i+3)) & 0x0F;
+        result = result + String.fromCharCode(65+sum);
+    }
 
-export function arisIdentifier(jAris) {
-    let c=symbol1(nowandthen(jAris.comp));
-    let f=symbol1(nowandthen(jAris.func));
-    let a=symbol1(nowandthen(jAris.cause));
-    let h=symbol1(nowandthen(jAris.harm));
-    let o=symbol1(nowandthen(jAris.code));
-    let i=symbol1(nowandthen(jAris.hazardousSituation));
-    let result=c+f+a+h+o+i;
     return result;
 }
+
 
 
 function makeJSONButton(idButton,url,fileName) { 
@@ -649,5 +651,15 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
     }
 }
 
+
+
+export function load(view) {
+    
+    let server=process.env.REACT_APP_NODE;
+    let s_port=process.env.REACT_APP_UI;
+    
+    if(server && server.length > SOME && s_port && s_port.length> SOME)
+        window.location.href = 'http://'+server+':'+s_port+'/?view='+view;
+}
 
 
