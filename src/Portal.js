@@ -652,15 +652,15 @@ export function Portal({portalFileName, view}) {
                    <div className="KNTABLE" key={"header"+area}>                                 
                         <div  key={"sep0"+area} className="FLEX RIM" ></div>                            
                         <div className="{ LEARN_DOMAIN ? 'KNLINE NONE' : 'NOTABLE' }"  key={"sep1row"+area}>
-                            <div className="KNLINE"  key={"sep0div"+area}>
-                                <div className="FILECOLOR FIELD LTXT">{arrFileNames[area]}</div>
+                            <div className="NONE"  key={"sep0div"+area}>
+                                <div className="FILECOLOR FIELD LTXT">{arrFileNames[area+1]}</div>
                                 { (ticket===SCR_DOMAIN) ? "":
                                         (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{addDOMAINRisk(ticket,area)}}>&#x21d1;</div>)}
                                 </div>
                             </div>
 
                             <div className="{ LEARN_DOMAIN ? 'KNLINE NONE' : 'NOTABLE' }"  key={"sep2row"+area}>
-                                <div className="KNLINE"  key={"sep0div"+area}>
+                                <div className="NONE"  key={"sep0div"+area}>
                                 { (ticket===SCR_DOMAIN) ? "":
                                         (<div className="FILEBACK FIELD BUTTON FONT24" onClick={(e)=>{compare(ticket,area);}}>Compare</div>)}
                             </div>
@@ -775,7 +775,7 @@ export function Portal({portalFileName, view}) {
 
                     { (focus==FCS_RISKS) ?
                     (
-                    <button key="Export" id={KN_DOWNLOAD} className="RISKBACK BUTTON" >
+                    <button key="Export" id={KN_DOWNLOAD} className="RISKBACK WIDEBUTTON" >
                         <div key="button" className="FIELD" 
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
                                 Export as Risk Table for 
