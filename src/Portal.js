@@ -1,11 +1,11 @@
 import { Buffer } from 'buffer';
-import { arisIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, handleHBook, handleStore, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { arisIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, handleHBook, handleStore, makeInternalFile, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 
 import { useState, useEffect } from 'react';
 
 // UP_ARROW &#x21d1;
 
-const LEARN_DOMAIN = true;
+const LEARN_DOMAIN = false;
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id: download to client as a device risk table, for re-editing
 const KN_EXPORT="KN_EXPORT"     // DOM button id: export as an Internal File as of VDE SPEC 90025 
@@ -790,7 +790,7 @@ export function Portal({portalFileName, view}) {
                         </button>          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
                         <div key="button" className="FIELD" 
-                            onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
+                            onClick={(() => { return makeInternalFile(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
                                 Export Internal File for 
                         </div>
                         <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        

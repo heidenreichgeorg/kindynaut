@@ -275,9 +275,7 @@ export function makeArchiveButton(url,domain) {
 }
 */
 
-export 
-
-function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
+export function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
     // create riskTable format
     let functionId=1;
     let harmId=1;
@@ -341,7 +339,73 @@ function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
 
     return makeJSONButton(idButton,url,fileName);
 }
- 
+
+export function makeInternalFile(idButton,arrListAris,rt_manufacturer,rt_project) {
+    // create riskTable format
+    let functionId=1;
+    let harmId=1;
+    let idMar=1;
+
+    // list all risk in domain repository    
+    //let arrListAris = repository[SCR_DOMAIN];
+
+    if(!arrListAris || arrListAris.length==0) return;
+
+    // separate DomainSpecificHazard from AnalyzedRisk structures
+    let jControlled={};
+    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)]=[]});
+    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)].push(jAris)});
+    
+    console.log("0760 makeInternalFile AnalyzedRisks="+JSON.stringify(jControlled))
+
+    let justification=Object.keys(jControlled).map((key,aris)=>({
+        'id':aris,
+        'name':'DomainSpecificHazard',
+        'component':jControlled[key][0].comp,
+        'function':{
+            'id':functionId,
+            'name':jControlled[key][0].func
+        },
+        'harm':{
+            'id':harmId++,
+            'name':jControlled[key][0].harm
+        },
+        'genericHazards':jControlled[key].map((dosh)=>(dosh.hazard)),        
+        'managedRisks':[{
+            'id':(idMar++), 
+            'name':(jControlled[key][0].hazardousSituation+';'+jControlled[key][0].cause+';'+jControlled[key][0].code)
+        }]
+    }))
+
+    let fileName="RISKTABLE"+rt_manufacturer+'_'+rt_project+".JSON";
+
+    let riskTable =  {
+        "id":1,
+        "name":"DeviceAssurance",
+        "justification":
+        {   "id":2,
+            "name":"Safety",
+            "file":fileName,
+            "manufacturer":rt_manufacturer,
+            "project":rt_project,
+            "version":"0.0",
+            "justification":justification
+        }
+    }
+
+    const strTable  = JSON.stringify(riskTable);
+    console.log("0762 makeInternalFile riskTable="+strTable)
+
+    // create a link to download that object to some client system
+    const blobContent = new Blob([strTable], { type: 'text/plain' });
+    const url = URL.createObjectURL(blobContent);
+
+    console.log("0764 makeInternalFile created URL")
+
+    return makeJSONButton(idButton,url,fileName);
+}
+
+
 function nowandthen(ins) {
     let str=ins+(ins.split('').reverse().join(''))+ins;
     let pos=[1,8,2,9,3,10,4,11,5,12,6,13,7,15];
