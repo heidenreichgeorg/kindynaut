@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react';
 
 const LEARN_DOMAIN = true;
 
-const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id
+const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id: download to client as a device risk table, for re-editing
+const KN_EXPORT="KN_EXPORT"     // DOM button id: export as an Internal File as of VDE SPEC 90025 
 
 const SCR_DOMAIN = "DOMAIN" // ticket name
 
@@ -122,6 +123,8 @@ export function Portal({portalFileName, view}) {
             {'project':'product',
             'clientDir':process.env.REACT_APP_CLIENT_DIR,
             'manufacturer':process.env.REACT_APP_MANUFACTURER,
+            'device':process.env.REACT_APP_DEVICE_NAME,
+            'version':process.env.REACT_APP_DEVICE_VERSION,
             'domain':process.env.REACT_APP_DOMAIN}) // common file data buffer
     const [mode, setMode ] = useState(MODE_SAVE);
     
@@ -578,8 +581,10 @@ export function Portal({portalFileName, view}) {
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
 
             <div id='caption' className="KNTABLE" key="infoCaption">
-            <div className="KNSEP" key="sepcm">&nbsp;</div><div className="FIELD" key="sepcmf">{getFile('manufacturer')}</div>
                 <div className="KNSEP" key="sepcd">&nbsp;</div><div className="FIELD" key="sepcdf">{getFile('domain')}</div>
+                <div className="KNSEP" key="sepcm">&nbsp;</div><div className="FIELD" key="sepcmf">{getFile('manufacturer')}</div>
+                <div className="KNSEP" key="sepcp">&nbsp;</div><div className="FIELD" key="sepcpf">{getFile('device')}</div>
+                <div className="KNSEP" key="sepcv">&nbsp;</div><div className="FIELD" key="sepcvf">{getFile('version')}</div>
             </div>
 
             <div id='selector' className="KNTABLE" key="selector">
@@ -775,13 +780,22 @@ export function Portal({portalFileName, view}) {
 
                     { (focus==FCS_RISKS) ?
                     (
-                    <button key="Export" id={KN_DOWNLOAD} className="RISKBACK WIDEBUTTON" >
+                    <div>
+                        <button key="Download" id={KN_DOWNLOAD} className="RISKBACK WIDEBUTTON" >
+                            <div key="button" className="FIELD" 
+                                onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
+                                    Download risk table for 
+                            </div>
+                            <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
+                        </button>          
+                        <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
                         <div key="button" className="FIELD" 
                             onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
-                                Export as Risk Table for 
+                                Export Internal File for 
                         </div>
                         <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
                     </button>          
+                    </div>
                     ):''
                     }
 
