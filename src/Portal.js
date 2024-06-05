@@ -132,7 +132,7 @@ export function Portal({portalFileName, view}) {
 
     // DOMAIN view - if no params are given
     // http://localhost:3000/public
-    let focus=FCS_DOMAIN;
+    let focus= LEARN_DOMAIN ? FCS_DOMAIN : FCS_FILES;
 
 
     // FILES view, if no view param is given
@@ -591,7 +591,7 @@ export function Portal({portalFileName, view}) {
 
                 <div className="KNSEP" key="sep0">&nbsp;</div>    
 
-                <div id='column1' className={focus===FCS_DOMAIN?"DOMCOLOR KNBUTTON":"KNBUTTON"}  key="column1">
+                <div id='column1' className={LEARN_DOMAIN ? (focus===FCS_DOMAIN?"DOMCOLOR KNBUTTON":"KNBUTTON"):"NOTABLE"}  key="column1">
                 <a href="?view=DOMAIN">DOMAIN</a></div>    
                 
                 <div id='column2' className={focus===FCS_RISKS?"RISKCOLOR KNBUTTON":"KNBUTTON"}  key="column2">
@@ -601,7 +601,7 @@ export function Portal({portalFileName, view}) {
                 <a href="?view=FILES">FILES</a></div>
             </div>
 
-            <div id='table0' className={view===FCS_DOMAIN?"KNMAIN":"NOTABLE"}  key="table0">
+            <div id='table0' className={(view===FCS_DOMAIN) && LEARN_DOMAIN ?"KNMAIN":"NOTABLE"}  key="table0">
                 <div id='column0' className="KNSEP0"  key="column0">
                     <div id='header0' className="DOMCOLOR KNBUTTON">Component</div> 
                     <div id='header1' className="DOMCOLOR KNBUTTON">Function</div> 
@@ -612,7 +612,7 @@ export function Portal({portalFileName, view}) {
                     <div id='header7' className="DOMCOLOR KNBUTTON">Harm</div> 
                 </div></div>
 
-                { (jListAris && view==FCS_DOMAIN) ? (
+                { (jListAris && view==FCS_DOMAIN) && LEARN_DOMAIN ? (
                     <div id='table1' className={view===FCS_DOMAIN?"KNMAIN":"NOTABLE"} key="table1">
 
                         <div id='column1' className="DOMCOLOR KNBUTTON"  key="column1">
