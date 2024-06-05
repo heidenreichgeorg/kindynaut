@@ -379,30 +379,34 @@ export function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
 }
 
 export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project,if_version) {
-    // create riskTable format
-    let functionId=1;
-    let harmId=1;
-    let idMar=1;
 
-    // list all risk in domain repository    
-    //let arrListAris = repository[SCR_DOMAIN];
+    // create string according to VDE SPEC 90025 internal format
 
     if(!arrListAris || arrListAris.length==0) return;
+   
+    console.log("0760 makeInternalFile AnalyzedRisks=#"+arrListAris.length)
 
-    // separate DomainSpecificHazard from AnalyzedRisk structures
-    let jControlled={};
-    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)]=[]});
-    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)].push(jAris)});
-    
-    console.log("0760 makeInternalFile AnalyzedRisks="+JSON.stringify(jControlled))
 
     let jComponent={}
     arrListAris.map((jAris)=>{jComponent[symbol1(jAris.comp)]=jAris.comp});
+
 
     let jFunction={}
     arrListAris.map((jAris)=>{jFunction[symbol1(jAris.func)]=jAris.func});
     
 
+    let jHazard={}
+    arrListAris.map((jAris)=>{jHazard[symbol1(jAris.hazard)]=jAris.hazard});
+    
+
+    let jHarm={}
+    arrListAris.map((jAris)=>{jHarm[symbol1(jAris.harm)]=jAris.harm});
+    
+
+    let jSituation={}
+    arrListAris.map((jAris)=>{jSituation[symbol1(jAris.hazardousSituation)]=jAris.hazardousSituation});
+    
+    // WHERE IS THE numeric identifier for each regsitry entry ??
 
     let fileName="INTERNALFILE"+if_manufacturer+'_'+if_project+".JSON";
 
@@ -426,10 +430,24 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
             "name":jFunction[x],
             "title":"Function"
         })),
-        "regHazard":[],
+        "regHazard":Object.keys(jHazard).map((x,id) => ({
+            "id":"HAZ"+id,
+            "name":jHazard[x],
+            "title":"Hazard"
+        })),
         "regEncodedHazard": [],
-        "regHarm": [], 
-        "regHazardousSituation": [],       
+        "regHarm": Object.keys(jHarm).map((x,id) => ({
+            "id":"HRM"+id,
+            "name":jHarm[x],
+            "title":"Harm"
+        })), 
+        "regHazardousSituation": Object.keys(jSituation).map((x,id) => ({
+            "id":"HAS"+id,
+            "name":jSituation[x],
+            "title":"HazardousSituation"
+            // cause unique
+            // code unique
+        })),       
         "regControlledRisk": [],
         "relSDA": []
     }
