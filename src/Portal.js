@@ -790,7 +790,7 @@ export function Portal({portalFileName, view}) {
                         </button>          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
                         <div key="button" className="FIELD" 
-                            onClick={(() => { return makeInternalFile(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project')) })}  >
+                            onClick={(() => { return makeInternalFile(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                 Export Internal File for 
                         </div>
                         <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
