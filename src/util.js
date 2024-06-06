@@ -388,25 +388,42 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
 
 
     let jComponent={}
-    arrListAris.map((jAris)=>{jComponent[symbol1(jAris.comp)]=jAris.comp});
+    let comp=0;
+    arrListAris.map((jAris)=>{jComponent[symbol1(jAris.comp)]={"name":jAris.comp,"title":"Component","id":"COM"+(comp++)}});
 
-
+    // create function registry
     let jFunction={}
-    arrListAris.map((jAris)=>{jFunction[symbol1(jAris.func)]=jAris.func});
+    let func=0;
+    arrListAris.map((jAris)=>{jFunction[symbol1(jAris.func)]={"name":jAris.func,"title":"Function","id":"FUN"+(func++)}});
     
 
+    // create hazard registry
     let jHazard={}
-    arrListAris.map((jAris)=>{jHazard[symbol1(jAris.hazard)]=jAris.hazard});
+    let hazd=0;
+    arrListAris.map((jAris)=>{jHazard[symbol1(jAris.hazard)]={"name":jAris.hazard,"title":"Hazard","id":"HAZ"+(hazd++)}});
     
 
+    // create harm registry
     let jHarm={}
-    arrListAris.map((jAris)=>{jHarm[symbol1(jAris.harm)]=jAris.harm});
+    let harm=0;
+    arrListAris.map((jAris)=>{jHarm[symbol1(jAris.harm)]={"name":jAris.harm,"title":"Harm","id":"HRM"+(harm++)}});
     
 
+    // create hazardous situation registry
     let jSituation={}
-    arrListAris.map((jAris)=>{jSituation[symbol1(jAris.hazardousSituation)]=jAris.hazardousSituation});
+    let hasi=0;
+    arrListAris.map((jAris)=>{jSituation[symbol1(jAris.hazardousSituation)]={"name":jAris.hazardousSituation,"title":"HazardousSituation","id":"HAS"+(hasi++)}});
     
-    // WHERE IS THE numeric identifier for each regsitry entry ??
+    let cori=0;
+    let arrCORI = arrListAris.map((jAris)=>({
+        "id":"RIT"+(cori++),
+        "title": "ControlledRisk",
+        "refComponent": jComponent[symbol1(jAris.comp)].id,
+        "refFunction":  jFunction[symbol1(jAris.func)].id,
+        "harm":  jHarm[symbol1(jAris.harm)],
+        "refHazard":  jHazard[symbol1(jAris.hazard)].id,
+        "regAnalyzedRisk":[]
+    }))
 
     let fileName="INTERNALFILE"+if_manufacturer+'_'+if_project+".JSON";
 
@@ -419,36 +436,14 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
             "version":if_version,
             "udi":123
         },
-        "regComponent":Object.keys(jComponent).map((x,id) => ({
-            "id":"COM"+id,
-            "name":jComponent[x],
-            "title":"Component"
-        })),
+        "regComponent":Object.keys(jComponent).map((x)=>(jComponent[x])),
         "regContext":[],
-        "regFunction":Object.keys(jFunction).map((x,id) => ({
-            "id":"FUN"+id,
-            "name":jFunction[x],
-            "title":"Function"
-        })),
-        "regHazard":Object.keys(jHazard).map((x,id) => ({
-            "id":"HAZ"+id,
-            "name":jHazard[x],
-            "title":"Hazard"
-        })),
+        "regFunction":Object.keys(jFunction).map((x)=>(jFunction[x])),
+        "regHazard":Object.keys(jHazard).map((x)=>(jHazard[x])),
         "regEncodedHazard": [],
-        "regHarm": Object.keys(jHarm).map((x,id) => ({
-            "id":"HRM"+id,
-            "name":jHarm[x],
-            "title":"Harm"
-        })), 
-        "regHazardousSituation": Object.keys(jSituation).map((x,id) => ({
-            "id":"HAS"+id,
-            "name":jSituation[x],
-            "title":"HazardousSituation"
-            // cause unique
-            // code unique
-        })),       
-        "regControlledRisk": [],
+        "regHarm": Object.keys(jHarm).map((x)=>(jHarm[x])),
+        "regHazardousSituation":Object.keys(jSituation).map((x)=>(jSituation[x])),      
+        "regControlledRisk": arrCORI,
         "relSDA": []
     }
 
