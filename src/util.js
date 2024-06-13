@@ -413,17 +413,50 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     let jSituation={}
     let hasi=0;
     arrListAris.map((jAris)=>{jSituation[symbol1(jAris.hazardousSituation)]={"name":jAris.hazardousSituation,"title":"HazardousSituation","id":"HAS"+(hasi++)}});
-    
+
+    let aris=0;
     let cori=0;
+    let rit_id="RIT"+(cori++);
+
     let arrCORI = arrListAris.map((jAris)=>({
-        "id":"RIT"+(cori++),
+        "id":rit_id,
         "title": "ControlledRisk",
         "refComponent": jComponent[symbol1(jAris.comp)].id,
         "refFunction":  jFunction[symbol1(jAris.func)].id,
         "harm":  jHarm[symbol1(jAris.harm)],
         "refHazard":  jHazard[symbol1(jAris.hazard)].id,
-        "regAnalyzedRisk":[]
+        "regAnalyzedRisk":[
+            {
+                "id": "ARI"+(aris++),
+                "title": "AnalyzedRisk",
+                "refCOR": rit_id,
+                "refHS": jSituation[symbol1(jAris.hazardousSituation)],
+                "refHarm": jHarm[symbol1(jAris.harm)],
+                "regTarget": ["Patient", " User", " Service Personnel"],
+                "risk": {
+                    "severity": "0",
+                    "probability": "-",
+                    "riskRegion": "-"
+                },
+                "refRiskSDA": "0",
+                "residualRisk": {
+                    "severity": "0",
+                    "probability": "-",
+                    "riskRegion": "_"
+                }
+
+            }
+        ] 
     }))
+
+
+
+// in the general regAnalyzedRisk array there is one or multiple ARIS listed in regAnalyzedRisk of some CORI
+// the fundamental assumption when generating a list of DOSH with potential controls
+// is that each DOSH has its own analysis and its won mitigation
+// still supüporting the idea that mitigations can combine mitigations 
+// notably when  the hazardous situation is the same
+
 
     let fileName="INTERNALFILE"+if_manufacturer+'_'+if_project+".JSON";
 
