@@ -262,7 +262,7 @@ export function makeArchiveButton(url,domain) {
         a.href = url;
         a.download = "ARCHIVE_"+domain+".JSON";
         a.style.display = 'none'; // was block
-        a.className = "key";
+        a.className = "FIELD MOAM";
         a.innerHTML = "Downloading...";
 
         replaceChild(a,"btnArchive");
@@ -379,7 +379,7 @@ function makeJSONButton(idButton,url,fileName) {
             // file name security
             a.download = fileName;
             a.style.display = 'block'; // was none
-            a.className = "key";
+            a.className = "FIELD MOAM" ; // was "key";
             a.innerHTML = "Download";
             downloadButton.replaceChild(a, downloadButton.childNodes[0]);(a); 
             console.log("0768 makeJSONButton");

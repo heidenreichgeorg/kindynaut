@@ -150,6 +150,7 @@ export function Portal({portalFileName, view}) {
         let envelope = document.getElementById('envelope')
         let letter=document.createElement('div')
         letter.innerHTML=content
+        letter.className = "FIELD MOAM";
         letter.setAttribute('id',ticket)
         letter.setAttribute('key',fileName)
         envelope.appendChild(letter)

@@ -53,6 +53,8 @@ function handleJSONSave(jContent) {
   if(anchor) {
       const newDiv = document.createElement('div');
       newDiv.innerText = b64encoded;
+      newDiv.className = "FIELD MOAM";
+
       anchor.appendChild(newDiv);
   }
   */
