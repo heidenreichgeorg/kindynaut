@@ -40,6 +40,16 @@ export function arisIdentifier(jAris) {
 }
 
 
+export function doshIdentifier(jAris) {
+    let c=symbol1(jAris.comp)
+    let f=symbol1(jAris.func)
+    let h=symbol1(jAris.harm)
+    let z=symbol1(jAris.hazard)
+    let result=c+f+h+z;
+    return result;
+}
+
+
 export function strSymbol(pat) {
 
     let seed = process.env.REACT_APP_ENCODING_SEED;
@@ -63,6 +73,34 @@ export function strSymbol(pat) {
     }
     return out.join('');
 }
+
+
+
+function nowandthen(ins) {
+    let str=ins+(ins.split('').reverse().join(''))+ins;
+    let pos=[1,8,2,9,3,10,4,11,5,12,6,13,7,15];
+    let pat=str+str+str+str+str+str+str+str+str;
+    let result=''
+    for(let index=0;(index<pos.length&&pat.length>pos[index]);index++) {
+        let el=pat[pos[index]];
+        if(el && el!==' ') result=result+el;
+    }
+    return result;
+}
+
+function symbol1(s) { 
+
+    let sl=s.length
+    let result=""+s.charAt(sl/2);
+
+    for(let i=0;i<s.length-4;i+=2) {
+        let sum = (s.charCodeAt(i)+s.charCodeAt(i+1)+s.charCodeAt(i+2)+s.charCodeAt(i+3)) & 0x0F;
+        result = result + String.fromCharCode(65+sum);
+    }
+
+    return result;
+}
+
 
 
 export  function jGrid(jThing) {
@@ -275,9 +313,7 @@ export function makeArchiveButton(url,domain) {
 }
 */
 
-export 
-
-function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
+export function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
     // create riskTable format
     let functionId=1;
     let harmId=1;
@@ -341,30 +377,119 @@ function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
 
     return makeJSONButton(idButton,url,fileName);
 }
- 
-function nowandthen(ins) {
-    let str=ins+(ins.split('').reverse().join(''))+ins;
-    let pos=[1,8,2,9,3,10,4,11,5,12,6,13,7,15];
-    let pat=str+str+str+str+str+str+str+str+str;
-    let result=''
-    for(let index=0;(index<pos.length&&pat.length>pos[index]);index++) {
-        let el=pat[pos[index]];
-        if(el && el!==' ') result=result+el;
+
+export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project,if_version) {
+
+    // create string according to VDE SPEC 90025 internal format
+
+    if(!arrListAris || arrListAris.length==0) return;
+   
+    console.log("0760 makeInternalFile AnalyzedRisks=#"+arrListAris.length)
+
+
+    let jComponent={}
+    let comp=0;
+    arrListAris.map((jAris)=>{jComponent[symbol1(jAris.comp)]={"name":jAris.comp,"title":"Component","id":"COM"+(comp++)}});
+
+    // create function registry
+    let jFunction={}
+    let func=0;
+    arrListAris.map((jAris)=>{jFunction[symbol1(jAris.func)]={"name":jAris.func,"title":"Function","id":"FUN"+(func++)}});
+    
+
+    // create hazard registry
+    let jHazard={}
+    let hazd=0;
+    arrListAris.map((jAris)=>{jHazard[symbol1(jAris.hazard)]={"name":jAris.hazard,"title":"Hazard","id":"HAZ"+(hazd++)}});
+    
+
+    // create harm registry
+    let jHarm={}
+    let harm=0;
+    arrListAris.map((jAris)=>{jHarm[symbol1(jAris.harm)]={"name":jAris.harm,"title":"Harm","id":"HRM"+(harm++)}});
+    
+
+    // create hazardous situation registry
+    let jSituation={}
+    let hasi=0;
+    arrListAris.map((jAris)=>{jSituation[symbol1(jAris.hazardousSituation)]={"name":jAris.hazardousSituation,"title":"HazardousSituation","id":"HAS"+(hasi++)}});
+
+    let aris=0;
+    let cori=0;
+    let rit_id="RIT"+(cori++);
+
+    let arrCORI = arrListAris.map((jAris)=>({
+        "id":rit_id,
+        "title": "ControlledRisk",
+        "refComponent": jComponent[symbol1(jAris.comp)].id,
+        "refFunction":  jFunction[symbol1(jAris.func)].id,
+        "harm":  jHarm[symbol1(jAris.harm)],
+        "refHazard":  jHazard[symbol1(jAris.hazard)].id,
+        "regAnalyzedRisk":[
+            {
+                "id": "ARI"+(aris++),
+                "title": "AnalyzedRisk",
+                "refCOR": rit_id,
+                "refHS": jSituation[symbol1(jAris.hazardousSituation)],
+                "refHarm": jHarm[symbol1(jAris.harm)],
+                "regTarget": ["Patient", " User", " Service Personnel"],
+                "risk": {
+                    "severity": "0",
+                    "probability": "-",
+                    "riskRegion": "-"
+                },
+                "refRiskSDA": "0",
+                "residualRisk": {
+                    "severity": "0",
+                    "probability": "-",
+                    "riskRegion": "_"
+                }
+
+            }
+        ] 
+    }))
+
+
+
+// in the general regAnalyzedRisk array there is one or multiple ARIS listed in regAnalyzedRisk of some CORI
+// the fundamental assumption when generating a list of DOSH with potential controls
+// is that each DOSH has its own analysis and its won mitigation
+// still supüporting the idea that mitigations can combine mitigations 
+// notably when  the hazardous situation is the same
+
+
+    let fileName="INTERNALFILE"+if_manufacturer+'_'+if_project+".JSON";
+
+    let internalFile =  {
+        "id":1,
+        "name":"DeviceAssurance",
+        "device":
+        {   "entity":if_manufacturer,
+            "project":if_project,
+            "version":if_version,
+            "udi":123
+        },
+        "regComponent":Object.keys(jComponent).map((x)=>(jComponent[x])),
+        "regContext":[],
+        "regFunction":Object.keys(jFunction).map((x)=>(jFunction[x])),
+        "regHazard":Object.keys(jHazard).map((x)=>(jHazard[x])),
+        "regEncodedHazard": [],
+        "regHarm": Object.keys(jHarm).map((x)=>(jHarm[x])),
+        "regHazardousSituation":Object.keys(jSituation).map((x)=>(jSituation[x])),      
+        "regControlledRisk": arrCORI,
+        "relSDA": []
     }
-    return result;
-}
 
-function symbol1(s) { 
+    const strTable  = JSON.stringify(internalFile);
+    console.log("0762 makeInternalFile strTable="+strTable)
 
-    let sl=s.length
-    let result=""+s.charAt(sl/2);
+    // create a link to download that object to some client system
+    const blobContent = new Blob([strTable], { type: 'text/plain' });
+    const url = URL.createObjectURL(blobContent);
 
-    for(let i=0;i<s.length-4;i+=2) {
-        let sum = (s.charCodeAt(i)+s.charCodeAt(i+1)+s.charCodeAt(i+2)+s.charCodeAt(i+3)) & 0x0F;
-        result = result + String.fromCharCode(65+sum);
-    }
+    console.log("0764 makeInternalFile created URL")
 
-    return result;
+    return makeJSONButton(idButton,url,fileName);
 }
 
 
