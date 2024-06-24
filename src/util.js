@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer';
 import { getFrom90025,processHTML } from './extract.js';
 
+import { convert } from "./xml_rdfa2html.js"
+
 // read and write
 // https://www.geeksforgeeks.org/how-to-read-and-write-json-file-using-node-js/
 
@@ -493,7 +495,7 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     return makeURLButton(idButton,url,fileName);
     */
 
-    return  functionButton(idButton,strTable,fileName,"Convert",(str,fName)=>{{ console.log("CALL "+fName+" "+str.length+ " CHARS") }}) 
+    return  functionButton(idButton,strTable,fileName,"Convert",(str,fileName)=>{  convert(str,fileName) }) 
 
 
 }

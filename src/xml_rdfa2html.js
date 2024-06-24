@@ -219,6 +219,21 @@ function start() {
     });
 }
 
+export function convert(strTable,filename) {
+
+        let jRiskFile = JSON.parse(strTable);
+        console.log('convert RISK FILE CONTENT from JSON');
+        console.log();
+        //console.log(JSON.stringify(jRiskFile));
+
+        let strBody = prepareBODY(jRiskFile);
+
+        console.log('convert RISK FILE CONTENT as exchange file');
+        console.log();
+        //console.log(strExportFile); 
+
+        save(jRiskFile,prefix+filename,'./'+getDate()+'_exchangeFile.html',strBody);
+}
 
 function saveCB(digest,strOutFile,strOut) { 
 
@@ -431,10 +446,6 @@ function prepareAllDOMAIN_SPECIFIC_HAZARDS(jRiskFile) {
 
 function prepareCOR(jRiskFile,jRIT) {
   
-  //let did = jRIT.craftsMDid;
-  //let nid = (did>=iRIT)?1:(did+1); // next  RIT
-  //let pid = (did<=1)?iRIT:(did-1); // previous RIT
-
   let componentId = jRIT.refComponent;
   let componentName = "Component";
   let jComponent = findByKey(getComponents(jRiskFile),'id',componentId);
@@ -446,6 +457,7 @@ function prepareCOR(jRiskFile,jRIT) {
   let funcId = jRIT.refFunction; 
   let jFunc = findByKey(getFuncs(jRiskFile),'id',funcId);
   let funcName = "Function";
+  let fRef = null; 
   if(jFunc) {
     funcName = jFunc?jFunc.name:null;
     fRef = jFunc?jFunc.craftsMDid:null;
