@@ -153,6 +153,7 @@ export function Portal({portalFileName, view}) {
         let envelope = document.getElementById('envelope')
         let letter=document.createElement('div')
         letter.innerHTML=content
+        letter.className = "FIELD MOAM";
         letter.setAttribute('id',ticket)
         letter.setAttribute('key',fileName)
         envelope.appendChild(letter)
@@ -787,7 +788,9 @@ export function Portal({portalFileName, view}) {
                                     Download risk table for 
                             </div>
                             <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="project" key="project"></input>                                                                        
-                        </button>          
+                        </button>        
+                        
+                          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
                         <div key="button" className="FIELD" 
                             onClick={(() => { return makeInternalFile(KN_EXPORT,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >

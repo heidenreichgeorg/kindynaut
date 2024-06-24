@@ -137,6 +137,7 @@ function save(strOut,ext) {
      a.style = 'display: none';
      let url=makeTextFile(strOut);
      a.href = url;
+     a.className = "FIELD MOAM";
      a.download = sFile;
      a.click();
      window.URL.revokeObjectURL(url);
@@ -168,6 +169,7 @@ function processLines(aLines) {
     // integrate HTML text into DOM
      function buildHTML(html) {
            let tmp = document.createElement('DIV');
+           tmp.className = "FIELD MOAM";
            tmp.innerHTML = html;
          return tmp;
     }

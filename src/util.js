@@ -300,7 +300,7 @@ export function makeArchiveButton(url,domain) {
         a.href = url;
         a.download = "ARCHIVE_"+domain+".JSON";
         a.style.display = 'none'; // was block
-        a.className = "key";
+        a.className = "FIELD MOAM";
         a.innerHTML = "Downloading...";
 
         replaceChild(a,"btnArchive");
@@ -375,7 +375,7 @@ export function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
 
     console.log("0764 makeRiskTable created URL")
 
-    return makeJSONButton(idButton,url,fileName);
+    return makeURLButton(idButton,url,fileName);
 }
 
 export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project,if_version) {
@@ -483,19 +483,44 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     const strTable  = JSON.stringify(internalFile);
     console.log("0762 makeInternalFile strTable="+strTable)
 
-    // create a link to download that object to some client system
     const blobContent = new Blob([strTable], { type: 'text/plain' });
+
+    /*
+    // create a link to download that object to some client system
     const url = URL.createObjectURL(blobContent);
 
     console.log("0764 makeInternalFile created URL")
+    return makeURLButton(idButton,url,fileName);
+    */
 
-    return makeJSONButton(idButton,url,fileName);
+    return  functionButton(idButton,strTable,fileName,"Convert",(str,fName)=>{{ console.log("CALL "+fName+" "+str.length+ " CHARS") }}) 
+
+
 }
 
 
 
-function makeJSONButton(idButton,url,fileName) { 
-    console.log("0766 makeJSONButton "+url);
+function functionButton(idButton,strTable,fileName,functionName,functionCode) { 
+    
+    try {
+        const functionButton=document.getElementById(idButton);
+        if(functionButton) {
+            let a = document.createElement('div');
+            a.style.display = 'block'; // was none
+            a.className = "FIELD MOAM" ; // was "key";
+            a.innerHTML = functionName;
+            a.onclick = (e) => { functionCode(strTable,functionName); }
+            functionButton.replaceChild(a, functionButton.childNodes[0])
+            console.log("0768 functionButton  "+functionName);
+        } else console.log("0767 functionButton ("+functionName+") file("+fileName+"), NO button control");
+    } catch(err) { console.log("0765 functionButton ("+functionName+") file("+fileName+"): "+err);}
+    return functionName;
+}
+
+
+
+function makeURLButton(idButton,url,fileName) { 
+    console.log("0766 makeURLButton "+url);
     try {
         const downloadButton=document.getElementById(idButton);
         if(downloadButton) {
@@ -504,12 +529,12 @@ function makeJSONButton(idButton,url,fileName) {
             // file name security
             a.download = fileName;
             a.style.display = 'block'; // was none
-            a.className = "key";
+            a.className = "FIELD MOAM" ; // was "key";
             a.innerHTML = "Download";
             downloadButton.replaceChild(a, downloadButton.childNodes[0]);(a); 
-            console.log("0768 makeJSONButton");
-        } else console.log("0767 makeJSONButton file("+fileName+"), NO button control");
-    } catch(err) { console.log("0765 makeJSONButton:"+err);}
+            console.log("0768 makeURLButton");
+        } else console.log("0767 makeURLButton file("+fileName+"), NO button control");
+    } catch(err) { console.log("0765 makeURLButton:"+err);}
     return url;
 }
 

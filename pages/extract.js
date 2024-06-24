@@ -145,6 +145,7 @@ function save(strOut,ext) {
             let url=makeTextFile(strOut);
             a.href = url;
             a.download = sFile;
+            a.className = "FIELD MOAM";
             a.click();
             window.URL.revokeObjectURL(url);
             return textFile;
@@ -176,6 +177,7 @@ function processLines(aLines) {
             function buildHTML(html) {
                         let tmp = document.createElement('DIV');
                         tmp.innerHTML = html;
+                        tmp.className = "FIELD MOAM";
                        return tmp;
     }
 
