@@ -427,6 +427,7 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
         "refFunction":  jFunction[symbol1(jAris.func)].id,
         "harm":  jHarm[symbol1(jAris.harm)],
         "refHazard":  jHazard[symbol1(jAris.hazard)].id,
+        "regHazard":  [jAris.hazard.name],  // GH20240625
         "regAnalyzedRisk":[
             {
                 "id": "ARI"+(aris++),

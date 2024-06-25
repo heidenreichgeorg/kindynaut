@@ -337,6 +337,7 @@ function prepareBODY(jRiskFile) {
 
   prepareDSHIdentifiers(jRiskFile); 
 
+  // must do prepareXXX in order to assign craftsMDId
 
   tables = '<div class="object"><div class="value"><DIV class="prop">\n'+ 
 
@@ -510,9 +511,7 @@ function prepareCOR(jRiskFile,jRIT) {
       (jRIT.regEncodedHazard?jRIT.regEncodedHazard.map((encHazTerm)=>encHazTerm.name).join('</div><div class="value">'):"")+
       '</div></div>';
   
-  // must do prepareXXX in order to assign craftsMDId
 
-// was   tables = div
 
   let regHazards = jRIT.regHazard?jRIT.regHazard.map((haz)=>(haz.name)):[];
 
@@ -522,7 +521,10 @@ function prepareCOR(jRiskFile,jRIT) {
 }
 
 
-function prepareRISKITEMfromDSH(jRiskFile,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {  let result="";
+function prepareRISKITEMfromDSH(jRiskFile,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {  
+
+
+  let result="";
   let aRIT = getARIbyRIT(jRIT);
   
   if(aRIT) aRIT.forEach((jARI)=>{if(jARI) result+=prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName);});
@@ -534,6 +536,7 @@ const lim="'";
 function prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {
 
   console.log("prepareRIT with "+JSON.stringify(jARI));
+  console.log("prepareRIT comp="+componentName+"  func="+funcName+ "  harm="+jRIT.harm.name)
 
 
   let hsRef = jARI.refHS; // VALUE for hazardous situation
@@ -580,8 +583,9 @@ function prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,c
     '                 </div>\n') 
     });
   
+    console.log("prepareRIT produces arrDOSH= "+arrDOSH.join('\n'))
 
-  return ''+
+    return ''+
   '        <div class="value"         typeof="'+RISKMAN_CORI+'"            title="'+hazsitName+'"  id="'+ritID+'"  onclick="toggleDSH('+ritID+')">\n'+
   '          <div class="value"       property="'+RISKMAN_HAS_ARIS+'"      title="controls">\n\n'+  // v4
 
