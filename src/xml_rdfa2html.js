@@ -751,12 +751,12 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
 'function dragDOSH(ev,dosh64) { ev.dataTransfer.setData("text/plain", dosh64); }\n'+
 
 'function dragLOCATION(ev) { \n'+
-'  let aPath=new String(location).split('/');\n'+
+'  let aPath=new String(location).split("/");\n'+
 '  aPath.pop();\n'+
 '  aPath.shift();\n'+
 '  aPath.shift();\n'+
 '  aPath.shift();\n'+
-'  let filePath=aPath.join('/');\n'+
+'  let filePath=aPath.join("/");\n'+
 '  let jLOC =  { "env": btoa(filePath)};\n'+
 '  ev.dataTransfer.setData("application/json", filePath);\n}\n'+
 
