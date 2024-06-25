@@ -337,8 +337,42 @@ function prepareBODY(jRiskFile) {
 
   prepareDSHIdentifiers(jRiskFile); 
 
+
+  tables = '<div class="object"><div class="value"><DIV class="prop">\n'+ 
+
+        '<div class="object"  property="'+RISKMAN_HASCOMPONENT+'" id="regComponent">'+ 
+                prepareAllCOMPONENTS(jRiskFile)+
+				'</div>\n'+
+/*        
+        '<div class="object"  property="'+RISKMAN_HASCONTEXT+'" id="regContext">'+ 
+                prepareAllCONTEXTS(jRiskFile)+
+				'</div>\n'+
+*/
+        '<div class="object"  property="'+RISKMAN_HASFUNCTION+'" id="regFunction">'+ 
+                prepareAllFUNCTIONS(jRiskFile)+
+				'</div>\n'+
+
+        '<div class="object"  property="'+RISKMAN_HASHARM+'" id="regHarm">'+ 
+                prepareAllHARMS(jRiskFile)+
+				'</div>\n'+
+        '\n'; 
+
+        '<div class="object"  property="'+RISKMAN_HASHAZARD+'" id="regHazard">'+ 
+                prepareAllHAZARDS(jRiskFile)+
+				'</div>\n'+
+
+        '<div class="object"  property="'+RISKMAN_HASHAZSIT+'" id="regHazardousSituation">'+ 
+                prepareAllHAZARDOUSSITUATIONS(jRiskFile)+
+				'</div>\n'+
+
+	'</DIV></DIV></DIV>\n';
+	
+
+
+
   let strRIT  = prepareAllDOMAIN_SPECIFIC_HAZARDS(jRiskFile);
 
+  
   
   console.log();
   console.log(strRIT);
@@ -476,37 +510,7 @@ function prepareCOR(jRiskFile,jRIT) {
   
   // must do prepareXXX in order to assign craftsMDId
 
-
-  tables = '<div class="object"><div class="value"><DIV class="prop">\n'+ 
-
-        '<div class="object"  property="'+RISKMAN_HASCOMPONENT+'" id="regComponent">'+ 
-                prepareAllCOMPONENTS(jRiskFile)+
-				'</div>\n'+
-/*        
-        '<div class="object"  property="'+RISKMAN_HASCONTEXT+'" id="regContext">'+ 
-                prepareAllCONTEXTS(jRiskFile)+
-				'</div>\n'+
-*/
-        '<div class="object"  property="'+RISKMAN_HASFUNCTION+'" id="regFunction">'+ 
-                prepareAllFUNCTIONS(jRiskFile)+
-				'</div>\n'+
-
-        '<div class="object"  property="'+RISKMAN_HASHARM+'" id="regHarm">'+ 
-                prepareAllHARMS(jRiskFile)+
-				'</div>\n'+
-        '\n'; 
-
-        '<div class="object"  property="'+RISKMAN_HASHAZARD+'" id="regHazard">'+ 
-                prepareAllHAZARDS(jRiskFile)+
-				'</div>\n'+
-
-        '<div class="object"  property="'+RISKMAN_HASHAZSIT+'" id="regHazardousSituation">'+ 
-                prepareAllHAZARDOUSSITUATIONS(jRiskFile)+
-				'</div>\n'+
-
-	'</DIV></DIV></DIV>\n';
-	
-
+// was   tables = div
 
   let regHazards = jRIT.regHazard?jRIT.regHazard.map((haz)=>(haz.name)):[];
 
@@ -528,8 +532,8 @@ const lim="'";
 function prepareRIT(jRiskFile,jDSH,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {
 
 
-  let hsId = jRIT.refHS; // VALUE for hazardous situation
-  let jHazSit = findByKey(getHAZARDOUSSITUATIONS(jRiskFile),'id',hsId);
+  let hsRef = jRIT.refHS; // VALUE for hazardous situation
+  let jHazSit = findByKey(getHAZARDOUSSITUATIONS(jRiskFile),'id',hsRef.id);
   let hazsitName = jHazSit ? jHazSit.name : "Hazardous S";
   let hasi_code = jHazSit ? jHazSit.code : "Cause code";
   let hasi_cause = jHazSit ? jHazSit.cause : "Cause text";
