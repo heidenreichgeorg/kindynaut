@@ -479,6 +479,8 @@ function prepareAllDOMAIN_SPECIFIC_HAZARDS(jRiskFile) {
 
 
 function prepareCOR(jRiskFile,jRIT) {
+
+  console.log("prepareCOR with "+JSON.stringify(jRIT));
   
   let componentId = jRIT.refComponent;
   let componentName = "Component";
@@ -520,37 +522,39 @@ function prepareCOR(jRiskFile,jRIT) {
 }
 
 
-function prepareRISKITEMfromDSH(jRiskFile,jDSH,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {  let result="";
-  let aRIT = getRITByDSH(jDSH);
+function prepareRISKITEMfromDSH(jRiskFile,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {  let result="";
+  let aRIT = getARIbyRIT(jRIT);
   
-  if(aRIT) aRIT.forEach((jRIT)=>{if(jRIT) result+=prepareRIT(jRiskFile,jDSH,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName);});
+  if(aRIT) aRIT.forEach((jARI)=>{if(jARI) result+=prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName);});
   return result;	
 }
 
 const lim="'";
 
-function prepareRIT(jRiskFile,jDSH,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {
+function prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {
+
+  console.log("prepareRIT with "+JSON.stringify(jARI));
 
 
-  let hsRef = jRIT.refHS; // VALUE for hazardous situation
+  let hsRef = jARI.refHS; // VALUE for hazardous situation
   let jHazSit = findByKey(getHAZARDOUSSITUATIONS(jRiskFile),'id',hsRef.id);
   let hazsitName = jHazSit ? jHazSit.name : "Hazardous S";
   let hasi_code = jHazSit ? jHazSit.code : "Cause code";
   let hasi_cause = jHazSit ? jHazSit.cause : "Cause text";
 
   let harmId="?";
-  let harmName=jDSH.harm.name;
+  let harmName=jRIT.harm.name;
   let jHarm = findByKey(getHarms(jRiskFile),'name',harmName);
   if(jHarm && jHarm.id) harmId = jHarm.craftsMDid;
 
 
-  jRIT.craftsMDid = nextRIT();
-  let rit= jRIT.craftsMDid;
+  jARI.craftsMDid = nextRIT();
+  let rit= jARI.craftsMDid;
   let ritID='RIT'+rit;
 
   // generate a DOSH for each generic Hazard...
 
-  let strSDA = formatSDAValues(jRiskFile,jRIT.refRiskSDA,componentName,funcName,hazsitName);
+  let strSDA = formatSDAValues(jRiskFile,jARI.refRiskSDA,componentName,funcName,hazsitName);
 
   
   // v8
@@ -584,12 +588,12 @@ function prepareRIT(jRiskFile,jDSH,jRIT,hazardId,hazTerm,arrHazard,componentId,c
   '          <div class="cell aris"   typeof="'+RISKMAN_ARI+'"             title="Risk Analysis">\n'+  // v4
   '            <div class="value"    property="'+RISKMAN_ID+'"  title="id" >'+ritID+ // risk id v8
   '              <div class="value"     property="'+RISKMAN_HAS_DOSH+'"        title="protects" >\n'+arrDOSH.join('\n')+'</div>\n'+  
-  '              <div class="prop"  property="'+RISKMAN_HASTARGET+'"     title="target"><div class="object" typeof="'+RISKMAN_TARGET+'"><div class="value" ><div class="prop" >'+(jRIT.regTarget?(jRIT.regTarget.join('</div></div><div class="value" ><div class="prop" >')):"?")+'</div></div></div></div>\n'+
+  '              <div class="prop"  property="'+RISKMAN_HASTARGET+'"     title="target"><div class="object" typeof="'+RISKMAN_TARGET+'"><div class="value" ><div class="prop" >'+(jARI.regTarget?(jARI.regTarget.join('</div></div><div class="value" ><div class="prop" >')):"?")+'</div></div></div></div>\n'+
   
     // Analyzed Risk
   '              <div class="prop"   property="'+RISKMAN_HASHAZSIT+'"        title="hazardous situation">'+hazsitName+'</div>\n'+	
   '              <div class="prop"  property="'+RISKMAN_HASHARM+'"           title="harm" ref="'+harmId+'">'+harmName+'</div>\n'+
-  '              <div class="clos"   property="'+RISKMAN_HASPRERISK+'"       title="pre-risk">'+(jRIT.risk?formatRiskValues(RISKMAN_RISKLEVEL, jRIT.risk):"")+'</div>'+
+  '              <div class="clos"   property="'+RISKMAN_HASPRERISK+'"       title="pre-risk">'+(jARI.risk?formatRiskValues(RISKMAN_RISKLEVEL, jARI.risk):"")+'</div>'+
 	'            </div>\n'+ // ARI id v5
   '          </div>\n'+  // ARI
   '        </div>\n'+ // CONTROLS
@@ -603,7 +607,7 @@ function prepareRIT(jRiskFile,jDSH,jRIT,hazardId,hazTerm,arrHazard,componentId,c
 
 '          </div>\n'+ // IS_MITIGATED_BY G6
 
-  '          <div class="prop"  property="'+RISKMAN_HASRESI+'" title="post-risk">'+(jRIT.residualRisk?formatRiskValues(RISKMAN_RESI, jRIT.residualRisk):"")+'</div>'+
+  '          <div class="prop"  property="'+RISKMAN_HASRESI+'" title="post-risk">'+(jARI.residualRisk?formatRiskValues(RISKMAN_RESI, jARI.residualRisk):"")+'</div>'+
   '            <div class="clos">&nbsp;</div>\n\n'+ // spacer
   '        </div>\n'; // CONTROLLED_RISK
 
@@ -929,7 +933,7 @@ function prepareHazardousSituation(jRiskFile,jHazSit) {
   let hsId=jHazSit.id;
   let refMRforHS = [];
   getAllRisks(jRiskFile).forEach((jDSH)=>{ 
-    getRITByDSH(jDSH).forEach((jRIT) =>{ 
+    getARIbyRIT(jDSH).forEach((jRIT) =>{ 
       if(hsId!=jRIT.refHS) {} else refMRforHS.push("RIT"+jRIT.craftsMDid) })});
   jHazSit.relMR = refMRforHS;
 
@@ -952,7 +956,7 @@ function prepareDSHIdentifiers(jRiskFile) {
 
   if(allDSH && allDSH.length>0) 
     allDSH.forEach((jDSH)=>{jDSH.craftsMDid=nextDSH(); 
-       // if(getRITByDSH(jDSH)) getRITByDSH(jDSH).forEach((jRIT)=>{jRIT.craftsMDid=nextRIT();  })
+       // if(getARIbyRIT(jDSH)) getARIbyRIT(jDSH).forEach((jRIT)=>{jRIT.craftsMDid=nextRIT();  })
     });
   return "";
 }
@@ -983,14 +987,14 @@ function prepareAllHAZARD_REFSfromDSH(jRiskFile,jDSH) {
   return generateHazardRef(jRiskFile,jDSH.refHazard);	
 }
 
-function getRITByDSH(jDSH) { return jDSH.regAnalyzedRisk; }
+function getARIbyRIT(jRIT) { return jRIT.regAnalyzedRisk; }
 
 
 function linkHarm2RIT(jRiskFile,jHarm) {
   let result = [];
   let id = jHarm.id;
-  let allDSH=getAllRisks(jRiskFile);
-  allDSH.forEach((jDSH)=>{  jDSH.regAnalyzedRisk.forEach((jRIT)=>{ if(jRIT.regHarm && jRIT.regHarm.href==id) result.push(jRIT); } )});
+  let allRisks=getAllRisks(jRiskFile);
+  allRisks.forEach((jRIT)=>{  jRIT.regAnalyzedRisk.forEach((jARI)=>{ if(jARI.regHarm && jARI.regHarm.href==id) result.push(jARI); } )});
 
   // 20230715 remember related RIT of Harm
   jHarm.relRIT=result;
@@ -1004,14 +1008,14 @@ function linkHarmHazard(jRiskFile) { return jRiskFile.regHarm.map((jHarm)=>(link
 function linkHarmToHazard(jRiskFile,jHarm) {
   let relHazard={};
   let id = jHarm.id;
-  let allDSH=getAllRisks(jRiskFile);
-  allDSH.forEach((jDSH)=>{ 
-      jDSH.regAnalyzedRisk.forEach((jRIT)=> // GH20240130
-                        { if(jRIT.regHarm && jRIT.regHarm.href==id) {
-                          let refCOR=jRIT.refCOR;
+  let allRisks=getAllRisks(jRiskFile);
+  allRisks.forEach((jRIT)=>{ 
+      jRIT.regAnalyzedRisk.forEach((jARI)=> // GH20240130
+                        { if(jARI.regHarm && jARI.regHarm.href==id) {
+                          let refCOR=jARI.refCOR;
                           if(refCOR) {
-                            let refHaz=jDSH.refHazard;
-                            if(refHaz) relHazard[refHaz]="DSH"+jDSH.craftsMDid;
+                            let refHaz=jRIT.refHazard;
+                            if(refHaz) relHazard[refHaz]="DSH"+jRIT.craftsMDid;
                           }
                         }}
         )});
