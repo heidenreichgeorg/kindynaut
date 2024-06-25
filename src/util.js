@@ -420,14 +420,16 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     let cori=0;
     let rit_id="RIT"+(cori++);
 
+    let hazardId=null;
+
     let arrCORI = arrListAris.map((jAris)=>({
         "id":rit_id,
         "title": "ControlledRisk",
         "refComponent": jComponent[symbol1(jAris.comp)].id,
         "refFunction":  jFunction[symbol1(jAris.func)].id,
         "harm":  jHarm[symbol1(jAris.harm)],
-        "refHazard":  jHazard[symbol1(jAris.hazard)].id,
-        "regHazard":  [jAris.hazard.name],  // GH20240625
+        "refHazard":  (hazardId=jHazard[symbol1(jAris.hazard)].id),
+        "regHazard":  [{'id':hazardId,'name':jAris.hazard}],  
         "regAnalyzedRisk":[
             {
                 "id": "ARI"+(aris++),
