@@ -232,7 +232,7 @@ export function convert(strTable,filename) {
         console.log();
         //console.log(strExportFile); 
 
-        save(jRiskFile,prefix+filename,'./'+getDate()+'_exchangeFile.html',strBody);
+        save(jRiskFile,prefix+filename,'./'+filename+getDate()+'_VDE.html',strBody);
 }
 
 function saveCB(digest,strOutFile,strOut) { 

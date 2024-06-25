@@ -498,7 +498,7 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     return makeURLButton(idButton,url,fileName);
     */
 
-    return  functionButton(idButton,strTable,fileName,"Convert",(str,fileName)=>{  convert(str,fileName) }) 
+    return  functionButton(idButton,strTable,fileName,"Convert",(strTable)=>{  convert(strTable,(if_manufacturer+'_'+if_project)) }) 
 
 
 }
@@ -514,7 +514,7 @@ function functionButton(idButton,strTable,fileName,functionName,functionCode) {
             a.style.display = 'block'; // was none
             a.className = "FIELD MOAM" ; // was "key";
             a.innerHTML = functionName;
-            a.onclick = (e) => { functionCode(strTable,functionName); }
+            a.onclick = (e) => { functionCode(strTable); }
             functionButton.replaceChild(a, functionButton.childNodes[0])
             console.log("0768 functionButton  "+functionName);
         } else console.log("0767 functionButton ("+functionName+") file("+fileName+"), NO button control");
