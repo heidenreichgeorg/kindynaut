@@ -44,11 +44,13 @@ function init() {
     if(check && check.length>SOME) return;
     window.sessionStorage.setItem(KN_TICKETS,  T_DOMAIN );
     window.sessionStorage.setItem(KN_FILES,    T_DOMAIN );
-    store(SCR_DOMAIN,JSON.parse("[]"));
+    store(SCR_DOMAIN,JSON.parse("[1]")); // was {'function':'Function'} but crashed on startup
+
+    console.log("0708 init SCR_DOMAIN="+repository[SCR_DOMAIN])
 }
 
 // repository mirrors the json-lists stored in sessionStorage for the domain and also for all files
-let repository={};
+let repository={'DOMAIN':{}};
 let repFiles=[];
 
 function store(ticket,arrList)  {
@@ -62,7 +64,7 @@ function store(ticket,arrList)  {
             console.log("0716 STORE key list="+strList);
             try {
                 let b64encoded= Buffer.from(strList,"utf8").toString('base64');
-                console.log("0718 STORE keys in base64="+b64encoded);
+                console.log("0718 STORE keys for ticket ("+ticket+") in base64 as"+b64encoded);
                 window.sessionStorage.setItem(ticket,b64encoded);
             } catch(err) {console.log("715 STORE "+ticket+" ->"+err)}
         } catch(err) {console.log("713 STORE "+ticket+" ->"+err)}
@@ -77,7 +79,7 @@ function addProjAris(jAris,strMessage) {
         if(jAris) {
             if(jAris.hazard) {
                 let jListAris = repository[SCR_DOMAIN];
-                console.log("0892 addProjAris ENTER element for hazard="+jAris.hazard);
+                console.log("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into "+jListAris);
         
                 jListAris.push(jAris);
                 console.log("0894 addProjAris stored with remaining "+jListAris.length+" entries.");        
@@ -538,7 +540,7 @@ export function Portal({portalFileName, view}) {
 
                     repository[ticket]=jList;
                     console.log("0808-LOOP Portal rebuilds content from "+ticket);
-                } else console.log("0808-FAIL Portal finds empty base64encoded ticket");
+                } else console.log("0808-FAIL Portal finds empty base64encoded ticket for "+ticket);
             });
             console.log("0808-M Portal rebuilds content from tickets");
     } catch(err) { console.log("0809 Portal failed "+err);}
@@ -549,7 +551,7 @@ export function Portal({portalFileName, view}) {
     } catch(e) {}
 
     let jListAris = repository[SCR_DOMAIN];
-    console.log("0810 DOMAIN shows "+(jListAris ? Object.keys(jListAris):"empty")+"# of risks.")
+    console.log("0810 DOMAIN("+jListAris+") shows "+(jListAris ? Object.keys(jListAris):"empty")+"# of risks.")
 
 
 

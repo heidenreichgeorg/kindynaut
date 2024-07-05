@@ -731,7 +731,8 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
     'This content shows an example and is not intended to, and does not, create any claim or assertion, in any jurisdiction, regarding any kind of product or service.</h5>\n'+
     strContent+
 '\n   <script>\n'+
-/*
+
+
 
 'function toggleDSH(ritID) {\n'+
 '	  const allObjects = document.getElementsByTagName("div");\n'+
@@ -745,10 +746,12 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
 '}\n\n'+
 
 
-}
 
-*/
-'function dragDOSH(ev,dosh64) { ev.dataTransfer.setData("text/plain", dosh64); }\n'+
+
+
+'function dragDOSH(ev,dosh64) { \n'+
+'   ev.dataTransfer.setData("text/plain", dosh64);\n'+
+' }\n'+
 
 'function dragLOCATION(ev) { \n'+
 '  let aPath=new String(location).split("/");\n'+

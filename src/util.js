@@ -691,7 +691,7 @@ export function dragARIS(ev,jAris) {
 export function dragOverHandler(ev) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
-    console.log('0618 File(s) in drop zone'); //+JSON.stringify(ev.dataTransfer.items[0]));
+    console.log('0616 File(s) in drop zone'); //+JSON.stringify(ev.dataTransfer.items[0]));
 }
 
 
@@ -714,7 +714,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
         if (ev.dataTransfer.getData('application/json')) {
             
             let strDOSH= ev.dataTransfer.getData("application/json");                
-            console.log('0620 Target  JSON '+strDOSH+'  dropped' );
+            console.log('0618 Target  JSON '+strDOSH+'  dropped' );
             try {
                 let jDOSH = JSON.parse(strDOSH);
                 if(jDOSH.hazard) {
@@ -724,7 +724,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
                 } else {
                     console.log('0621 JSON OTHER=\n'+strDOSH);
                     if(jDOSH.env) {
-                        console.log('0626 FILE ENV=\n'+jDOSH.env);                        
+                        console.log('0619 FILE ENV=\n'+jDOSH.env);                        
                     }
                 }
             } catch(e) {
@@ -732,19 +732,27 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
         } 
         
         if (ev.dataTransfer.getData('text/plain')) {
-            console.log('0622 Target  PLAIN '+ev.dataTransfer.getData("text/plain")+'  dropped' );
-
+            console.log('0622 Target  BASE '+ev.dataTransfer.getData("text/plain")+'  dropped' );
             let strBASE = ev.dataTransfer.getData("text/plain");
-
             try {
                 let strPLAIN= atob(strBASE);
-                console.log('0622 JSON PLAIN=\n'+strPLAIN);
-                addProjAris(JSON.parse(strPLAIN),"drag text/plain from event as base64");
+                console.log('0624 atob(BASE)=PLAIN\n'+strPLAIN);
+                try {
+                    addProjAris(JSON.parse(strPLAIN),"drag text/plain from event as base64");
+                    console.log('0626 drag text/plain from event as base64')
+                } catch(e) {                    
+                    try {
+                        addProjAris(JSON.parse(strBASE),"drag text/plain from event in clear text");
+                        console.log('0628 drag text/plain from event in clear text')
+                    } catch(e) {
+                        console.log('0623 JSON ('+e+') BASE=\n'+strBASE);
+                    }
+                }        
 
             } catch(e) {
-                console.log('0623 CODE ('+e+') BASE=\n'+strBASE);
                 try {
                     addProjAris(JSON.parse(strBASE),"drag text/plain from event in clear text");
+                    console.log('0626 drag text/plain from event in clear text')
                 } catch(e) {
                     console.log('0625 JSON ('+e+') BASE=\n'+strBASE);
                 }
