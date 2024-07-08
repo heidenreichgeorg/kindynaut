@@ -733,7 +733,7 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
 '\n   <script>\n'+
 
 
-
+/*
 'function toggleDSH(ritID) {\n'+
 '	  const allObjects = document.getElementsByTagName("div");\n'+
 '	  for(let i=allObjects.length-1;i>=0;i--) if(allObjects.item(i).getAttribute("typeOf")=="'+RISKMAN_CORI+'") {\n'+
@@ -745,14 +745,14 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
 '   console.log("goto #"+ritID);\n'+
 '}\n\n'+
 
-
+*/
 
 
 
 'function dragDOSH(ev,dosh64) { \n'+
 '   ev.dataTransfer.setData("text/plain", dosh64);\n'+
 ' }\n'+
-
+/*
 'function dragLOCATION(ev) { \n'+
 '  let aPath=new String(location).split("/");\n'+
 '  aPath.pop();\n'+
@@ -762,6 +762,7 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
 '  let filePath=aPath.join("/");\n'+
 '  let jLOC =  { "env": btoa(filePath)};\n'+
 '  ev.dataTransfer.setData("application/json", filePath);\n}\n'+
+*/
 
 'function getPayload() { \n'+
 '   const allObjects=document.getElementsByTagName("div");\n'+
@@ -786,12 +787,14 @@ function generateExportFile(jRiskFile,strRiskFile,strContent) {
 "   const name = document.getElementById('signName').value;\n"+
 "   node.innerHTML= digest+' &rarr; '+(new Date()).toISOString()+': '+name; \n}\n"+
 
+/*
 "function loadName() {\n"+
 "   var wshShell= window.ActiveXObject('wscript.shell');\n"+
 "   var userName=wshShell.ExpandEnvironmentStrings('%username%');\n"+
 "   console.log(userName);\n}\n"+
 
 " loadName();\n"+
+*/
 
 "</script>\n</body>\n</html>\n\n";
 }
