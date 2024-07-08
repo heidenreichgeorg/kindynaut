@@ -438,7 +438,7 @@ export function Portal({portalFileName, view}) {
         let arrInstance=repository[ticket];
         let filteredAris=[];
         let enableFlag=false ;
-        if(arrInstance) 
+        if(arrInstance && arrInstance.length && arrInstance.isArray()) {
             console.log("0822 filterInstance using filter "+strFilter)
             arrInstance.forEach((line)=>{            
                 let jFilter=JSON.parse(strFilter.toLowerCase());
@@ -474,6 +474,7 @@ export function Portal({portalFileName, view}) {
                 if(flag) 
                     filteredAris.push(line);
             });
+        }
         console.log("0826 filterInstance: filtered list for ticket "+ticket+" still has "+filteredAris.length+" risks.")
                 
         return filteredAris;
