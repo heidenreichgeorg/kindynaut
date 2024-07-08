@@ -125,12 +125,13 @@ function init() {
   iRIT=0; 
   iSDA=0; 
   
+  // set DEFAULTS for draggable DOSH components
   let ctlXComp = document.getElementById('exComp');  xComp=ctlXComp?ctlXComp.checked:null;
-  let ctlXFunc = document.getElementById('exComp');  xFunc=ctlXFunc?ctlXFunc.checked:null;
-  let ctlXCaus = document.getElementById('exCaus');  xCaus=ctlXCaus?ctlXCaus.checked:null;
-  let ctlXHaSi = document.getElementById('exHaSi');  xHaSi=ctlXHaSi?ctlXHaSi.checked:null;
-  let ctlXHKey = document.getElementById('exHKey');  xHKey=ctlXHKey?ctlXHKey.checked:null;
-  let ctlXHarm = document.getElementById('exHarm');  xHarm=ctlXHarm?ctlXHarm.checked:null;
+  let ctlXFunc = document.getElementById('exComp');  xFunc=ctlXFunc?ctlXFunc.checked:true;
+  let ctlXCaus = document.getElementById('exCaus');  xCaus=ctlXCaus?ctlXCaus.checked:true;
+  let ctlXHaSi = document.getElementById('exHaSi');  xHaSi=ctlXHaSi?ctlXHaSi.checked:true;
+  let ctlXHKey = document.getElementById('exHKey');  xHKey=ctlXHKey?ctlXHKey.checked:true;
+  let ctlXHarm = document.getElementById('exHarm');  xHarm=ctlXHarm?ctlXHarm.checked:true;
 
 
   console.log("DRAGGABLE INFO FOR HAZARD and "
