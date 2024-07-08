@@ -44,7 +44,7 @@ function init() {
     if(check && check.length>SOME) return;
     window.sessionStorage.setItem(KN_TICKETS,  T_DOMAIN );
     window.sessionStorage.setItem(KN_FILES,    T_DOMAIN );
-    store(SCR_DOMAIN,JSON.parse("[1]")); // was {'function':'Function'} but crashed on startup
+    store(SCR_DOMAIN,[]); 
 
     console.log("0708 init SCR_DOMAIN="+repository[SCR_DOMAIN])
 }
@@ -79,8 +79,10 @@ function addProjAris(jAris,strMessage) {
         if(jAris) {
             if(jAris.hazard) {
                 let jListAris = repository[SCR_DOMAIN];
-                console.log("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into "+jListAris);
+                console.log("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into "+JSON.stringify(jListAris));
         
+                if(!Array.isArray(jListAris)) jListAris=[]; // GH20240708 help with startup
+
                 jListAris.push(jAris);
                 console.log("0894 addProjAris stored with remaining "+jListAris.length+" entries.");        
 
@@ -438,7 +440,7 @@ export function Portal({portalFileName, view}) {
         let arrInstance=repository[ticket];
         let filteredAris=[];
         let enableFlag=false ;
-        if(arrInstance && arrInstance.length && arrInstance.isArray()) {
+        if(arrInstance && arrInstance.length && Array.isArray(arrInstance)) {
             console.log("0822 filterInstance using filter "+strFilter)
             arrInstance.forEach((line)=>{            
                 let jFilter=JSON.parse(strFilter.toLowerCase());
