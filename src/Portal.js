@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { arisIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, handleHBook, handleStore, makeInternalFile, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { arisIdentifier, corIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, handleHBook, handleStore, makeInternalFile, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 
 import { useState, useEffect } from 'react';
 
@@ -83,14 +83,25 @@ function addProjAris(jAris,strMessage) {
         
                 if(!Array.isArray(jListAris)) jListAris=[]; // GH20240708 help with startup
 
-                jListAris.push(jAris);
-                console.log("0894 addProjAris stored with remaining "+jListAris.length+" entries.");        
+                jAris.corID = corIdentifier(jAris);
+                jAris.arisID = arisIdentifier(jAris);
 
-                store(SCR_DOMAIN,jListAris);
+                jListAris.push(jAris);
+                
+                let aKeys={}
+                jListAris.map((aris)=>(aKeys[aris.arisID]=0));
+                jListAris.map((aris)=>(aKeys[aris.arisID]=1+aKeys[aris.arisID]));
+                console.log("0894 addProjAris stored with now "+jListAris.length+" entries for "+JSON.stringify(aKeys));   
+
+                let jNewList = [];
+                Object.keys(aKeys).map((arisID)=>(jListAris.forEach((aris)=>{if(aris.arisID===arisID) jNewList.push(aris)})))
+
+                console.log("0896 addProjAris sorts new list with remaining "+jListAris.length+" entries.");   
+                store(SCR_DOMAIN,jNewList);
 
             } else console.log("0895 addProjAris "+strMessage+" INVALID:"+JSON.stringify(jAris));
 
-            console.log("0896 addProjAris EXIT "+strMessage+" ="+JSON.stringify(jListAris));
+            console.log("0898 addProjAris EXIT "+strMessage+" with these arisIDs: "+JSON.stringify(jListAris.map((aris)=>(aris.arisID))));
         }
         else console.log("0891 addProjAris "+strMessage+" EMPTY");
     }
