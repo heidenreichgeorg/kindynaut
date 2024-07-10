@@ -42,6 +42,16 @@ export function arisIdentifier(jAris) {
 }
 
 
+
+export function corIdentifier(jAris) {
+    let c=symbol1(nowandthen(jAris.comp));
+    let f=symbol1(nowandthen(jAris.func));
+    let h=symbol1(nowandthen(jAris.harm));
+    let result=c+f+h;
+    return result;
+}
+
+
 export function doshIdentifier(jAris) {
     let c=symbol1(jAris.comp)
     let f=symbol1(jAris.func)
@@ -79,6 +89,7 @@ export function strSymbol(pat) {
 
 
 function nowandthen(ins) {
+    if(!ins) return "";
     let str=ins+(ins.split('').reverse().join(''))+ins;
     let pos=[1,8,2,9,3,10,4,11,5,12,6,13,7,15];
     let pat=str+str+str+str+str+str+str+str+str;
