@@ -502,7 +502,7 @@ function prepareCOR(jRiskFile,jRIT) {
   }
 
 
-  let hazardId = jRIT.refHazard; 
+  let corId = jRIT.refHazard; 
   
   
 
@@ -514,27 +514,27 @@ function prepareCOR(jRiskFile,jRIT) {
   
 
 
-  let regHazards = jRIT.regHazard?jRIT.regHazard.map((haz)=>(haz.name)):[];
+  let arrHazard = jRIT.regHazard?jRIT.regHazard.map((haz)=>(haz.name)):[];
 
-  return prepareRISKITEMfromDSH(jRiskFile,jRIT,hazardId,hazTerm,regHazards,componentId,componentName,funcId,funcName);  
+  return prepareRISKITEMfromDSH(jRiskFile,jRIT,corId,hazTerm,arrHazard,componentId,componentName,funcId,funcName);  
 
 
 }
 
 
-function prepareRISKITEMfromDSH(jRiskFile,jRIT,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {  
+function prepareRISKITEMfromDSH(jRiskFile,jRIT,corId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {  
 
 
   let result="";
   let aRIT = getARIbyRIT(jRIT);
   
-  if(aRIT) aRIT.forEach((jARI)=>{if(jARI) result+=prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName);});
+  if(aRIT) aRIT.forEach((jARI)=>{if(jARI) result+=prepareRIT(jRiskFile,jRIT,jARI,corId,hazTerm,arrHazard,componentId,componentName,funcId,funcName);});
   return result;	
 }
 
 const lim="'";
 
-function prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {
+function prepareRIT(jRiskFile,jRIT,jARI,corId,hazTerm,arrHazard,componentId,componentName,funcId,funcName) {
 
   console.log("prepareRIT with "+JSON.stringify(jARI));
   console.log("prepareRIT comp="+componentName+"  func="+funcName+ "  harm="+jRIT.harm.name)
@@ -580,7 +580,7 @@ function prepareRIT(jRiskFile,jRIT,jARI,hazardId,hazTerm,arrHazard,componentId,c
     '                   <div class="prop"  property="'+RISKMAN_ID+'"           title="id">'+(ritID+'D'+dsh_id)+'</div>\n'+
     '                   <div class="prop"  property="'+RISKMAN_HASCOMPONENT+'" title="component" ref="'+componentId+'">'+componentName+'.</div>\n'+
     '                   <div class="prop"  property="'+RISKMAN_HASFUNCTION+'"  title="function" ref="'+funcId+'">'+funcName+'.</div>\n'+
-    '                   <div class="clos"  property="'+RISKMAN_HASHAZARD+'"    title="hazard" ref="'+hazardId+'">'+dosh+'</div>\n'+				// + encoded hazTerm   // v5
+    '                   <div class="clos"  property="'+RISKMAN_HASHAZARD+'"    title="hazard" ref="'+corId+'">'+dosh+'</div>\n'+				// + encoded hazTerm   // v5
     '                 </div>\n') 
     });
   
