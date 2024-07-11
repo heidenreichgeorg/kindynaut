@@ -593,7 +593,7 @@ export function Portal({portalFileName, view}) {
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
-    
+    var currentCID="1";
 
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
@@ -714,7 +714,22 @@ export function Portal({portalFileName, view}) {
 
                     { (ticket===SCR_DOMAIN) ? 
                         filterInstance(ticket,area).map((aris,line)=>( 
-                            (<div className="KNLINE NONE" key={"domainrisk"+area+line}>    
+                            (<div className="KNLINE NONE" key={"domainrisk"+area+line}>
+                                {(currentCID===aris.corID) ?  "" :  (<div className="KNLINE NONE" key={"controlledrisk"+area+line}>                                    
+                                        <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
+                                        <div className="RISKCOLOR FIELD NAME"></div>
+                                        <div className="RISKCOLOR NOTE DATE">3.2-</div>
+                                        <div className="RISKCOLOR NOTE DATE">C</div>
+                                        <div className="RISKCOLOR NOTE DATE">II</div>
+                                        <div className="RISKCOLOR FIELD SEP"></div>
+                                        <div className="RISKCOLOR NOTE DATE">Service</div>
+                                        <div className="RISKCOLOR NOTE DATE">Staff</div>
+                                        <div className="RISKCOLOR NOTE DATE">Patients</div>
+                                        <div className="RISKCOLOR FIELD SEP"></div>
+                                        <div className="RISKCOLOR NOTE DATE">3.2-</div>
+                                        <div className="RISKCOLOR NOTE DATE">C</div>
+                                        <div className="RISKCOLOR NOTE DATE">II</div>
+                                    </div>) }
                                 {portalLine( "RISKCOLOR",
                                     aris.comp,
                                     aris.func,
