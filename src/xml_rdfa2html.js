@@ -220,7 +220,7 @@ function start() {
     });
 }
 
-export function convert(strTable,filename) {
+export function convert2VDE(strTable,filename) {
 
         let jRiskFile = JSON.parse(strTable);
         console.log('convert RISK FILE CONTENT from JSON');
@@ -233,7 +233,7 @@ export function convert(strTable,filename) {
         console.log();
         //console.log(strExportFile); 
 
-        save(jRiskFile,prefix+filename,'./'+filename+getDate()+'_VDE.html',strBody);
+        saveExportFile(jRiskFile,prefix+filename,'./'+filename+getDate()+'_VDE.html',strBody);
 }
 
 function saveCB(digest,strOutFile,strOut) { 
@@ -307,7 +307,7 @@ function getPayload() {
 
 function getEnvelope() { return document.getElementById(TAG_ENVELOPE); }
 
-function save(jRiskFile,strInFile,strOutFile,strBody) { 
+function saveExportFile(jRiskFile,strInFile,strOutFile,strBody) { 
 
   let element = putElement(strBody);
   let strContent = getPayload();
