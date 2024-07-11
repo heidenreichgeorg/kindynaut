@@ -36,8 +36,8 @@ export function arisIdentifier(jAris) {
     let a=symbol1(nowandthen(jAris.cause));
     let h=symbol1(nowandthen(jAris.harm));
     let o=symbol1(nowandthen(jAris.code));
-    let i=symbol1(nowandthen(jAris.hazardousSituation));
-    let result=c+f+a+h+o+i;
+    let s=symbol1(nowandthen(jAris.hazardousSituation));
+    let result=c+f+a+h+o+s;
     return result;
 }
 
@@ -47,7 +47,8 @@ export function corIdentifier(jAris) {
     let c=symbol1(nowandthen(jAris.comp));
     let f=symbol1(nowandthen(jAris.func));
     let h=symbol1(nowandthen(jAris.harm));
-    let result=c+f+h;
+    let s=symbol1(nowandthen(jAris.hazardousSituation));
+    let result=c+f+h+s;
     return result;
 }
 
@@ -458,14 +459,22 @@ export function makeInternalFile(idButton,arrListDoSH,if_manufacturer,if_project
             let jDoSH = aWitness[did];
             if(jDoSH.corID===jCOR.refHazard)  {
                 // key(C * F * Hm)
-                let jAris = addARIS(jCOR,jDoSH,jSituation,jHarm,aris++) 
+                addARIS(jCOR,jDoSH,jSituation,jHarm,aris++) 
                 console.log("1076 makeInternalFile add "+JSON.stringify(jDoSH)+" to COR "+jCOR.id);   
             }
         })    
 
 
-        // now add all Dosh into related aris
-    });
+
+        // then fill each COR with all related hazards
+        let dosh=0;
+        arrListDoSH.forEach((jDoSH)=>{            
+            if(jDoSH.corID===jCOR.refHazard)  {
+                // key(C * F * Hm)
+                addHazard(jCOR,jDoSH,dosh++) 
+                console.log("1078 makeInternalFile add "+JSON.stringify(jDoSH)+" to COR "+jCOR.id);   
+            }
+        })        });
 
 
 
@@ -525,8 +534,13 @@ function initCOR(jAris,rit_id,idCOR,jComponent,jFunction,jHarm) {
     }
 }
 
+function addHazard(jCor,jAris,iDoSH) {
+    jCor.regHazard.push({'id':iDoSH, 'name':jAris.hazard})
+    console.log("1080 addARIS add "+jAris.hazard+" to COR "+JSON.stringify(jCor.regHazard));   
+}
+
 function addARIS(jCor,jAris,jSituation,jHarm,iAris) {
-    let ifAris = {
+    jCor.regAnalyzedRisk.push({
         "id": "ARI"+iAris,
         "title": "AnalyzedRisk",
         "refCOR": jCor.id,
@@ -544,14 +558,9 @@ function addARIS(jCor,jAris,jSituation,jHarm,iAris) {
             "probability": "-",
             "riskRegion": "_"
         }
-    }
-    
-    jCor.regAnalyzedRisk.push(ifAris);
+    });
+    console.log("1082 addARIS add "+jAris.hazardousSituation+" to COR "+JSON.stringify(jCor.regHazard));   
 
-    jCor.regHazard.push({'id':iAris, 'name':jAris.hazard})
-    console.log("1078 addARIS add "+jAris.hazard+" to COR "+JSON.stringify(jCor.regHazard));   
-
-    return ifAris;
 }
 
 function functionButton(idButton,strTable,fileName,functionName,functionCode) { 
