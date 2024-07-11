@@ -326,21 +326,19 @@ export function makeArchiveButton(url,domain) {
 }
 */
 
-export function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
+export function makeRiskTable(idButton,arrListDoSH,rt_manufacturer,rt_project) {
     // create riskTable format
     let functionId=1;
     let harmId=1;
     let idMar=1;
 
-    // list all risk in domain repository    
-    //let arrListAris = repository[SCR_DOMAIN];
 
-    if(!arrListAris || arrListAris.length==0) return;
+    if(!arrListDoSH || arrListDoSH.length==0) return;
 
     // separate DomainSpecificHazard from AnalyzedRisk structures
     let jControlled={};
-    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)]=[]});
-    arrListAris.map((jAris)=>{jControlled[arisIdentifier(jAris)].push(jAris)});
+    arrListDoSH.map((jDoSH)=>{jControlled[arisIdentifier(jDoSH)]=[]});
+    arrListDoSH.map((jDoSH)=>{jControlled[arisIdentifier(jDoSH)].push(jDoSH)});
     
     console.log("0760 makeRiskTable AnalyzedRisks="+JSON.stringify(jControlled))
 
@@ -391,87 +389,86 @@ export function makeRiskTable(idButton,arrListAris,rt_manufacturer,rt_project) {
     return makeURLButton(idButton,url,fileName);
 }
 
-export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project,if_version) {
+export function makeInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version) {
 
     // create string according to VDE SPEC 90025 internal format
 
-    if(!arrListAris || arrListAris.length==0) return;
+    if(!arrListDoSH || arrListDoSH.length==0) return;
    
-    console.log("0760 makeInternalFile AnalyzedRisks=#"+arrListAris.length)
+    console.log("1060 makeInternalFile DoSH=#"+arrListDoSH.length)
 
 
     let jComponent={}
     let comp=0;
-    arrListAris.map((jAris)=>{jComponent[symbol1(jAris.comp)]={"name":jAris.comp,"title":"Component","id":"COM"+(comp++)}});
+    arrListDoSH.map((jDoSH)=>{jComponent[symbol1(jDoSH.comp)]={"name":jDoSH.comp,"title":"Component","id":"COM"+(comp++)}});
 
     // create function registry
     let jFunction={}
     let func=0;
-    arrListAris.map((jAris)=>{jFunction[symbol1(jAris.func)]={"name":jAris.func,"title":"Function","id":"FUN"+(func++)}});
+    arrListDoSH.map((jDoSH)=>{jFunction[symbol1(jDoSH.func)]={"name":jDoSH.func,"title":"Function","id":"FUN"+(func++)}});
     
 
     // create hazard registry
     let jHazard={}
     let hazd=0;
-    arrListAris.map((jAris)=>{jHazard[symbol1(jAris.hazard)]={"name":jAris.hazard,"title":"Hazard","id":"HAZ"+(hazd++)}});
+    arrListDoSH.map((jDoSH)=>{jHazard[symbol1(jDoSH.hazard)]={"name":jDoSH.hazard,"title":"Hazard","id":"HAZ"+(hazd++)}});
     
 
     // create harm registry
     let jHarm={}
     let harm=0;
-    arrListAris.map((jAris)=>{jHarm[symbol1(jAris.harm)]={"name":jAris.harm,"title":"Harm","id":"HRM"+(harm++)}});
+    arrListDoSH.map((jDoSH)=>{jHarm[symbol1(jDoSH.harm)]={"name":jDoSH.harm,"title":"Harm","id":"HRM"+(harm++)}});
     
 
     // create hazardous situation registry
     let jSituation={}
     let hasi=0;
-    arrListAris.map((jAris)=>{jSituation[symbol1(jAris.hazardousSituation)]={"name":jAris.hazardousSituation,"title":"HazardousSituation","id":"HAS"+(hasi++)}});
+    arrListDoSH.map((jDoSH)=>{jSituation[symbol1(jDoSH.hazardousSituation)]={"name":jDoSH.hazardousSituation,"title":"HazardousSituation","id":"HAS"+(hasi++)}});
 
-    let aris=0;
     let cori=0;
-    let rit_id="RIT"+(cori++);
+    
 
-    let hazardId=null;
 
-    let arrCORI = arrListAris.map((jAris)=>({
-        "id":rit_id,
-        "title": "ControlledRisk",
-        "refComponent": jComponent[symbol1(jAris.comp)].id,
-        "refFunction":  jFunction[symbol1(jAris.func)].id,
-        "harm":  jHarm[symbol1(jAris.harm)],
-        "refHazard":  (hazardId=jHazard[symbol1(jAris.hazard)].id),
-        "regHazard":  [{'id':hazardId,'name':jAris.hazard}],  
-        "regAnalyzedRisk":[
-            {
-                "id": "ARI"+(aris++),
-                "title": "AnalyzedRisk",
-                "refCOR": rit_id,
-                "refHS": jSituation[symbol1(jAris.hazardousSituation)],
-                "refHarm": jHarm[symbol1(jAris.harm)],
-                "regTarget": ["Patient", " User", " Service Personnel"],
-                "risk": {
-                    "severity": "0",
-                    "probability": "-",
-                    "riskRegion": "-"
-                },
-                "refRiskSDA": "0",
-                "residualRisk": {
-                    "severity": "0",
-                    "probability": "-",
-                    "riskRegion": "_"
-                }
+    let aWitness={}
+    arrListDoSH.map((aris)=>(aWitness[aris.arisID]=aris));
+    console.log("1070 makeInternalFile with aris keys and one matching ARIS "+JSON.stringify(aWitness));   
 
+
+    let cWitness={}
+    arrListDoSH.map((aris)=>(cWitness[aris.corID]=aris));
+    console.log("1072 makeInternalFile with CoR keys and one matching CoR "+JSON.stringify(cWitness));   
+
+
+    //for each ARIS witness, generate one COR
+    let rit_id=0;
+    let arrCORI = Object.keys(cWitness).map((corID)=>( initCOR(cWitness[corID],rit_id++,corID,jComponent,jFunction,jHarm)))
+    let jListCor = {};
+    Object.keys(cWitness).forEach((corID,i)=>{
+
+        
+        let jCOR = arrCORI[i]
+        console.log("1074 makeInternalFile fills COR "+corID);   
+
+        jListCor[corID]=jCOR;
+        // jListCor assigns corID to COR's internal file structure
+
+        // then fill each COR with all related aris instances
+        let aris=0;
+        Object.keys(aWitness).forEach((did)=>{            
+            let jDoSH = aWitness[did];
+            if(jDoSH.corID===jCOR.refHazard)  {
+                // key(C * F * Hm)
+                let jAris = addARIS(jCOR,jDoSH,jSituation,jHarm,aris++) 
+                console.log("1076 makeInternalFile add "+JSON.stringify(jDoSH)+" to COR "+jCOR.id);   
             }
-        ] 
-    }))
+        })    
+
+
+        // now add all Dosh into related aris
+    });
 
 
 
-// in the general regAnalyzedRisk array there is one or multiple ARIS listed in regAnalyzedRisk of some CORI
-// the fundamental assumption when generating a list of DOSH with potential controls
-// is that each DOSH has its own analysis and its won mitigation
-// still supüporting the idea that mitigations can combine mitigations 
-// notably when  the hazardous situation is the same
 
 
     let fileName="INTERNALFILE"+if_manufacturer+'_'+if_project+".JSON";
@@ -499,9 +496,9 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     const strTable  = JSON.stringify(internalFile);
     console.log("0762 makeInternalFile strTable="+strTable)
 
+    /*
     const blobContent = new Blob([strTable], { type: 'text/plain' });
 
-    /*
     // create a link to download that object to some client system
     const url = URL.createObjectURL(blobContent);
 
@@ -510,11 +507,52 @@ export function makeInternalFile(idButton,arrListAris,if_manufacturer,if_project
     */
 
     return  functionButton(idButton,strTable,fileName,"Convert",(strTable)=>{  convert(strTable,(if_manufacturer+'_'+if_project)) }) 
-
-
 }
 
+// refHazard in reality is the key made of C * F * Hm
 
+function initCOR(jAris,rit_id,idCOR,jComponent,jFunction,jHarm) {
+
+    return {
+        "id":rit_id,
+        "title": "ControlledRisk",
+        "refComponent": jComponent[symbol1(jAris.comp)].id,
+        "refFunction":  jFunction[symbol1(jAris.func)].id,
+        "harm":  jHarm[symbol1(jAris.harm)],
+        "refHazard":  idCOR,
+        "regHazard":  JSON.parse('[]'),  
+        "regAnalyzedRisk":JSON.parse('[]')
+    }
+}
+
+function addARIS(jCor,jAris,jSituation,jHarm,iAris) {
+    let ifAris = {
+        "id": "ARI"+iAris,
+        "title": "AnalyzedRisk",
+        "refCOR": jCor.id,
+        "refHS": jSituation[symbol1(jAris.hazardousSituation)],
+        "refHarm": jHarm[symbol1(jAris.harm)],
+        "regTarget": ["Patient", " User", " Service Personnel"],
+        "risk": {
+            "severity": "0",
+            "probability": "-",
+            "riskRegion": "-"
+        },
+        "refRiskSDA": "0",
+        "residualRisk": {
+            "severity": "0",
+            "probability": "-",
+            "riskRegion": "_"
+        }
+    }
+    
+    jCor.regAnalyzedRisk.push(ifAris);
+
+    jCor.regHazard.push({'id':iAris, 'name':jAris.hazard})
+    console.log("1078 addARIS add "+jAris.hazard+" to COR "+JSON.stringify(jCor.regHazard));   
+
+    return ifAris;
+}
 
 function functionButton(idButton,strTable,fileName,functionName,functionCode) { 
     
@@ -824,7 +862,6 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
         }
     }
 }
-
 
 
 export function load(view) {

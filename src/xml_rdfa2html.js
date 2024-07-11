@@ -377,7 +377,7 @@ function prepareBODY(jRiskFile) {
   
   
   console.log();
-  console.log(strRIT);
+  //console.log(strRIT);
   console.log();
 
   
@@ -584,7 +584,7 @@ function prepareRIT(jRiskFile,jRIT,jARI,corId,hazTerm,arrHazard,componentId,comp
     '                 </div>\n') 
     });
   
-    console.log("prepareRIT produces arrDOSH= "+arrDOSH.join('\n'))
+    //console.log("prepareRIT produces arrDOSH= "+arrDOSH.join('\n'))
 
     return ''+
   '        <div class="value"         typeof="'+RISKMAN_CORI+'"            title="'+hazsitName+'"  id="'+ritID+'"  onclick="toggleDSH('+ritID+')">\n'+
