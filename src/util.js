@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import { getFrom90025,processHTML } from './extract.js';
 
-import { convert } from "./xml_rdfa2html.js"
+import { convert2VDE } from "./xml_rdfa2html.js"
 
 // read and write
 // https://www.geeksforgeeks.org/how-to-read-and-write-json-file-using-node-js/
@@ -327,7 +327,7 @@ export function makeArchiveButton(url,domain) {
 }
 */
 
-export function makeRiskTable(idButton,arrListDoSH,rt_manufacturer,rt_project) {
+ export function makeRiskTable(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version) {
     // create riskTable format
     let functionId=1;
     let harmId=1;
@@ -390,11 +390,34 @@ export function makeRiskTable(idButton,arrListDoSH,rt_manufacturer,rt_project) {
     return makeURLButton(idButton,url,fileName);
 }
 
-export function makeInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version) {
+export function makeExportFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version) {
+    processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version,"Convert",convert2VDE);
+}
+
+export function makeInternalFile(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version) {
+    processInternalFile(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version,"Get",keep);
+}
+
+
+function keep(strTable,fileName,idButton) { 
+    
+    const blobContent = new Blob([strTable], { type: 'text/plain' });
+
+    // create a link to download that object to some client system
+    const url = URL.createObjectURL(blobContent);
+
+    console.log("0766 keep created URL")
+
+    return makeURLButton(idButton,url,fileName);
+    
+    //return strTable; 
+}
+
+function processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version,action,converter) {
 
     // create string according to VDE SPEC 90025 internal format
 
-    if(!arrListDoSH || arrListDoSH.length==0) return;
+    if(!arrListDoSH || arrListDoSH.length==0 || !Array.isArray(arrListDoSH)) return;
    
     console.log("1060 makeInternalFile DoSH=#"+arrListDoSH.length)
 
@@ -505,17 +528,7 @@ export function makeInternalFile(idButton,arrListDoSH,if_manufacturer,if_project
     const strTable  = JSON.stringify(internalFile);
     console.log("0762 makeInternalFile strTable="+strTable)
 
-    /*
-    const blobContent = new Blob([strTable], { type: 'text/plain' });
-
-    // create a link to download that object to some client system
-    const url = URL.createObjectURL(blobContent);
-
-    console.log("0764 makeInternalFile created URL")
-    return makeURLButton(idButton,url,fileName);
-    */
-
-    return  functionButton(idButton,strTable,fileName,"Convert",(strTable)=>{  convert(strTable,(if_manufacturer+'_'+if_project)) }) 
+    return  functionButton(idButton,strTable,fileName,action,(strTable)=>{  converter(strTable,(if_manufacturer+'_'+if_project),idButton) }) 
 }
 
 // refHazard in reality is the key made of C * F * Hm

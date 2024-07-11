@@ -220,7 +220,7 @@ function start() {
     });
 }
 
-export function convert2VDE(strTable,filename) {
+export function convert2VDE(strTable,filename,idButton) {
 
         let jRiskFile = JSON.parse(strTable);
         console.log('convert RISK FILE CONTENT from JSON');
