@@ -30,6 +30,8 @@ const KN_FILES = "KN_FILES"
 
 const T_DOMAIN = '["DOMAIN"]';
 
+const EMPTY_ARIS = {'comp':' ','func':' ','hazard':' ','code':' ','cause':' ','hazardousSituation':' ','harm':' '}
+
 function sanitize(str) {
     if(!str) return "0";
     let nocol=str.replaceAll(',','_')
@@ -342,7 +344,7 @@ export function Portal({portalFileName, view}) {
                 <div className={color+" FIELD NAME"} key="cod">{code}</div>
                 <div className={color+" FIELD NAME"} key="cau">{cause}</div>
                 <div className={color+" FIELD NAME"} key="hsi">{hazardousSituation}</div>
-                <div className={color+" FIELD NAME"} key="har">{harm}</div>
+                <div className={color+" FIELD "} key="har">{harm}</div>
                 {removeLine ? (<div className={color+" FIELD SEP"} key="kill" onClick={removeLine}>&#128465;</div>) : ""} 
                 {editStart ?  (<div className={color+" FIELD SEP"} key="edit" onClick={editStart}>&#9998;</div>) : ""}  
             </div>)
@@ -593,7 +595,12 @@ export function Portal({portalFileName, view}) {
         } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
-    var currentCID="1";
+    function fPush(arr,elem) {
+        if(arr && elem) arr.push(elem);
+        return arr;
+    }
+
+    var currentCID="";
 
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
@@ -713,11 +720,10 @@ export function Portal({portalFileName, view}) {
 
 
                     { (ticket===SCR_DOMAIN) ? 
-                        filterInstance(ticket,area).map((aris,line)=>( 
+                        fPush(filterInstance(ticket,area),EMPTY_ARIS).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line}>
-                                {(currentCID===aris.corID) ?  "" :  (<div className="KNLINE NONE" key={"controlledrisk"+area+line}>                                    
-                                        <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
-                                        <div className="RISKCOLOR FIELD NAME"></div>
+                                {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} id={"CORID"+currentCID}>                                    
+                                        <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
                                         <div className="RISKCOLOR NOTE DATE">3.2-</div>
                                         <div className="RISKCOLOR NOTE DATE">C</div>
                                         <div className="RISKCOLOR NOTE DATE">II</div>
@@ -729,6 +735,7 @@ export function Portal({portalFileName, view}) {
                                         <div className="RISKCOLOR NOTE DATE">3.2-</div>
                                         <div className="RISKCOLOR NOTE DATE">C</div>
                                         <div className="RISKCOLOR NOTE DATE">II</div>
+                                        <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
                                     aris.comp,

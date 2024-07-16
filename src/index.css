@@ -64,6 +64,7 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .SNAM     { width: 5.8rem; text-align: left; }		
 .C100     { width: 6rem; }
 .R105     { width: 6rem; text-align: right; }
+.LNAM     { width: 7rem; text-align: left;  }
 .TENY     { width: 7rem;  text-align: right; }
 .MONY     { width: 7rem; text-align: right; font-family:monospace; font-size:1.3em; }
 .CNAM     { width: 7rem; text-align: center;  }
