@@ -333,10 +333,10 @@ export function Portal({portalFileName, view}) {
     console.log("0704 Portal finds env with "+Object.keys(process.env).map((key)=>(key+'->'+process.env[key])))
     
 
-    function portalLine(color,comp,func,hazard,code,cause,hazardousSituation,harm,removeLine,editStart,clickH) {
+    function portalLine(color,comp,func,hazard,code,cause,hazardousSituation,harm,corID,removeLine,editStart,clickH) {
         // line for a DOMAIN-related ARIS: no drag, but edit,delete,copy
         return (
-            <div className="KNLINE NONE"  onClick={clickH} key="workbench">                                     
+            <div className="KNLINE NONE" corid={corID} onClick={clickH} key="workbench">                                     
                 <div className={color+" FIELD TRASH"} key="sep">&nbsp;</div>
                 <div className={color+" FIELD NAME"} key="com">{comp}</div>
                 <div className={color+" FIELD NAME"} key="fun">{func}</div>
@@ -722,7 +722,7 @@ export function Portal({portalFileName, view}) {
                     { (ticket===SCR_DOMAIN) ? 
                         fPush(filterInstance(ticket,area),EMPTY_ARIS).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line}>
-                                {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} id={"CORID"+currentCID}>                                    
+                                {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
                                         <div className="RISKCOLOR NOTE DATE">3.2-</div>
                                         <div className="RISKCOLOR NOTE DATE">C</div>
@@ -745,6 +745,7 @@ export function Portal({portalFileName, view}) {
                                     aris.cause,
                                     aris.hazardousSituation,
                                     aris.harm,
+                                    aris.corID,
                                     ()=>{removeLine(line)},                                    
                                     ()=>{editStart(line)}
                                     )} 
