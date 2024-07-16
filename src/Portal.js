@@ -449,6 +449,10 @@ export function Portal({portalFileName, view}) {
         console.log("0776 filterARIS:"+filter)    
     }
 
+    function editRisk(tag,value) {
+        console.log("editRisk sets "+value+" to "+tag);
+    }
+
     function filterInstance(ticket,area) {
         console.log("0820 filterInstance for ticket "+ticket+" entered.")
         let arrInstance=repository[ticket];
@@ -724,17 +728,17 @@ export function Portal({portalFileName, view}) {
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
-                                        <div className="RISKCOLOR NOTE DATE" id={"URS"+currentCID}>3.2-</div>
-                                        <div className="RISKCOLOR NOTE DATE" id={"URL"+currentCID}>C</div>
-                                        <div className="RISKCOLOR NOTE DATE" id={"URA"+currentCID}>II</div>
+                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URS"+aris.corID,e.target.value))} key="urs"/>
+                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URL"+aris.corID,e.target.value))} key="url"/>
+                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URA"+aris.corID,e.target.value))} key="ura"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
                                         <div className="RISKCOLOR NOTE DATE">Service</div>
                                         <div className="RISKCOLOR NOTE DATE">Staff</div>
                                         <div className="RISKCOLOR NOTE DATE">Patients</div>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <div className="RISKCOLOR NOTE DATE" id={"MRS"+currentCID}>3.2-</div>
-                                        <div className="RISKCOLOR NOTE DATE" id={"MRL"+currentCID}>C</div>
-                                        <div className="RISKCOLOR NOTE DATE" id={"MRA"+currentCID}>II</div>
+                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRS"+aris.corID,e.target.value))} key="mrs"/>
+                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRL"+aris.corID,e.target.value))} key="mrl"/>
+                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRA"+aris.corID,e.target.value))} key="mra"/>
                                         <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
