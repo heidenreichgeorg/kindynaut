@@ -724,17 +724,17 @@ export function Portal({portalFileName, view}) {
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
-                                        <div className="RISKCOLOR NOTE DATE">3.2-</div>
-                                        <div className="RISKCOLOR NOTE DATE">C</div>
-                                        <div className="RISKCOLOR NOTE DATE">II</div>
+                                        <div className="RISKCOLOR NOTE DATE" id={"URS"+currentCID}>3.2-</div>
+                                        <div className="RISKCOLOR NOTE DATE" id={"URL"+currentCID}>C</div>
+                                        <div className="RISKCOLOR NOTE DATE" id={"URA"+currentCID}>II</div>
                                         <div className="RISKCOLOR FIELD SEP"></div>
                                         <div className="RISKCOLOR NOTE DATE">Service</div>
                                         <div className="RISKCOLOR NOTE DATE">Staff</div>
                                         <div className="RISKCOLOR NOTE DATE">Patients</div>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <div className="RISKCOLOR NOTE DATE">3.2-</div>
-                                        <div className="RISKCOLOR NOTE DATE">C</div>
-                                        <div className="RISKCOLOR NOTE DATE">II</div>
+                                        <div className="RISKCOLOR NOTE DATE" id={"MRS"+currentCID}>3.2-</div>
+                                        <div className="RISKCOLOR NOTE DATE" id={"MRL"+currentCID}>C</div>
+                                        <div className="RISKCOLOR NOTE DATE" id={"MRA"+currentCID}>II</div>
                                         <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
