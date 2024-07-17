@@ -422,37 +422,56 @@ export function Portal({portalFileName, view}) {
     }
 
 
+    function editRiskStart() {
+        let arrTag = ["URS","URL","URA","MRS","MRL","MRA"]
+        let jValues = repository[SCR_COR]
+        if(jValues) {
+            console.log("0777 editRiskStart "+JSON.stringify(jValues));
+            let arrCOR = Object.keys(repository[SCR_COR])
+            arrCOR.forEach((corID) => {
+                let assignment = jValues[corID]
+                arrTag.forEach((tag) => {
+                    let value = assignment[tag]
+                    jRiskEditor[tag]=value
+                })
+            })
+        }
+    }
+
+
     function editRisk(tag,corID,value) {
         if(tag && value) {
-            console.log("editRisk sets "+value+" to "+tag);
+            console.log("0754 editRisk("+corID+") sets "+value+" to "+tag);
             jRiskEditor.corID=corID
             jRiskEditor[tag]=value
         }
-        console.log("editRisk keeps risk= "+JSON.stringify(jRiskEditor));
+        console.log("0756 editRisk keeps risk= "+JSON.stringify(jRiskEditor));
     }
 
-    function riskEditStop() {
+    function riskEditStop(corID) {
 
         // copy all risk/COR edit content into the special editorLine instance
-        console.log("0782 riskEditStop EDITOR="+JSON.stringify(jRiskEditor));
+        console.log("0790 riskEditStop("+corID+") EDITOR="+JSON.stringify(jRiskEditor));
         let jListCor = repository[SCR_COR]
-        if(!jListCor) jListCor = {};
+
+        // (A) init new SCR_COR
+        if(!jListCor) {
+            jListCor = { };
+            repository[SCR_COR]=jListCor;
+        }
         try {
-            
-            let corid = jRiskEditor.corID
+            // (B) init new corID
+            if(!jListCor[corID]) jListCor[corID]={};
             
             try {
-                jListCor[corid]=jRiskEditor;
+                jListCor[corID]=jRiskEditor;
                 store(SCR_COR,jListCor);
-                console.log("0785 riskEditStop STORE "+JSON.stringify(jRiskEditor));
+                console.log("0792 riskEditStop STORE "+JSON.stringify(jRiskEditor));
 
-            } catch(e) { console.log("0783 riskEditStop BAD FORMAT1 "+JSON.stringify(jRiskEditor)); }
-        
-            // setMode(MODE_SAVE);
+            } catch(e) { console.log("0793 riskEditStop BAD FORMAT1 "+JSON.stringify(jRiskEditor)); }
+            console.log("0794 riskEditStop STORE "+JSON.stringify(jListCor));
 
-            console.log("0782 riskEditStop STORE "+JSON.stringify(jListCor));
-
-        } catch(e) { console.log("0783 riskEditStop BAD FORMAT2 "+JSON.stringify(jRiskEditor)+"  into "+JSON.stringify(jListCor)); }
+        } catch(e) { console.log("0795 riskEditStop BAD FORMAT2 "+JSON.stringify(jRiskEditor)+"  into "+JSON.stringify(jListCor)); }
     }
 
     function editLine(key,style,stopH) {
@@ -760,22 +779,22 @@ export function Portal({portalFileName, view}) {
 
                     { (ticket===SCR_DOMAIN) ? 
                         fPush(filterInstance(ticket,area),EMPTY_ARIS).map((aris,line)=>( 
-                            (<div className="KNLINE NONE" key={"domainrisk"+area+line}>
+                            (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
-                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URS",aris.corID,e.target.value))} key="urs"/>
-                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URL",aris.corID,e.target.value))} key="url"/>
-                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URA",aris.corID,e.target.value))} key="ura"/>
+                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URS",currentCID,e.target.value))} key="urs"/>
+                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URL",currentCID,e.target.value))} key="url"/>
+                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URA",currentCID,e.target.value))} key="ura"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
                                         <div className="RISKCOLOR NOTE DATE">Service</div>
                                         <div className="RISKCOLOR NOTE DATE">Staff</div>
                                         <div className="RISKCOLOR NOTE DATE">Patients</div>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRS",aris.corID,e.target.value))} key="mrs"/>
-                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRL",aris.corID,e.target.value))} key="mrl"/>
-                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRA",aris.corID,e.target.value))} key="mra"/>
+                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRS",currentCID,e.target.value))} key="mrs"/>
+                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRL",currentCID,e.target.value))} key="mrl"/>
+                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRA",currentCID,e.target.value))} key="mra"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <div className="FIELD NOTE DASH" onClick={riskEditStop}>OK</div>
+                                        <div className="FIELD NOTE DASH" onClick={()=>riskEditStop(currentCID)}>OK</div>
                                         <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
