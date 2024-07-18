@@ -244,7 +244,19 @@ export function Portal({portalFileName, view}) {
         return ticket;
     }
 
+    function fLoadRiskInfo(whatever) {
+        try {
+            let base64Domain=window.sessionStorage.getItem(SCR_COR);
+            if(base64Domain && base64Domain.length>SOME) {
+                let strRisks = Buffer.from(base64Domain,'base64').toString('utf8');
+                repository[SCR_COR]=JSON.parse(strRisks);
+            }
+            debug("0830 fLoadRiskInfo already in RISKS="+JSON.stringify(repository[SCOR])); 
+            
+        } catch(err) { debug("0831 fLoadRiskInfo DOMAIN decoding/parsing failed "+err);} 
 
+        return whatever;
+    }
 
 
     function compare(ticket,area) {
@@ -677,6 +689,7 @@ export function Portal({portalFileName, view}) {
         return arr;
     }
 
+    
     var currentCID=""
     var currentRisk={}
 
@@ -798,7 +811,7 @@ export function Portal({portalFileName, view}) {
 
 
                     { (ticket===SCR_DOMAIN) ? 
-                        fPush(filterInstance(ticket,area),EMPTY_ARIS).map((aris,line)=>( 
+                        fLoadRiskInfo(fPush(filterInstance(ticket,area),EMPTY_ARIS)).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
