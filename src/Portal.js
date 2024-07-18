@@ -24,6 +24,10 @@ const FCS_FILES  = "FILES"
 const KN_TICKETS="KN_TICKETS"
 const KN_FILES = "KN_FILES"
 
+// elements of COntrolled Risk
+const arrTag = ["URS","URL","URA","TGT","MRS","MRL","MRA"]
+
+
 // envelope is a container for a message queue
 // ticket identifies letter
 // letter.innerHTML is base64 form of a fixed content collection
@@ -251,10 +255,8 @@ export function Portal({portalFileName, view}) {
                 let strRisks = Buffer.from(base64Domain,'base64').toString('utf8');
                 repository[SCR_COR]=JSON.parse(strRisks);
             }
-            debug("0830 fLoadRiskInfo already in RISKS="+JSON.stringify(repository[SCOR])); 
-            
+            debug("0830 fLoadRiskInfo already in RISKS="+JSON.stringify(repository[SCOR]));             
         } catch(err) { debug("0831 fLoadRiskInfo DOMAIN decoding/parsing failed "+err);} 
-
         return whatever;
     }
 
@@ -455,7 +457,6 @@ export function Portal({portalFileName, view}) {
     function editRiskStart() {
         debug("0775 editRiskStart ENTER");
         // unmitigated risk severity, likelihood,level, target group, mitigated risk severity likelihood,level
-        let arrTag = ["URS","URL","URA","TGT","MRS","MRL","MRA"]
         let jValues = repository[SCR_COR]
         if(jValues) {
             debug("0777 editRiskStart "+JSON.stringify(jValues));
@@ -472,16 +473,23 @@ export function Portal({portalFileName, view}) {
     }
 
 
-    function editRisk(tag,target) {
+    function editRisk(target) {
+        let parent=target.parentNode
         if(target) {
-            let corID = target.parentNode.getAttribute('corid');
-            let value = target.value;
-            if(tag && corID && value) {
-                debug("0754 editRisk("+corID+") sets "+value+" to "+tag);
-                jRiskEditor.corID=corID
-                jRiskEditor[tag]=value
-                debug("0756 editRisk("+corID+") keeps risk= "+JSON.stringify(jRiskEditor));
-            } else debug("0755 editRisk missing input for ("+corID+") tried setting "+value+" to "+tag)
+            let corID = parent.getAttribute('corid');
+            let children=parent.children;
+            for (const cNode of children) {
+                let tag = cNode.getAttribute('tag')
+                if(tag) {
+                    let value = cNode.value;
+                    if(value) {
+                        debug("0754 editRisk("+corID+") sets "+value+" to "+tag);
+                        jRiskEditor.corID=corID
+                        jRiskEditor[tag]=value
+                        debug("0756 editRisk("+corID+") keeps risk= "+JSON.stringify(jRiskEditor));
+                    } else debug("0755 editRisk("+corID+") empty value "+tag);
+                } else debug("0753 editRisk("+corID+") no key in node "+cNode.tagName);
+            }
         } else debug("0757 editRisk missing target")
     }
 
@@ -815,15 +823,15 @@ export function Portal({portalFileName, view}) {
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
-                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URS",e.target))} value={getRiskField("URS")} key="urs"/>
-                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URL",e.target))} value={getRiskField("URL")} key="url"/>
-                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URA",e.target))} value={getRiskField("URA")} key="ura"/>
+                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URS")} tag="URS"/>
+                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URL")} tag="URL"/>
+                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URA")} tag="URA"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("TGT",e.target))} value={getRiskField("TGT")} key="tgt" />
+                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("TGT")} tag="TGT" />
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRS",e.target))} value={getRiskField("MRS")} key="mrs"/>
-                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRL",e.target))} value={getRiskField("MRL")} key="mrl"/>
-                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRA",e.target))} value={getRiskField("MRA")} key="mra"/>
+                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRS")} tag="MRS"/>
+                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRL")} tag="MRL"/>
+                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRA")} tag="MRA"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
                                         <div className="FIELD NOTE DASH" onClick={(e)=>riskEditStop(e.target.parentNode.getAttribute('corid'))}>OK</div>
                                         <div className="RISKCOLOR NOTABLE TRASH">{ (currentCID=aris.corID) + JSON.stringify(currentRisk=getRisk(currentCID)) }</div>
