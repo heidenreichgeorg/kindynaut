@@ -33,6 +33,10 @@ const T_DOMAIN = '["DOMAIN"]';
 
 const EMPTY_ARIS = {'comp':' ','func':' ','hazard':' ','code':' ','cause':' ','hazardousSituation':' ','harm':' '}
 
+function debug(str) {
+    console.log(str)
+}
+
 function sanitize(str) {
     if(!str) return "0";
     let nocol=str.replaceAll(',','_')
@@ -51,29 +55,29 @@ function init() {
     store(SCR_DOMAIN,[]); 
     store(SCR_COR,{}); 
 
-    console.log("0708 init SCR_DOMAIN="+repository[SCR_DOMAIN])
+    debug("0708 init SCR_DOMAIN="+repository[SCR_DOMAIN])
 }
 
 // repository mirrors the json-lists stored in sessionStorage for the domain and also for all files
-let repository={'DOMAIN':{}};
+let repository={'DOMAIN':[],'SCR_COR':{}};
 let repFiles=[];
 
 function store(ticket,arrList)  {
     try {
-        console.log("make712 STORE searches "+ticket);
+        debug("0712 STORE searches "+ticket);
         repository[ticket]=arrList;
         try {
-            console.log("0714 STORE finds repository on keys list="+JSON.stringify(Object.keys(arrList)));
+            debug("0714 STORE finds repository on keys list="+JSON.stringify(Object.keys(arrList)));
             
             let strList = JSON.stringify(arrList);
-            console.log("0716 STORE key list="+strList);
+            debug("0716 STORE key list="+strList);
             try {
                 let b64encoded= Buffer.from(strList,"utf8").toString('base64');
-                console.log("0718 STORE keys for ticket ("+ticket+") in base64 as"+b64encoded);
+                debug("0718 STORE keys for ticket ("+ticket+") in base64 as"+b64encoded);
                 window.sessionStorage.setItem(ticket,b64encoded);
-            } catch(err) {console.log("715 STORE "+ticket+" ->"+err)}
-        } catch(err) {console.log("713 STORE "+ticket+" ->"+err)}
-    } catch(err) {console.log("711 STORE "+ticket+" ->"+err)}
+            } catch(err) {debug("0715 STORE "+ticket+" ->"+err)}
+        } catch(err) {debug("0713 STORE "+ticket+" ->"+err)}
+    } catch(err) {debug("0711 STORE "+ticket+" ->"+err)}
 }
 
 
@@ -84,7 +88,7 @@ function addProjAris(jAris,strMessage) {
         if(jAris) {
             if(jAris.hazard) {
                 let jListAris = repository[SCR_DOMAIN];
-                console.log("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into "+JSON.stringify(jListAris));
+                debug("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into "+JSON.stringify(jListAris));
         
                 if(!Array.isArray(jListAris)) jListAris=[]; // GH20240708 help with startup
 
@@ -96,19 +100,19 @@ function addProjAris(jAris,strMessage) {
                 let aKeys={}
                 jListAris.map((aris)=>(aKeys[aris.arisID]=0));
                 jListAris.map((aris)=>(aKeys[aris.arisID]=1+aKeys[aris.arisID]));
-                console.log("0894 addProjAris stored with now "+jListAris.length+" entries for "+JSON.stringify(aKeys));   
+                debug("0894 addProjAris stored with now "+jListAris.length+" entries for "+JSON.stringify(aKeys));   
 
                 let jNewList = [];
                 Object.keys(aKeys).map((arisID)=>(jListAris.forEach((aris)=>{if(aris.arisID===arisID) jNewList.push(aris)})))
 
-                console.log("0896 addProjAris sorts new list with remaining "+jListAris.length+" entries.");   
+                debug("0896 addProjAris sorts new list with remaining "+jListAris.length+" entries.");   
                 store(SCR_DOMAIN,jNewList);
 
-            } else console.log("0895 addProjAris "+strMessage+" INVALID:"+JSON.stringify(jAris));
+            } else debug("0895 addProjAris "+strMessage+" INVALID:"+JSON.stringify(jAris));
 
-            console.log("0898 addProjAris EXIT "+strMessage+" with these arisIDs: "+JSON.stringify(jListAris.map((aris)=>(aris.arisID))));
+            debug("0898 addProjAris EXIT "+strMessage+" with these arisIDs: "+JSON.stringify(jListAris.map((aris)=>(aris.arisID))));
         }
-        else console.log("0891 addProjAris "+strMessage+" EMPTY");
+        else debug("0891 addProjAris "+strMessage+" EMPTY");
     }
 }
 
@@ -179,7 +183,7 @@ export function Portal({portalFileName, view}) {
         letter.setAttribute('id',ticket)
         letter.setAttribute('key',fileName)
         envelope.appendChild(letter)
-        console.log("addFileTicket "+ticket)
+        debug("0752 addFileTicket "+ticket)
 
 //         load(FCS_FILES);
 
@@ -200,25 +204,25 @@ export function Portal({portalFileName, view}) {
     // GH20240514 data coming from initDomain -- e is a string already
 
 
-    function testComp(e) { console.log("0720 "+JSON.stringify(setComp)+"+"+JSON.stringify(e)); if(setComp[e.comp]) return false;               return setComp[e.comp]=1;}
-    function testFunc(e) { console.log("0722 "+JSON.stringify(setFunc)+"+"+JSON.stringify(e)); if(setFunc[e.func]) return false;               return setFunc[e.func]=1;}
-    function testHazd(e) { console.log("0724 "+JSON.stringify(setHazd)+"+"+JSON.stringify(e)); if(setHazd[e.hazard]) return false;             return setHazd[e.hazard]=1;}
-    function testCaus(e) { console.log("0726 "+JSON.stringify(setCaus)+"+"+JSON.stringify(e)); if(setCaus[e.cause]) return false;              return setCaus[e.cause]=1;}
-    function testCode(e) { console.log("0728 "+JSON.stringify(setCode)+"+"+JSON.stringify(e)); if(setCode[e.code]) return false;               return setCode[e.code]=1;}
-    function testSitu(e) { console.log("0730 "+JSON.stringify(setSitu)+"+"+JSON.stringify(e)); if(setSitu[e.hazardousSituation]) return false; return setSitu[e.hazardousSituation]=1;}
-    function testHarm(e) { console.log("0732 "+JSON.stringify(setHarm)+"+"+JSON.stringify(e)); if(setHarm[e.harm]) return false;               return setHarm[e.harm]=1;}
+    function testComp(e) { debug("0720 "+JSON.stringify(setComp)+"+"+JSON.stringify(e)); if(setComp[e.comp]) return false;               return setComp[e.comp]=1;}
+    function testFunc(e) { debug("0722 "+JSON.stringify(setFunc)+"+"+JSON.stringify(e)); if(setFunc[e.func]) return false;               return setFunc[e.func]=1;}
+    function testHazd(e) { debug("0724 "+JSON.stringify(setHazd)+"+"+JSON.stringify(e)); if(setHazd[e.hazard]) return false;             return setHazd[e.hazard]=1;}
+    function testCaus(e) { debug("0726 "+JSON.stringify(setCaus)+"+"+JSON.stringify(e)); if(setCaus[e.cause]) return false;              return setCaus[e.cause]=1;}
+    function testCode(e) { debug("0728 "+JSON.stringify(setCode)+"+"+JSON.stringify(e)); if(setCode[e.code]) return false;               return setCode[e.code]=1;}
+    function testSitu(e) { debug("0730 "+JSON.stringify(setSitu)+"+"+JSON.stringify(e)); if(setSitu[e.hazardousSituation]) return false; return setSitu[e.hazardousSituation]=1;}
+    function testHarm(e) { debug("0732 "+JSON.stringify(setHarm)+"+"+JSON.stringify(e)); if(setHarm[e.harm]) return false;               return setHarm[e.harm]=1;}
 
 
 
 
     function addDOMAINRisk(ticket,area) {
         // add risk in this FILE to DOMAIN list    
-        console.log("0880 Portal.addDOMAINRisk "+ticket+ "  "+area); 
+        debug("0880 Portal.addDOMAINRisk "+ticket+ "  "+area); 
 
         let jRawList=filterInstance(ticket,area);
 
         try {
-            console.log("0882 Portal.addDOMAINRisk to transfer filtered FILE risks "+JSON.stringify(jRawList)+" risks.");
+            debug("0882 Portal.addDOMAINRisk to transfer filtered FILE risks "+JSON.stringify(jRawList)+" risks.");
             let arrDomain=[];
             try {
                 let base64Domain=window.sessionStorage.getItem(SCR_DOMAIN);
@@ -226,16 +230,16 @@ export function Portal({portalFileName, view}) {
                     let strDomain = Buffer.from(base64Domain,'base64').toString('utf8');
                     arrDomain=JSON.parse(strDomain);
                 }
-                console.log("0884 Portal.addDOMAINRisk already in DOMAIN="+JSON.stringify(arrDomain)); 
+                debug("0884 Portal.addDOMAINRisk already in DOMAIN="+JSON.stringify(arrDomain)); 
                 
                 try { 
                     jRawList.forEach((aris)=>{arrDomain.push(aris)});
 
                     updateDomainWindow(arrDomain);
 
-                } catch(err) { console.log("0881 Portal.addDOMAINRisk DOMAIN push failed "+err);}
-            } catch(err) { console.log("0883 Portal.addDOMAINRisk DOMAIN decoding/parsing failed "+err);} 
-        } catch(err) { console.log("0885 Portal.addDOMAINRisk new risk parsing failed "+err);}
+                } catch(err) { debug("0881 Portal.addDOMAINRisk DOMAIN push failed "+err);}
+            } catch(err) { debug("0883 Portal.addDOMAINRisk DOMAIN decoding/parsing failed "+err);} 
+        } catch(err) { debug("0885 Portal.addDOMAINRisk new risk parsing failed "+err);}
 
         return ticket;
     }
@@ -246,7 +250,7 @@ export function Portal({portalFileName, view}) {
     function compare(ticket,area) {
     
         // add risk in FILE to DOMAIN risks    
-        console.log("0880 Portal.compare "+ticket+ "  "+area); 
+        debug("0880 Portal.compare "+ticket+ "  "+area); 
 
     
 
@@ -259,16 +263,16 @@ export function Portal({portalFileName, view}) {
         let fileIndex = Object.keys(fileKeys).sort();
 
 
-        console.log("0888A\n"+fileIndex.map((key)=>(key+":\n"+(fileKeys[key].map((d)=>(jGrid(d)))).join('\n')   )).join('\n'));
+        debug("0888A\n"+fileIndex.map((key)=>(key+":\n"+(fileKeys[key].map((d)=>(jGrid(d)))).join('\n')   )).join('\n'));
 
 
         let jListAris = repository[SCR_DOMAIN];
         let domainKeys = {}        
         jListAris.forEach((risk)=>{let id=arisIdentifier(risk); if(domainKeys[id] && domainKeys[id].length>0) domainKeys[id].push(risk); else domainKeys[id]=[risk] })
-            console.log("0888B\n"+JSON.stringify(domain));
+            debug("0888B\n"+JSON.stringify(domain));
         let domainIndex = Object.keys(domainKeys).sort();
 
-        console.log("0888C\n"+domainIndex.map((key)=>(key+":\n"+(domainIndex[key].map((d)=>(jGrid(d)))).join('\n')   )).join('\n'));
+        debug("0888C\n"+domainIndex.map((key)=>(key+":\n"+(domainIndex[key].map((d)=>(jGrid(d)))).join('\n')   )).join('\n'));
         // DOMAIN list domain content for each key
         // do the same for DOMAIN and merge the sorted key lists.
         // then play the joint index file and tell whats here and whats there
@@ -282,51 +286,51 @@ export function Portal({portalFileName, view}) {
 
     function updateDomainWindow(arrDomain) {                    
         let strTransfer=JSON.stringify(arrDomain);
-        console.log("0886 Portal.updateDomainWindow new DOMAIN risks="+strTransfer);
+        debug("0886 Portal.updateDomainWindow new DOMAIN risks="+strTransfer);
         let transfer64 = Buffer.from(strTransfer,'utf8').toString('base64');
         window.sessionStorage.setItem(SCR_DOMAIN,transfer64);
         setMode(mode+1); // trigger redraw
     }
 
 
-    console.log("0800 Portal for "+focus);
+    debug("0800 Portal for "+focus);
 
     function update() {        
         let message=receiveLetter();
         if(message && message.ticket.length>SOME) {
-            console.log("0812 Portal.update: new message.ticket "+message.ticket);  
+            debug("0812 Portal.update: new message.ticket "+message.ticket);  
             let base64encoded=message.content;
             if(base64encoded && base64encoded.length>SOME) {
-                console.log("0812 Portal.update checks letter from message.content ["+base64encoded+"]");
+                debug("0812 Portal.update checks letter from message.content ["+base64encoded+"]");
 
                 let strTickets = window.sessionStorage.getItem(KN_TICKETS);
                 if(!strTickets || strTickets.length<SOME) { 
                     strTickets='[]';
-                    console.log("0814 Portal.update finds no strTickets "+strTickets);
+                    debug("0814 Portal.update finds no strTickets "+strTickets);
                 } else {
-                    console.log("0814 Portal.update finds strTickets "+strTickets);
+                    debug("0814 Portal.update finds strTickets "+strTickets);
                 }
 
                 try {                    
                     let jTickets= JSON.parse(strTickets);         
                     jTickets.push(message.ticket);
                     window.sessionStorage.setItem(KN_TICKETS, JSON.stringify(jTickets));
-                    console.log("0812 Portal.update sessionStorage with ticket");
+                    debug("0812 Portal.update sessionStorage with ticket");
 
                     window.sessionStorage.setItem(message.ticket,base64encoded);
-                    console.log("0816 Portal.update sessionStorage with content");
+                    debug("0816 Portal.update sessionStorage with content");
 
                     let strFiles = window.sessionStorage.getItem(KN_FILES);
                     repFiles= JSON.parse(strFiles);         
                     repFiles.push(message.fileName);                    
                     strFiles=JSON.stringify(repFiles);
                     window.sessionStorage.setItem(KN_FILES,strFiles);
-                    console.log("0818 Portal.update sessionStorage with file names "+strFiles);
+                    debug("0818 Portal.update sessionStorage with file names "+strFiles);
 
                     setMode(mode+1) // notify parent for re-paint
       
-                } catch(e) { console.log("0815 Cannot parse JSON"); }
-            } else console.log("0813 Portal.update gets empty content.");
+                } catch(e) { debug("0815 Cannot parse JSON"); }
+            } else debug("0813 Portal.update gets empty content.");
         }        
     }
 
@@ -334,7 +338,7 @@ export function Portal({portalFileName, view}) {
 
 
     /* security */
-    console.log("0704 Portal finds env with "+Object.keys(process.env).map((key)=>(key+'->'+process.env[key])))
+    debug("0704 Portal finds env with "+Object.keys(process.env).map((key)=>(key+'->'+process.env[key])))
     
 
     function portalLine(color,comp,func,hazard,code,cause,hazardousSituation,harm,corID,removeLine,editStart,clickH) {
@@ -373,12 +377,12 @@ export function Portal({portalFileName, view}) {
     // begin editing at all 
     function editStart(index) {
         let jListAris = repository[SCR_DOMAIN]
-        console.log("0774 editStart ENTER element at index="+index)
+        debug("0774 editStart ENTER element at index="+index)
         let jContent = jListAris[index]
         setJArisEditor(jContent)
 
         setMode(MODE_EDIT)
-        console.log("0774 editStart BEGIN EDITING for editing element ="+JSON.stringify(jContent))
+        debug("0774 editStart BEGIN EDITING for editing element ="+JSON.stringify(jContent))
     }
 
     function getEditor(attribute) {
@@ -391,43 +395,58 @@ export function Portal({portalFileName, view}) {
     function setEditInput(comp,value) {
         // onInput handler for edit controls
         let result=JSON.stringify(jArisEditor)
-        console.log("0780 setEditInput ENTER ("+comp+") set value="+result);
+        debug("0780 setEditInput ENTER ("+comp+") set value="+result);
 
         try {
             let jContent=JSON.parse(result)
             jContent[comp]=value;
             result=JSON.stringify(jContent);
             setJArisEditor(jContent);
-            console.log("0780 setEditInput LOAD editor="+result);
-
-        } catch(e) { console.log("0781 editStart ("+comp+","+value+") BAD FORMAT "+result); }
+            debug("0780 setEditInput LOAD editor="+result);
+        } catch(e) { debug("0781 editStart ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
 
     function editStop() {
         // copy all edit content into the special editorLine instance
-        console.log("0782 editStop EDITOR="+JSON.stringify(jArisEditor));
-        try {
-            
+        debug("0782 editStop EDITOR="+JSON.stringify(jArisEditor));
+        try {            
             let jListAris = repository[SCR_DOMAIN];
-            jListAris.push(jArisEditor);
-            
+            jListAris.push(jArisEditor);            
             store(SCR_DOMAIN,jListAris);
-
             setMode(MODE_SAVE);
-
-            console.log("0782 editStop STORE "+JSON.stringify(jArisEditor));
-
-        } catch(e) { console.log("0783 editStop BAD FORMAT "+JSON.stringify(jArisEditor)); }
+            debug("0782 editStop STORE "+JSON.stringify(jArisEditor));
+        } catch(e) { debug("0783 editStop BAD FORMAT "+JSON.stringify(jArisEditor)); }
     }
 
+    function getRisk(corID) {
+        let result={}
+        let jListCor = repository[SCR_COR]
+        // (A) init new SCR_COR
+        if(!jListCor) {
+            jListCor = { };
+            repository[SCR_COR]=jListCor;
+        }
+        // (B) init new corID
+        if(corID) {
+            if(!jListCor[corID]) jListCor[corID]={};
+            result=jListCor[corID];
+        }
+        return result;
+    }
+
+    function getRiskField(attribute) {
+        debug("0759 getRiskField("+attribute+") from "+JSON.stringify(currentRisk))
+        return currentRisk[attribute]
+    }
 
     function editRiskStart() {
-        console.log("0775 editRiskStart ENTER");
-        let arrTag = ["URS","URL","URA","MRS","MRL","MRA"]
+        debug("0775 editRiskStart ENTER");
+        // unmitigated risk severity, likelihood,level, target group, mitigated risk severity likelihood,level
+        let arrTag = ["URS","URL","URA","TGT","MRS","MRL","MRA"]
         let jValues = repository[SCR_COR]
         if(jValues) {
-            console.log("0777 editRiskStart "+JSON.stringify(jValues));
+            debug("0777 editRiskStart "+JSON.stringify(jValues));
             let arrCOR = Object.keys(repository[SCR_COR])
             arrCOR.forEach((corID) => {
                 let assignment = jValues[corID]
@@ -436,6 +455,7 @@ export function Portal({portalFileName, view}) {
                     jRiskEditor[tag]=value
                 })
             })
+            // setJRiskEditor(jRiskEditor)
         }
     }
 
@@ -445,38 +465,32 @@ export function Portal({portalFileName, view}) {
             let corID = target.parentNode.getAttribute('corid');
             let value = target.value;
             if(tag && corID && value) {
-                console.log("0754 editRisk("+corID+") sets "+value+" to "+tag);
+                debug("0754 editRisk("+corID+") sets "+value+" to "+tag);
                 jRiskEditor.corID=corID
                 jRiskEditor[tag]=value
-                console.log("0756 editRisk("+corID+") keeps risk= "+JSON.stringify(jRiskEditor));
-            } else console.log("0755 editRisk missing input for ("+corID+") tried setting "+value+" to "+tag)
-        } else console.log("0757 editRisk missing target")
-        }
+                debug("0756 editRisk("+corID+") keeps risk= "+JSON.stringify(jRiskEditor));
+            } else debug("0755 editRisk missing input for ("+corID+") tried setting "+value+" to "+tag)
+        } else debug("0757 editRisk missing target")
+    }
 
     function riskEditStop(corID) {
-
         // copy all risk/COR edit content into the special editorLine instance
-        console.log("0790 riskEditStop("+corID+") EDITOR="+JSON.stringify(jRiskEditor));
+        debug("0790 riskEditStop("+corID+") EDITOR="+JSON.stringify(jRiskEditor));
         let jListCor = repository[SCR_COR]
-
         // (A) init new SCR_COR
         if(!jListCor) {
             jListCor = { };
             repository[SCR_COR]=jListCor;
         }
+        // (B) init new corID
+        if(!jListCor[corID]) jListCor[corID]={};
+
         try {
-            // (B) init new corID
-            if(!jListCor[corID]) jListCor[corID]={};
-            
-            try {
-                jListCor[corID]=jRiskEditor;
-                store(SCR_COR,jListCor);
-                console.log("0792 riskEditStop STORE "+JSON.stringify(jRiskEditor));
-
-            } catch(e) { console.log("0793 riskEditStop BAD FORMAT1 "+JSON.stringify(jRiskEditor)); }
-            console.log("0794 riskEditStop STORE "+JSON.stringify(jListCor));
-
-        } catch(e) { console.log("0795 riskEditStop BAD FORMAT2 "+JSON.stringify(jRiskEditor)+"  into "+JSON.stringify(jListCor)); }
+            jListCor[corID]=jRiskEditor;
+            store(SCR_COR,jListCor);
+            debug("0792 riskEditStop STORE "+JSON.stringify(jRiskEditor));
+        } catch(e) { debug("0793 riskEditStop BAD FORMAT1 "+JSON.stringify(jRiskEditor)); }
+        debug("0794 riskEditStop STORE "+JSON.stringify(jListCor));
     }
 
     function editLine(key,style,stopH) {
@@ -496,11 +510,11 @@ export function Portal({portalFileName, view}) {
     // jListAris reflects the repository entry  for SCR_DOMAIN, i.e. the work-space     
     function removeLine(index) {
         let jListAris = repository[SCR_DOMAIN];
-        console.log("0770 removeLine ENTER remove element at index="+index);        
+        debug("0770 removeLine ENTER remove element at index="+index);        
         if(index>=0)  jListAris.splice(index,1);
         store(SCR_DOMAIN,jListAris);
         setMode(mode+1); // trigger redraw
-        console.log("0770 removeLine EXIT with remaining "+jListAris.length+" entries.");        
+        debug("0770 removeLine EXIT with remaining "+jListAris.length+" entries.");        
     }
     
     function filterARIS(tag,value) {
@@ -508,17 +522,17 @@ export function Portal({portalFileName, view}) {
         pattern[tag]=value;
         let filter=JSON.stringify(pattern);
         setStrFilter(filter);
-        console.log("0776 filterARIS:"+filter)    
+        debug("0776 filterARIS:"+filter)    
     }
 
 
     function filterInstance(ticket,area) {
-        console.log("0820 filterInstance for ticket "+ticket+" entered.")
+        debug("0820 filterInstance for ticket "+ticket+" entered.")
         let arrInstance=repository[ticket];
         let filteredAris=[];
         let enableFlag=false ;
         if(arrInstance && arrInstance.length && Array.isArray(arrInstance)) {
-            console.log("0822 filterInstance using filter "+strFilter)
+            debug("0822 filterInstance using filter "+strFilter)
             arrInstance.forEach((line)=>{            
                 let jFilter=JSON.parse(strFilter.toLowerCase());
                 let flag=true;
@@ -554,7 +568,7 @@ export function Portal({portalFileName, view}) {
                     filteredAris.push(line);
             });
         }
-        console.log("0826 filterInstance: filtered list for ticket "+ticket+" still has "+filteredAris.length+" risks.")
+        debug("0826 filterInstance: filtered list for ticket "+ticket+" still has "+filteredAris.length+" risks.")
                 
         return filteredAris;
     }
@@ -563,16 +577,16 @@ export function Portal({portalFileName, view}) {
     let jTickets=[];
     try { 
         let strTickets=window.sessionStorage.getItem(KN_TICKETS)
-        console.log("0802 Portal reads tickets as "+strTickets);
+        debug("0802 Portal reads tickets as "+strTickets);
         jTickets=JSON.parse(strTickets);
-    } catch(err) { console.log("0801 Portal failed in KN_TICKETS "+err);}
+    } catch(err) { debug("0801 Portal failed in KN_TICKETS "+err);}
 
     let jFiles=[];
     try { 
         let strFiles=window.sessionStorage.getItem(KN_FILES);
-        console.log("0802 Portal reads files as "+strFiles);
+        debug("0802 Portal reads files as "+strFiles);
         jFiles=JSON.parse(strFiles);
-    } catch(err) { console.log("0803 Portal failed in KN_FILES "+err);}
+    } catch(err) { debug("0803 Portal failed in KN_FILES "+err);}
 
     
     function backTrans(jAris) {
@@ -581,7 +595,7 @@ export function Portal({portalFileName, view}) {
                 Object.keys(jAris).forEach((key)=>{
                     try {
                         result[key]=Buffer.from(jAris[key],'base64').toString('utf8')
-                   } catch(err) { console.log("0752 backTrans["+key+"] base64 decoding failed "+err);}
+                   } catch(err) { debug("0752 backTrans["+key+"] base64 decoding failed "+err);}
                 })
         }
         return result;
@@ -590,7 +604,7 @@ export function Portal({portalFileName, view}) {
     let fileName="?";
     try { 
         jTickets.forEach((ticket,line)=>{
-                console.log("0804 Portal retrieves base64 for ("+ticket+")");
+                debug("0804 Portal retrieves base64 for ("+ticket+")");
                 let base64encoded=window.sessionStorage.getItem(ticket);
                 let jList=[{"harm":"no data"}];
                 let strList = JSON.stringify(jList);
@@ -601,29 +615,29 @@ export function Portal({portalFileName, view}) {
                         strList = Buffer.from(base64encoded,'base64').toString('utf8');
                         try {
                             jRawList=JSON.parse(strList);
-                            console.log("0806 Portal.update finds strList with length=="+jRawList.length);
-                        } catch(err) { console.log("0805 Portal parse failed "+err);}
+                            debug("0806 Portal.update finds strList with length=="+jRawList.length);
+                        } catch(err) { debug("0805 Portal parse failed "+err);}
                         
                         // GH20240514 key with number jList = jRawList.map((risk,index)=>((risk.key=index)?risk:risk))
                         jList=jRawList;
 
                         fileName=jFiles[line];
-                    } catch(err) { console.log("0807 Portal base64 decoding failed "+err);}
+                    } catch(err) { debug("0807 Portal base64 decoding failed "+err);}
 
                     // back-translation of attributes that had been encoded by extract.js
                     if(fileName.endsWith('html')) {
                         try {
                             let jTrans=jList.map((jAris)=>(backTrans(jAris)))
                             jList=jTrans;
-                        } catch(err) { console.log("0807-H Portal HTML decoding failed "+err);}
+                        } catch(err) { debug("0807-H Portal HTML decoding failed "+err);}
                     }
 
                     repository[ticket]=jList;
-                    console.log("0808-LOOP Portal rebuilds content from "+ticket);
-                } else console.log("0808-FAIL Portal finds empty base64encoded ticket for "+ticket);
+                    debug("0808-LOOP Portal rebuilds content from "+ticket);
+                } else debug("0808-FAIL Portal finds empty base64encoded ticket for "+ticket);
             });
-            console.log("0808-M Portal rebuilds content from tickets");
-    } catch(err) { console.log("0809 Portal failed "+err);}
+            debug("0808-M Portal rebuilds content from tickets");
+    } catch(err) { debug("0809 Portal failed "+err);}
 
     let arrFileNames=[];
     try {
@@ -631,7 +645,7 @@ export function Portal({portalFileName, view}) {
     } catch(e) {}
 
     let jListAris = repository[SCR_DOMAIN];
-    console.log("0810 DOMAIN("+jListAris+") shows "+(jListAris ? Object.keys(jListAris):"empty")+"# of risks.")
+    debug("0810 DOMAIN("+jListAris+") shows "+(jListAris ? Object.keys(jListAris):"empty")+"# of risks.")
 
 
 
@@ -646,16 +660,16 @@ export function Portal({portalFileName, view}) {
     function setFileInput(comp,value) {
         // onInput handler for edit controls
         let result=JSON.stringify(jFile)
-        console.log("0780 setFileInput ENTER ("+comp+") set value="+result);
+        debug("0780 setFileInput ENTER ("+comp+") set value="+result);
 
         try {
             let jContent=JSON.parse(result)
             jContent[comp]=sanitize(value);
             result=JSON.stringify(jContent);
             setJFile(jContent);
-            console.log("0780 setFileInput LOAD editor="+result);
+            debug("0780 setFileInput LOAD editor="+result);
 
-        } catch(e) { console.log("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
+        } catch(e) { debug("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
     function fPush(arr,elem) {
@@ -663,7 +677,8 @@ export function Portal({portalFileName, view}) {
         return arr;
     }
 
-    var currentCID="";
+    var currentCID=""
+    var currentRisk={}
 
     return (
         <div  key="top" className="BORDER" onLoad={(e)=>{init(e)} }> 
@@ -787,20 +802,18 @@ export function Portal({portalFileName, view}) {
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
-                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URS",e.target))} key="urs"/>
-                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URL",e.target))} key="url"/>
-                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URA",e.target))} key="ura"/>
+                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URS",e.target))} value={getRiskField("URS")} key="urs"/>
+                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URL",e.target))} value={getRiskField("URL")} key="url"/>
+                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("URA",e.target))} value={getRiskField("URA")} key="ura"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <div className="RISKCOLOR NOTE DATE">Service</div>
-                                        <div className="RISKCOLOR NOTE DATE">Staff</div>
-                                        <div className="RISKCOLOR NOTE DATE">Patients</div>
+                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("TGT",e.target))} value={getRiskField("TGT")} key="tgt" />
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRS",e.target))} key="mrs"/>
-                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRL",e.target))} key="mrl"/>
-                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRA",e.target))} key="mra"/>
+                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRS",e.target))} value={getRiskField("MRS")} key="mrs"/>
+                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRL",e.target))} value={getRiskField("MRL")} key="mrl"/>
+                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk("MRA",e.target))} value={getRiskField("MRA")} key="mra"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
                                         <div className="FIELD NOTE DASH" onClick={(e)=>riskEditStop(e.target.parentNode.getAttribute('corid'))}>OK</div>
-                                        <div className="RISKCOLOR NOTABLE TRASH">{currentCID=aris.corID}</div>
+                                        <div className="RISKCOLOR NOTABLE TRASH">{ (currentCID=aris.corID) + JSON.stringify(currentRisk=getRisk(currentCID)) }</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
                                     aris.comp,
