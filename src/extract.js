@@ -70,8 +70,15 @@ export function processHTML(aLines) {
                          let jHarm=jARID?jARID['riskman:hasHarm']:"H";
                          let strHarm=jHarm?jHarm.cMDNodeValue:"Harm?";
 
+                         // GH20240719
+                         let jSDA = jCOR?jCOR['riskman:hasSDA']:"S";
+                         let arrSDA = []; Object.keys(jSDA).forEach((key)=>{if(key.startsWith('SDA')) { let sda=jSDA[key].has.has.has; arrSDA.push(sda['riskman:cause'])}})
+                         let strCaus=arrSDA[0].cMDNodeValue;
+
                          let jHASDOSH=jARID?jARID['riskman:hasDomainSpecificHazard']:null;
-                         //let strHASDOSH=jHASDOSH?jHASDOSH.title:"H";
+                         //list of DOSH
+
+
 
                          Object.keys(jHASDOSH).forEach((doshKey)=>{
 
@@ -87,9 +94,11 @@ export function processHTML(aLines) {
                                    let jHAZD=jDOSH['riskman:hasHazard'];
                                    let strHazd=jHAZD?jHAZD.cMDNodeValue:"Func?";
 
+          
                                    aCollection.push('{ "func":"'+strFunc+
                                                   '", "comp":"'+strComp+
-                                                  '",  "hazard":"'+strHazd+
+                                                  '", "hazard":"'+strHazd+
+                                                  '", "cause":"'+strCaus+
                                                   '", "hazardousSituation":"'+strCOR+
                                                   '", "harm":"'+strHarm+
                                                   '", "ControlledRisk":"'+key.toString()+

@@ -71,13 +71,13 @@ function store(ticket,arrList)  {
         debug("0712 STORE searches "+ticket);
         repository[ticket]=arrList;
         try {
-            debug("0714 STORE finds repository on keys list="+JSON.stringify(Object.keys(arrList)));
+            debug("0714 STORE finds repository on keys list #"+Object.keys(arrList).length);
             
             let strList = JSON.stringify(arrList);
             debug("0716 STORE key list="+strList);
             try {
                 let b64encoded= Buffer.from(strList,"utf8").toString('base64');
-                debug("0718 STORE keys for ticket ("+ticket+") in base64 as"+b64encoded);
+                //debug("0718 STORE keys for ticket ("+ticket+") in base64 as"+b64encoded);
                 window.sessionStorage.setItem(ticket,b64encoded);
             } catch(err) {debug("0715 STORE "+ticket+" ->"+err)}
         } catch(err) {debug("0713 STORE "+ticket+" ->"+err)}
@@ -92,7 +92,7 @@ function addProjAris(jAris,strMessage) {
         if(jAris) {
             if(jAris.hazard) {
                 let jListAris = repository[SCR_DOMAIN];
-                debug("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into "+JSON.stringify(jListAris));
+                debug("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into #"+Object.keys(jListAris).length);
         
                 if(!Array.isArray(jListAris)) jListAris=[]; // GH20240708 help with startup
 
@@ -104,15 +104,15 @@ function addProjAris(jAris,strMessage) {
                 let aKeys={}
                 jListAris.map((aris)=>(aKeys[aris.arisID]=0));
                 jListAris.map((aris)=>(aKeys[aris.arisID]=1+aKeys[aris.arisID]));
-                debug("0894 addProjAris stored with now "+jListAris.length+" entries for "+JSON.stringify(aKeys));   
+                debug("0894 addProjAris stored with now "+jListAris.length+" entries for #"+aKeys.length);   
 
                 let jNewList = [];
                 Object.keys(aKeys).map((arisID)=>(jListAris.forEach((aris)=>{if(aris.arisID===arisID) jNewList.push(aris)})))
 
-                debug("0896 addProjAris sorts new list with remaining "+jListAris.length+" entries.");   
+                //debug("0896 addProjAris sorts new list with remaining "+jListAris.length+" entries.");   
                 store(SCR_DOMAIN,jNewList);
 
-            } else debug("0895 addProjAris "+strMessage+" INVALID:"+JSON.stringify(jAris));
+            } else debug("0895 addProjAris "+strMessage+" NO HAZARD - INVALID:"+JSON.stringify(jAris));
 
             debug("0898 addProjAris EXIT "+strMessage+" with these arisIDs: "+JSON.stringify(jListAris.map((aris)=>(aris.arisID))));
         }
@@ -237,7 +237,14 @@ export function Portal({portalFileName, view}) {
                 debug("0884 Portal.addDOMAINRisk already in DOMAIN="+JSON.stringify(arrDomain)); 
                 
                 try { 
-                    jRawList.forEach((aris)=>{arrDomain.push(aris)});
+                    jRawList.forEach((aris)=>{
+                        // was arrDomain.push(aris) GH20240719
+                        addProjAris(aris,"adDomainRisk into "+ticket)
+                        // !! CAN resolve arrays by itself
+                        // GH 20240719 aris identifier needs cause,code members
+                        // cause,code are not transferred on whole html file transfers
+                    });
+                    // GH20240719 must sort by ControlledRisk, do not just push into DOSH list...
 
                     updateDomainWindow(arrDomain);
 
