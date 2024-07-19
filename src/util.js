@@ -390,12 +390,12 @@ export function makeArchiveButton(url,domain) {
     return makeURLButton(idButton,url,fileName);
 }
 
-export function makeExportFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version) {
-    processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version,"Convert",convert2VDE);
+export function makeExportFile(jListCORs,idButton,arrListDoSH,if_manufacturer,if_project,if_version) {
+    processInternalFile(jListCORs,idButton,arrListDoSH,if_manufacturer,if_project,if_version,"Convert",convert2VDE);
 }
 
-export function makeInternalFile(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version) {
-    processInternalFile(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version,"Get",keep);
+export function makeInternalFile(jListCORs,idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version) {
+    processInternalFile(jListCORs,idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version,"Get",keep);
 }
 
 
@@ -413,7 +413,7 @@ function keep(strTable,fileName,idButton) {
     //return strTable; 
 }
 
-function processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_version,action,converter) {
+function processInternalFile(jListCORs,idButton,arrListDoSH,if_manufacturer,if_project,if_version,action,converter) {
 
     // create string according to VDE SPEC 90025 internal format
 
@@ -462,7 +462,6 @@ function processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_
     arrListDoSH.map((aris)=>(cWitness[aris.corID]=aris));
     console.log("1072 makeInternalFile with CoR keys and one matching CoR "+JSON.stringify(cWitness));   
 
-
     //for each ARIS witness, generate one COR
     let rit_id=0;
     let arrCORI = Object.keys(cWitness).map((corID)=>( initCOR(cWitness[corID],rit_id++,corID,jComponent,jFunction,jHarm)))
@@ -471,7 +470,8 @@ function processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_
 
         
         let jCOR = arrCORI[i]
-        console.log("1074 makeInternalFile fills COR "+corID);   
+        let jRisk=jListCORs[corID] // from editor , repository[SCR_COR]
+        console.log("1074 makeInternalFile fills COR "+corID + " repository has "+JSON.stringify(jRisk));   
 
         jListCor[corID]=jCOR;
         // jListCor assigns corID to COR's internal file structure
@@ -482,7 +482,7 @@ function processInternalFile(idButton,arrListDoSH,if_manufacturer,if_project,if_
             let jDoSH = aWitness[did];
             if(jDoSH.corID===jCOR.refHazard)  {
                 // key(C * F * Hm)
-                addARIS(jCOR,jDoSH,jSituation,jHarm,aris++) 
+                addARIS(jCOR,jRisk,jDoSH,jSituation,jHarm,aris++) 
                 console.log("1076 makeInternalFile add "+JSON.stringify(jDoSH)+" to COR "+jCOR.id);   
             }
         })    
@@ -549,30 +549,35 @@ function initCOR(jAris,rit_id,idCOR,jComponent,jFunction,jHarm) {
 
 function addHazard(jCor,jAris,iDoSH) {
     jCor.regHazard.push({'id':iDoSH, 'name':jAris.hazard})
-    console.log("1080 addARIS add "+jAris.hazard+" to COR "+JSON.stringify(jCor.regHazard));   
+    console.log("1080 addHazard add "+jAris.hazard+" to COR "+JSON.stringify(jCor.regHazard));   
 }
 
-function addARIS(jCor,jAris,jSituation,jHarm,iAris) {
-    jCor.regAnalyzedRisk.push({
-        "id": "ARI"+iAris,
-        "title": "AnalyzedRisk",
-        "refCOR": jCor.id,
-        "refHS": jSituation[symbol1(jAris.hazardousSituation)],
-        "refHarm": jHarm[symbol1(jAris.harm)],
-        "regTarget": ["Patient", " User", " Service Personnel"],
-        "risk": {
-            "severity": "0",
-            "probability": "-",
-            "riskRegion": "-"
-        },
-        "refRiskSDA": "0",
-        "residualRisk": {
-            "severity": "0",
-            "probability": "-",
-            "riskRegion": "_"
-        }
-    });
-    console.log("1082 addARIS add "+jAris.hazardousSituation+" to COR "+JSON.stringify(jCor.regHazard));   
+function addARIS(jCor,jRisk,jAris,jSituation,jHarm,iAris) {
+    if(jCor && jRisk) console.log("1062 addARIS add COR="+jCor.id+" "+jRisk.id);   
+    else console.log("1063 addARIS add COR="+jCor.id+" "+jRisk.id); 
+
+    try {
+        jCor.regAnalyzedRisk.push({
+            "id": "ARI"+iAris,
+            "title": "AnalyzedRisk",
+            "refCOR": jCor.id,
+            "refHS": jSituation[symbol1(jAris.hazardousSituation)],
+            "refHarm": jHarm[symbol1(jAris.harm)],
+            "risk": JSON.parse(JSON.stringify({
+                "severity": jRisk && jRisk.URS ? jRisk.URS : "0"  ,
+                "probability": jRisk && jRisk.URL ? jRisk.URL : "-",
+                "riskRegion": jRisk && jRisk.URA ? jRisk.URA :"-"
+            })),
+            "regTarget": jRisk && jRisk.TGT ? [jRisk.TGT] : ["Patient"],
+            "refRiskSDA": "0",
+            "residualRisk": {
+                "severity": jRisk && jRisk.MRS ? jRisk.MRS : "0"  ,
+                "probability": jRisk && jRisk.MRL ? jRisk.MRL : "-",
+                "riskRegion": jRisk && jRisk.MRA ? jRisk.MRA :"-"
+            }
+        })
+    } catch(e) { console.log("1065 addARIS failed");   }
+    console.log("1064 addARIS add "+jAris.hazardousSituation+" to COR "+JSON.stringify(jCor.regHazard));   
 
 }
 

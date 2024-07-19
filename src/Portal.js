@@ -255,7 +255,7 @@ export function Portal({portalFileName, view}) {
                 let strRisks = Buffer.from(base64Domain,'base64').toString('utf8');
                 repository[SCR_COR]=JSON.parse(strRisks);
             }
-            debug("0830 fLoadRiskInfo already in RISKS="+JSON.stringify(repository[SCOR]));             
+            debug("0830 fLoadRiskInfo already in RISKS="+JSON.stringify(repository[SCR_COR]));             
         } catch(err) { debug("0831 fLoadRiskInfo DOMAIN decoding/parsing failed "+err);} 
         return whatever;
     }
@@ -822,12 +822,12 @@ export function Portal({portalFileName, view}) {
                         fLoadRiskInfo(fPush(filterInstance(ticket,area),EMPTY_ARIS)).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
-                                        <div className="RISKCOLOR FIELD NAME">{currentCID}</div>
+                                        <div className="RISKCOLOR FIELD LTXT">{currentCID}</div>
+                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("TGT")} tag="TGT" />
+                                        <div className="RISKCOLOR FIELD SEP"></div>
                                         <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URS")} tag="URS"/>
                                         <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URL")} tag="URL"/>
                                         <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URA")} tag="URA"/>
-                                        <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("TGT")} tag="TGT" />
                                         <div className="RISKCOLOR FIELD SEP"></div>
                                         <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRS")} tag="MRS"/>
                                         <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRL")} tag="MRL"/>
@@ -931,7 +931,7 @@ export function Portal({portalFileName, view}) {
                           
                         <button key="Internal" id={KN_INTERNAL} className="RISKBACK WIDEBUTTON" >
                             <div key="button" className="FIELD" 
-                                onClick={(() => { return makeInternalFile(KN_INTERNAL,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
+                                onClick={(() => { return makeInternalFile(repository[SCR_COR],KN_INTERNAL,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get Internal File for 
                             </div>
                             <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="projectINT" key="projectINT"></input>                                                                        
@@ -939,7 +939,7 @@ export function Portal({portalFileName, view}) {
                          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
                             <div key="button" className="FIELD" 
-                                onClick={(() => { return makeExportFile(KN_EXPORT,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
+                                onClick={(() => { return makeExportFile(repository[SCR_COR],KN_EXPORT,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Export VDE File for 
                             </div>
                             <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="projectEXP" key="projectEXP"></input>                                                                        
