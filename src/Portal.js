@@ -87,11 +87,11 @@ function store(ticket,arrList)  {
 
 function addProjAris(jAris,strMessage) {
     let jListAris = [];
-    if(Array.isArray(jAris)) jAris.forEach((jElement, i)=>{addProjAris(jElement,"#"+i+" "+strMessage)})
+    if(Array.isArray(jAris)) jAris.forEach((jElement, i)=>{jListAris=addProjAris(jElement,"#"+i+" "+strMessage)})
     else {
         if(jAris) {
             if(jAris.hazard) {
-                let jListAris = repository[SCR_DOMAIN];
+                jListAris = repository[SCR_DOMAIN];
                 debug("0892 addProjAris("+strMessage+") ENTER element for hazard="+jAris.hazard+" into #"+Object.keys(jListAris).length);
         
                 if(!Array.isArray(jListAris)) jListAris=[]; // GH20240708 help with startup
@@ -104,7 +104,7 @@ function addProjAris(jAris,strMessage) {
                 let aKeys={}
                 jListAris.map((aris)=>(aKeys[aris.arisID]=0));
                 jListAris.map((aris)=>(aKeys[aris.arisID]=1+aKeys[aris.arisID]));
-                debug("0894 addProjAris stored with now "+jListAris.length+" entries for #"+aKeys.length);   
+                debug("0894 addProjAris stored with now "+jListAris.length+" entries for #"+Object.keys(aKeys).length);   
 
                 let jNewList = [];
                 Object.keys(aKeys).map((arisID)=>(jListAris.forEach((aris)=>{if(aris.arisID===arisID) jNewList.push(aris)})))
@@ -118,6 +118,7 @@ function addProjAris(jAris,strMessage) {
         }
         else debug("0891 addProjAris "+strMessage+" EMPTY");
     }
+    return jListAris;
 }
 
 
@@ -239,7 +240,7 @@ export function Portal({portalFileName, view}) {
                 try { 
                     jRawList.forEach((aris)=>{
                         // was arrDomain.push(aris) GH20240719
-                        addProjAris(aris,"adDomainRisk into "+ticket)
+                        arrDomain=addProjAris(aris,"adDomainRisk into "+ticket)
                         // !! CAN resolve arrays by itself
                         // GH 20240719 aris identifier needs cause,code members
                         // cause,code are not transferred on whole html file transfers
@@ -305,9 +306,13 @@ export function Portal({portalFileName, view}) {
     }
 
 
-    function updateDomainWindow(arrDomain) {                    
+    function updateDomainWindow(arrDomain) {       
+        
+        // GH20240720
+        // maybe sort aris by COR id
+
         let strTransfer=JSON.stringify(arrDomain);
-        debug("0886 Portal.updateDomainWindow new DOMAIN risks="+strTransfer);
+        debug("0886 Portal.updateDomainWindow new DOMAIN risks #"+arrDomain.length);
         let transfer64 = Buffer.from(strTransfer,'utf8').toString('base64');
         window.sessionStorage.setItem(SCR_DOMAIN,transfer64);
         setMode(mode+1); // trigger redraw
