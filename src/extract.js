@@ -123,37 +123,6 @@ export function processHTML(aLines) {
      return summary;
 }
 
-
-function save(strOut,ext) {
-
-     var sFile='rebuiltFile.'+ext;
-     console.log('0590 save() creating file='+sFile);
-     //console.log(strOut);
-
-     var textFile=null,makeTextFile = function (text) {
-       var data = new Blob([text], {type: 'text/plain'});
-       if (textFile !== null) {
-           window.URL.revokeObjectURL(textFile);
-       }
-       textFile = window.URL.createObjectURL(data);
-
-       // returns a URL you can use as a href
-       return textFile;
-     };
-
-     var a = document.createElement('a');
-     document.body.appendChild(a);
-     a.style = 'display: none';
-     let url=makeTextFile(strOut);
-     a.href = url;
-     a.className = "FIELD MOAM";
-     a.download = sFile;
-     a.click();
-     window.URL.revokeObjectURL(url);
-     return textFile;
-}
-
-
 function processLines(aLines) {
 
 
