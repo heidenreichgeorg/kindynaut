@@ -64,6 +64,7 @@ function init() {
 
 // repository mirrors the json-lists stored in sessionStorage for the domain and also for all files
 let repository={'DOMAIN':[],'SCR_COR':{}};
+let corMap = {}; // list of controlled risk identifiers
 let repFiles=[];
 
 function store(ticket,arrList)  {
@@ -201,9 +202,9 @@ export function Portal({portalFileName, view}) {
     
     function addRiskTicket(jDOSH,message) {
 
-        addProjAris(jDOSH,message);
+        let arrDomain = addProjAris(jDOSH,message);
 
-        setMode(mode+1) // trigger redraw
+        updateDomainWindow(arrDomain)
         return jDOSH;
     }
 
@@ -319,13 +320,23 @@ export function Portal({portalFileName, view}) {
 
     function updateDomainWindow(arrDomain) {       
         
-        // GH20240720
-        // maybe sort aris by COR id
+        // GH20240722
+        // sort aris by COR id
+        corMap={};
+        let c=0;
+        JSON.stringify(arrDomain.forEach((d)=>{if(c=corMap[d.corID]) corMap[d.corID].push(d); else corMap[d.corID]=[d]}))
 
-        let strTransfer=JSON.stringify(arrDomain);
-        debug("0886 Portal.updateDomainWindow new DOMAIN risks #"+arrDomain.length);
+            // sort array by dosh ids as they are in the map
+        let newDomain=[];
+        Object.keys(corMap).forEach((corID)=>{let dosh4cor=corMap[corID]; dosh4cor.forEach((dosh)=>{newDomain.push(dosh)})})
+
+        debug("0886 Portal.updateDomainWindow new DOMAIN risks #"+arrDomain.length+ " now #"+newDomain.length+ " with CORs ="+JSON.stringify(corMap));
+        
+        let strTransfer=JSON.stringify(newDomain);
+        
         let transfer64 = Buffer.from(strTransfer,'utf8').toString('base64');
         window.sessionStorage.setItem(SCR_DOMAIN,transfer64);
+
         setMode(mode+1); // trigger redraw
     }
 
@@ -869,7 +880,7 @@ export function Portal({portalFileName, view}) {
                                         <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRL",currentCID)} tag="MRL"/>
                                         <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRA",currentCID)} tag="MRA"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <div className="FIELD NOTE DASH" onClick={(e)=>riskEditStop(currentCID)}>OK</div>
+                                        <div className="FIELD NOTE DASH" onClick={(e)=>riskEditStop(e.target)}>OK</div>
                                         <div className="RISKCOLOR NOTABLE TRASH">{ (currentCID=aris.corID) + JSON.stringify(currentRisk=getRisk(currentCID)) }</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
