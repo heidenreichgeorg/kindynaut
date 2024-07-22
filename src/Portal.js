@@ -68,7 +68,7 @@ let repFiles=[];
 
 function store(ticket,arrList)  {
     try {
-        debug("0712 STORE searches "+ticket);
+        debug("0712 STORE puts "+JSON.stringify(arrList)+" under "+ticket);
         repository[ticket]=arrList;
         try {
             debug("0714 STORE finds repository on keys list #"+Object.keys(arrList).length);
@@ -148,7 +148,9 @@ export function Portal({portalFileName, view}) {
     // filters and display/edit mode
     const [strFilter, setStrFilter] = useState("{}") // filter form buffer
     const [jArisEditor, setJArisEditor] = useState({}) // ARIS editor form buffer
-    const [jRiskEditor, setJRiskEditor] = useState({}) // RISK editor form buffer, part of COR
+    //const [jRiskEditor, setJRiskEditor] = useState({}) // RISK editor form buffer, part of COR
+
+    let jRiskEditor={};
 
     const [jFile, setJFile] = useState(
             {'project':'product',
@@ -459,20 +461,21 @@ export function Portal({portalFileName, view}) {
         let jListCor = repository[SCR_COR]
         // (A) init new SCR_COR
         if(!jListCor) {
-            jListCor = { };
+            jListCor = JSON.parse("{}");
             repository[SCR_COR]=jListCor;
         }
         // (B) init new corID
         if(corID) {
-            if(!jListCor[corID]) jListCor[corID]={};
+            if(!jListCor[corID]) jListCor[corID]=JSON.parse("{}");
             result=jListCor[corID];
         }
         return result;
     }
 
-    function getRiskField(attribute) {
-        debug("0759 getRiskField("+attribute+") from "+JSON.stringify(currentRisk))
-        return currentRisk[attribute]
+    function getRiskField(attribute,currentCID) {
+        let risk = getRisk(currentCID)
+        debug("0759 getRiskField("+attribute+")with["+currentCID+"] from "+JSON.stringify(risk)+ " taken from "+JSON.stringify(repository[SCR_COR]))
+        return risk[attribute]
     }
 
     function editRiskStart() {
@@ -514,24 +517,36 @@ export function Portal({portalFileName, view}) {
         } else debug("0757 editRisk missing target")
     }
 
-    function riskEditStop(corID) {
+    function riskEditStop(strangeID) {
+        const corID = jRiskEditor.corID; // GH20240722
+
         // copy all risk/COR edit content into the special editorLine instance
-        debug("0790 riskEditStop("+corID+") EDITOR="+JSON.stringify(jRiskEditor));
+        debug("0790 riskEditStop("+corID+") WILL STORE EDITOR ="+JSON.stringify(jRiskEditor));
         let jListCor = repository[SCR_COR]
         // (A) init new SCR_COR
         if(!jListCor) {
-            jListCor = { };
+            jListCor = JSON.parse("{}");
             repository[SCR_COR]=jListCor;
         }
+
+
         // (B) init new corID
-        if(!jListCor[corID]) jListCor[corID]={};
+        if(!jListCor[corID]) {
+            jListCor[corID]=JSON.parse("{}");
+            debug("0792 riskEditStop("+corID+") NEW ENTRY FOR "+JSON.stringify(jRiskEditor));
+        }
 
         try {
-            jListCor[corID]=jRiskEditor;
+            // in-place assignment with global variable
+            let strRiskEditor=JSON.stringify(jRiskEditor);
+            // needs a copy !!
+            jListCor[corID]=JSON.parse(strRiskEditor); 
+            debug("0794 riskEditStop("+corID+") STORED EDITOR ="+strRiskEditor);
+            
             store(SCR_COR,jListCor);
-            debug("0792 riskEditStop STORE "+JSON.stringify(jRiskEditor));
+            debug("0796 riskEditStop STORE "+JSON.stringify(jRiskEditor));
         } catch(e) { debug("0793 riskEditStop BAD FORMAT1 "+JSON.stringify(jRiskEditor)); }
-        debug("0794 riskEditStop STORE "+JSON.stringify(jListCor));
+        debug("0798 riskEditStop STORE "+JSON.stringify(jListCor));
     }
 
     function editLine(key,style,stopH) {
@@ -844,17 +859,17 @@ export function Portal({portalFileName, view}) {
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
                                         <div className="RISKCOLOR FIELD LTXT">{currentCID}</div>
-                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("TGT")} tag="TGT" />
+                                        <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("TGT",currentCID)} tag="TGT" />
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URS")} tag="URS"/>
-                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URL")} tag="URL"/>
-                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URA")} tag="URA"/>
+                                        <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URS",currentCID)} tag="URS"/>
+                                        <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URL",currentCID)} tag="URL"/>
+                                        <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URA",currentCID)} tag="URA"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRS")} tag="MRS"/>
-                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRL")} tag="MRL"/>
-                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRA")} tag="MRA"/>
+                                        <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRS",currentCID)} tag="MRS"/>
+                                        <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRL",currentCID)} tag="MRL"/>
+                                        <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRA",currentCID)} tag="MRA"/>
                                         <div className="RISKCOLOR FIELD SEP"></div>
-                                        <div className="FIELD NOTE DASH" onClick={(e)=>riskEditStop(e.target.parentNode.getAttribute('corid'))}>OK</div>
+                                        <div className="FIELD NOTE DASH" onClick={(e)=>riskEditStop(currentCID)}>OK</div>
                                         <div className="RISKCOLOR NOTABLE TRASH">{ (currentCID=aris.corID) + JSON.stringify(currentRisk=getRisk(currentCID)) }</div>
                                     </div>) }
                                 {portalLine( "RISKCOLOR",
