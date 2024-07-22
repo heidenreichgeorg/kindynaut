@@ -866,8 +866,7 @@ export function dropHandler(ev,addTicket,addRiskTicket,showLetter,clientDir) {
                 } catch(e) {
                     console.log('0625 JSON ('+e+') BASE=\n'+strBASE);
                 }
-            }
-            
+            }                        
         } else {
 
             let nItems=ev.dataTransfer.items.length;
