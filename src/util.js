@@ -361,6 +361,23 @@ function save(strOut,ext) {
 
 */
 
+export function makeDomainJSON(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version) {
+   
+    // just pack the DOSHes into a blob for button download
+    let fileName="ARCHIVE_"+rt_manufacturer+'_'+rt_project+".JSON";
+    
+    const strTable  = JSON.stringify(arrListDoSH);
+    console.log("0762 makeDomainJSON DOSH as strTable="+strTable)
+
+    // create a link to download that object to some client system
+    const blobContent = new Blob([strTable], { type: 'text/plain' });
+    const url = URL.createObjectURL(blobContent);
+
+    console.log("0764 makeDomainJSON created URL")
+
+    return makeURLButton(idButton,url,fileName);
+}
+
  export function makeRiskTable(idButton,arrListDoSH,rt_manufacturer,rt_project,rt_version) {
     // create riskTable format
     let functionId=1;

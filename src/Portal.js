@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
-import { arisIdentifier, corIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, handleHBook, handleStore, makeExportFile, makeInternalFile, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
+import { arisIdentifier, corIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, 
+     handleHBook, handleStore, makeDomainJSON, makeExportFile, makeInternalFile, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 
 import { useState, useEffect } from 'react';
 
@@ -8,6 +9,7 @@ import { useState, useEffect } from 'react';
 const LEARN_DOMAIN = false;
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id: download to client as a device risk table, for re-editing
+const KN_DHAZARDS="KN_DHAZARDS" // DOM button id: download to client as a dosh list, for re-loading
 const KN_EXPORT="KN_EXPORT"     // DOM button id: export as an Internal File as of VDE SPEC 90025 (JSON)
 const KN_INTERNAL="KN_INTERNAL" // DOM button id: export as an External File as of VDE SPEC 90025 (HTML)
 
@@ -978,15 +980,23 @@ export function Portal({portalFileName, view}) {
                                 onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get risk table for 
                             </div>
-                            <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="projectRSK" key="projectRSK"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectRSK" key="projectRSK"></input>                                                                        
                         </button>                                
                           
+                        <button key="DHazards" id={KN_DHAZARDS} className="RISKBACK WIDEBUTTON" >
+                            <div key="button" className="FIELD" 
+                                onClick={(() => { return makeDomainJSON(KN_DHAZARDS,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
+                                    Get domain hazards
+                            </div>
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectDOM" key="projectDOM"></input>                                                                        
+                        </button>                                
+
                         <button key="Internal" id={KN_INTERNAL} className="RISKBACK WIDEBUTTON" >
                             <div key="button" className="FIELD" 
                                 onClick={(() => { return makeInternalFile(repository[SCR_COR],KN_INTERNAL,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get Internal File for 
                             </div>
-                            <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="projectINT" key="projectINT"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectINT" key="projectINT"></input>                                                                        
                         </button>          
                          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
@@ -994,7 +1004,7 @@ export function Portal({portalFileName, view}) {
                                 onClick={(() => { return makeExportFile(repository[SCR_COR],KN_EXPORT,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Export VDE File for 
                             </div>
-                            <input type="edit" value={getFile('project')} onInput={e => setFileInput('project',e.target.value)}  id="projectEXP" key="projectEXP"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectEXP" key="projectEXP"></input>                                                                        
                         </button>          
                      </div>
                     ):''
