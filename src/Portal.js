@@ -188,12 +188,21 @@ export function Portal({portalFileName, view}) {
         letter.setAttribute('id',ticket)
         letter.setAttribute('key',fileName)
         envelope.appendChild(letter)
-        debug("0752 addFileTicket "+ticket)
+        debug("0752 addFileTicket("+fileName+") "+ticket)
 
 //         load(FCS_FILES);
 
         setMode(mode+1) // trigger redraw
         return ticket
+    }
+
+    
+    function addRiskTicket(jDOSH,message) {
+
+        addProjAris(jDOSH,message);
+
+        setMode(mode+1) // trigger redraw
+        return jDOSH;
     }
 
 
@@ -901,11 +910,16 @@ export function Portal({portalFileName, view}) {
                 </div>    
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
-                        <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addProjAris,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
+                        <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addRiskTicket,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
                     </div>            
                 </div>                            
             </div>
-            ):""}
+            ):
+                <div id='mainPage' className="KNTABLE"  key="landingzonetable">
+                <div className="BIGCELL"  key="landingzonecell">
+                    <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addRiskTicket,showLetter,getFile('clientDir'))}} >ADD RISK</div>                                                        
+                </div>            
+            </div>}
 
 
             { (focus!==FCS_FILES) ? // show SAVE buttons for DOMAIN / RISKS

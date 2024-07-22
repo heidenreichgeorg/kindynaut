@@ -805,7 +805,7 @@ export function dragOverHandler(ev) {
 }
 
 
-export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
+export function dropHandler(ev,addTicket,addRiskTicket,showLetter,clientDir) {
     // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
     console.log('0670 File(s) dropped');        
@@ -829,7 +829,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
                 let jDOSH = JSON.parse(strDOSH);
                 if(jDOSH.hazard) {
                     console.log('0620 JSON DOSH=\n'+strDOSH);
-                    addProjAris(jDOSH,"drag application/JSON from event");
+                    addRiskTicket(jDOSH,"drag application/JSON from event");
 
                 } else {
                     console.log('0621 JSON OTHER=\n'+strDOSH);
@@ -848,11 +848,11 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
                 let strPLAIN= atob(strBASE);
                 console.log('0624 atob(BASE)=PLAIN\n'+strPLAIN);
                 try {
-                    addProjAris(JSON.parse(strPLAIN),"drag text/plain from event as base64");
+                    addRiskTicket(JSON.parse(strPLAIN),"drag text/plain from event as base64");
                     console.log('0626 drag text/plain from event as base64')
                 } catch(e) {                    
                     try {
-                        addProjAris(JSON.parse(strBASE),"drag text/plain from event in clear text");
+                        addRiskTicket(JSON.parse(strBASE),"drag text/plain from event in clear text");
                         console.log('0628 drag text/plain from event in clear text')
                     } catch(e) {
                         console.log('0623 JSON ('+e+') BASE=\n'+strBASE);
@@ -861,7 +861,7 @@ export function dropHandler(ev,addTicket,addProjAris,showLetter,clientDir) {
 
             } catch(e) {
                 try {
-                    addProjAris(JSON.parse(strBASE),"drag text/plain from event in clear text");
+                    addRiskTicket(JSON.parse(strBASE),"drag text/plain from event in clear text");
                     console.log('0626 drag text/plain from event in clear text')
                 } catch(e) {
                     console.log('0625 JSON ('+e+') BASE=\n'+strBASE);
