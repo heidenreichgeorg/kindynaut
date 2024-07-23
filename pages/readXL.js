@@ -31,7 +31,9 @@ const { readFile,utils } = pkg;
 
 */
 
-// ISSUE page-break within the same risk crashes the column assignment
+
+
+const SYS_ROWS=4; // top of each new page
 
 
 const SLS = ';';
@@ -69,7 +71,7 @@ export function openHBook(fileName) {
         // show empty cells as empty string
         const s2j_options={ 'blankrows':true, 'defval':'', 'skipHidden':false };
         sheetNames.forEach((name,sheetNumber)=>{ 
-            let definedColumns=false;
+            let definedRows=0;
             const jTable = utils.sheet_to_json(workbook.Sheets[name],s2j_options);  
             // each sheet in jTable is an array of line objects with markup defined in the first line
             if(jTable){
@@ -78,8 +80,8 @@ export function openHBook(fileName) {
                         const keyNames = Object.keys(jLine);
                         //console.log("0406 READ workbook line"+row+"/("+sheetNumber+") ["+keyNames.join(' ')+"] "+JSON.stringify(jLine));
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
-                        //console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
-                        definedColumns=transferLine(comps,definedColumns);
+                        if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
+                        definedRows=transferLine(comps,definedRows);
                     });
                 }
             } //else console.log("0403 READ workbook sheet("+i+")"");
@@ -94,11 +96,11 @@ export function openHBook(fileName) {
 
 
 
+    
 
 
 
-
-    function transferLine(comps,definedColumns) {
+    function transferLine(comps,definedRows) {
         //console.log("  0420 RISK "+line)
         //const comps=line.split(SEP);
 
@@ -130,6 +132,7 @@ export function openHBook(fileName) {
                         if(column.startsWith('Residual')) tableMap.Residual=col;
                     });
                      console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+                     definedRows=0;
                 }
 
                 // (B) else other text line
@@ -145,22 +148,22 @@ export function openHBook(fileName) {
                 riskNumber++;
                 colBuffer=JSON.parse(JSON.stringify(columnsHBook))
                 
-                definedColumns=true;
+                definedRows++;
                 store(comps)
             }
         }
 
+        definedRows++
 
-        if(first.length==0 && (comps.join('').length>0) && definedColumns) {
+        if(first.length==0 && (comps.join('').length>0)) {
             // empty comps0
             // other text    
-            store(comps);
+            if(definedRows>SYS_ROWS) store(comps);
+            else console.log("0424 "+JSON.stringify(comps))
         }
     
 
-
         function store(comps) {
-            if(!definedColumns) return;
             let headers = Object.keys(tableMap);
             let check=[];
             // sort each line into colBuffer	   
@@ -188,12 +191,12 @@ export function openHBook(fileName) {
 
 
             // show each Excel row
-            // table view - console.log("0424 "+grid(check))
-            console.log("0424 "+JSON.stringify(comps))
+            // table view - console.log("0426 "+grid(check))
+            //console.log("0426 "+JSON.stringify(comps))
         }
 
 
-        return definedColumns;
+        return definedRows;
     }
 
 }
