@@ -726,19 +726,19 @@ export function Portal({portalFileName, view}) {
         return result;
     }
 
-    function setFileInput(comp,value) {
+    function setFileAttribute(comp,value) {
         // onInput handler for edit controls
         let result=JSON.stringify(jFile)
-        debug("0780 setFileInput ENTER ("+comp+") set value="+result);
+        debug("0780 setFileAttribute ENTER ("+comp+") set value="+result);
 
         try {
             let jContent=JSON.parse(result)
             jContent[comp]=sanitize(value);
             result=JSON.stringify(jContent);
             setJFile(jContent);
-            debug("0780 setFileInput LOAD editor="+result);
+            debug("0780 setFileAttribute LOAD editor="+result);
 
-        } catch(e) { debug("0781 setFileInput ("+comp+","+value+") BAD FORMAT "+result); }
+        } catch(e) { debug("0781 setFileAttribute ("+comp+","+value+") BAD FORMAT "+result); }
     }
 
     function fPush(arr,elem) {
@@ -919,23 +919,30 @@ export function Portal({portalFileName, view}) {
 
             { (focus===FCS_FILES) ? // show drag-n-drop landing zone only for FILES
             (<div className="KNLINE NONE" key="landingzoneline">        
-                <div className="FIELD" key="buttonbox">
-                    <div className="FIELD MOAM" key="buttons"></div>
+                <div key="buttonbox">
+
+                    {/* SET DIRECTORY Button */}
+                    <button key="FOLDER" className="FILEBOX">set Directory &nbsp;&nbsp;
+                        <input key="hidden" className="HIDE"></input>
+                        <input type="edit" value={getFile('clientDir')} onInput={e => setFileAttribute('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
+                    </button>          
+
 
                     {/* STORE Button */}
-                    <button key="TESTPUT" className="FILEBOX" onClick={(() => { return handleStore(jFile.clientDir);})}>Store on client &nbsp;&nbsp;
+                    <button key="JSON" className="FILEBOX" onClick={(() => { return handleStore(jFile.clientDir+'/'+jFile.domainFile);})}>Store on client &nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
-                        <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
+                        <input type="edit" value={getFile('domainFile')} onInput={e => setFileAttribute('domainFile',e.target.value)}  id="jsonFile" key="jsonFile"></input>
                     </button>          
                    
 
-                    {/* UPLOAD HBOOK Button */}
-                    <button key="HBook" className="FILEBOX">Upload HBook &nbsp;&nbsp;
+                    {/* GET HBOOK Button */}
+                    <button key="HBook" className="FILEBOX" onClick={(()=>{ handleHBook(jFile.clientDir+'/'+jFile.hBook+'.xlsx')})} >Get HBook &nbsp;&nbsp;
                         <input key="hidden" className="HIDE"></input>
-                        <input type="edit" value={getFile('clientDir')} onInput={e => setFileInput('clientDir',e.target.value)}  id="clientDir" key="clientDir"></input>
+                        <input type="edit" value={getFile('hBook')} onInput={e => setFileAttribute('hBook',e.target.value)}  id="xlsxFile" key="xlsxFile"></input>
                     </button>          
-                    &nbsp;&nbsp;
                 </div>    
+
+
                 <div id='mainPage' className="KNTABLE"  key="landingzonetable">
                     <div className="BIGCELL"  key="landingzonecell">
                         <div  key="landingzonebox" className="FLEX DROP" onDragOver={dragOverHandler} onDrop={(e)=>{dropHandler(e,addFileTicket,addRiskTicket,showLetter,getFile('clientDir'))}} >ADD FILE</div>                                                        
@@ -980,7 +987,7 @@ export function Portal({portalFileName, view}) {
                                 onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get risk table for 
                             </div>
-                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectRSK" key="projectRSK"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileAttribute('project',e.target.value)}  id="projectRSK" key="projectRSK"></input>                                                                        
                         </button>                                
                           
                         <button key="DHazards" id={KN_DHAZARDS} className="RISKBACK WIDEBUTTON" >
@@ -988,7 +995,7 @@ export function Portal({portalFileName, view}) {
                                 onClick={(() => { return makeDomainJSON(KN_DHAZARDS,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get domain hazards
                             </div>
-                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectDOM" key="projectDOM"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileAttribute('project',e.target.value)}  id="projectDOM" key="projectDOM"></input>                                                                        
                         </button>                                
 
                         <button key="Internal" id={KN_INTERNAL} className="RISKBACK WIDEBUTTON" >
@@ -996,7 +1003,7 @@ export function Portal({portalFileName, view}) {
                                 onClick={(() => { return makeInternalFile(repository[SCR_COR],KN_INTERNAL,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get Internal File for 
                             </div>
-                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectINT" key="projectINT"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileAttribute('project',e.target.value)}  id="projectINT" key="projectINT"></input>                                                                        
                         </button>          
                          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
@@ -1004,7 +1011,7 @@ export function Portal({portalFileName, view}) {
                                 onClick={(() => { return makeExportFile(repository[SCR_COR],KN_EXPORT,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Export VDE File for 
                             </div>
-                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileInput('project',e.target.value)}  id="projectEXP" key="projectEXP"></input>                                                                        
+                            <input type="edit" defaultValue={getFile('device')} onInput={e => setFileAttribute('project',e.target.value)}  id="projectEXP" key="projectEXP"></input>                                                                        
                         </button>          
                      </div>
                     ):''
