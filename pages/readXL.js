@@ -34,8 +34,12 @@ const { readFile,utils } = pkg;
 // ISSUE page-break within the same risk crashes the column assignment
 
 
+const SLS = ';';
 const SEP = ',';
 let tableMap={};
+
+let cor=[];
+
 
 export function openHBook(fileName) {
 
@@ -155,19 +159,37 @@ export function openHBook(fileName) {
     
 
 
-
         function store(comps) {
             if(!definedColumns) return;
-            
+            let headers = Object.keys(tableMap);
             let check=[];
             // sort each line into colBuffer	   
-            Object.keys(tableMap).forEach((key,index)=>{
+            headers.forEach((key,index)=>{
                 let col=tableMap[key];
                 let prev = colBuffer[index]+' ';
                 colBuffer[index]=comps[col]?prev+comps[col]:prev;
                 check[index]=comps[col]
             })
-            console.log("0424 "+grid(check))
+
+            // show each risk
+            if(check[0] && check[1]) {  // check[0] can be numeric
+                cor.forEach((cell,index)=>console.log(index+":"+headers[index]+"  "+cell))
+                console.log('-');
+                cor=[];
+            }
+
+            check.forEach((cell,index)=>{
+                if(cell && cell.length>0) {
+                    cor[index]=(cor[index] && cor[index].length>0)  ? (cor[index]+SLS+cell)
+                                                                    : cell
+                }
+            })
+
+
+
+            // show each Excel row
+            // table view - console.log("0424 "+grid(check))
+            console.log("0424 "+JSON.stringify(comps))
         }
 
 
@@ -206,7 +228,7 @@ async function writeTable(filePath,csvTable) {
 }
 
 function grid(arrStr) {
-    return arrStr.map((col)=>((col+'               ').substring(0,14))).join('|').substring(0,255);
+    return arrStr.map((col)=>((col+'                ').substring(0,15))).join('|').substring(0,255);
 }
 
 // OLD
