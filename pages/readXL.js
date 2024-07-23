@@ -8,28 +8,10 @@ import { sane } from './node_utils.js'
 import pkg from 'xlsx'; // CommonJS
 const { readFile,utils } = pkg;
 
-/* EXAMPLE output
 
-0406 READ workbook line1/(162) 
+// consumes and HBOOK.xlsx
 
-    {"Evaluation of Functions, Hazards, Risks and Measures":"F#",
-     "__EMPTY":"Function",
-     "__EMPTY_1":"",
-     "__EMPTY_2":"H#",
-     "__EMPTY_3":"Hazard", // prefix of Hazardous
-     "__EMPTY_4":"C#",
-     "__EMPTY_5":"Effect",
-     "__EMPTY_6":"Hazardous",
-     "Denali, VA1XX":"",
-     "__EMPTY_7":"Pre/Post",
-     "__EMPTY_8":"Initial",
-     "__EMPTY_9":"M#",
-     "__EMPTY_10":"",
-     "__EMPTY_11":"Measures",
-     "__EMPTY_12":"Residual",
-     "__EMPTY_13":""}
-
-*/
+// generates a Risk Table as of CRAFTS-MD
 
 
 
@@ -41,7 +23,7 @@ const SEP = ',';
 let tableMap={};
 
 let cor=[];
-
+let headers=null;
 
 export function openHBook(fileName) {
 
@@ -72,6 +54,8 @@ export function openHBook(fileName) {
         const s2j_options={ 'blankrows':true, 'defval':'', 'skipHidden':false };
         sheetNames.forEach((name,sheetNumber)=>{ 
             let definedRows=0;
+
+            headers=null;
             const jTable = utils.sheet_to_json(workbook.Sheets[name],s2j_options);  
             // each sheet in jTable is an array of line objects with markup defined in the first line
             if(jTable){
@@ -84,6 +68,7 @@ export function openHBook(fileName) {
                         definedRows=transferLine(comps,definedRows);
                     });
                 }
+                transferLine([99999,"RiskManagement","End of File"],SYS_ROWS+1)
             } //else console.log("0403 READ workbook sheet("+i+")"");
         })            
     } catch(err) {
@@ -92,7 +77,7 @@ export function openHBook(fileName) {
     }
     
     writeTable('c:/temp/csvTable.csv',result.join('\n'));
-    return result; // previous risk only
+    return result; // missing previous risk only
 
 
 
@@ -143,7 +128,7 @@ export function openHBook(fileName) {
                 // (C) new risk line
                 // comps[0] is numeric
                 // get rid of previous risk data, save existing colBuffer, count new risk, initialize colBuffer with value of columnsHBook 
-                result.push(colBuffer.join(';')); // GH20240514 sane() function ??
+                //result.push(colBuffer.join(';')); // GH20240514 sane() function ??
                 
                 riskNumber++;
                 colBuffer=JSON.parse(JSON.stringify(columnsHBook))
@@ -159,13 +144,14 @@ export function openHBook(fileName) {
             // empty comps0
             // other text    
             if(definedRows>SYS_ROWS) store(comps);
-            else console.log("0424 "+JSON.stringify(comps))
+            //else console.log("0424 "+JSON.stringify(comps))
         }
     
 
         function store(comps) {
-            let headers = Object.keys(tableMap);
             let check=[];
+
+            headers = Object.keys(tableMap);
             // sort each line into colBuffer	   
             headers.forEach((key,index)=>{
                 let col=tableMap[key];
@@ -174,12 +160,7 @@ export function openHBook(fileName) {
                 check[index]=comps[col]
             })
 
-            // show each risk
-            if(check[0] && check[1]) {  // check[0] can be numeric
-                cor.forEach((cell,index)=>console.log(index+":"+headers[index]+"  "+cell))
-                console.log('-');
-                cor=[];
-            }
+            documentRisk(check);
 
             check.forEach((cell,index)=>{
                 if(cell && cell.length>0) {
@@ -187,14 +168,50 @@ export function openHBook(fileName) {
                                                                     : cell
                 }
             })
-
-
-
-            // show each Excel row
-            // table view - console.log("0426 "+grid(check))
-            //console.log("0426 "+JSON.stringify(comps))
         }
 
+        function documentRisk(check) {
+
+            // show each risk
+            if(check[0] && check[1]) {  // check[0] can be numeric
+                let risk={};
+                cor.forEach((cell,index)=>{ risk[headers[index]]=cell })                
+                cor=[];
+
+                if(risk.Function==='RiskManagement') console.log("0423 REST "+JSON.stringify(check))
+                else {
+                    // VDE SPEC 90025 convention
+                    let managedRisk={'name':risk.HazardousSituation};
+                    let dosh={ 'id':riskNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
+                    try {
+
+                        // Siemens Healthineers combine Harm and Generic Hazards with GHx#
+                        let hazards = risk.Hazard
+                        let hazardsHarm=hazards.split("Generic Hazards");
+                        let harmName = hazardsHarm.shift();
+                        dosh.harm={ 'name': harmName }
+                        dosh.genericHazards=hazardsHarm[0].split('GH');
+
+                        // VDE SPEC 90025 convention
+                        dosh.hazard = { 'name':risk.Function+' '+harmName }
+
+                        managedRisk.subjectGroups=risk.Target.split(SLS);
+
+                        // risk vectors are combined with dash -
+                        let initial = risk.Initial.split('-');
+                        managedRisk.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+
+                        let residual = risk.Residual.split('-');
+                        managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+
+                        dosh.managedRisks=[managedRisk]
+                    } catch(e) {}
+
+                    result.push(dosh);
+                    console.log(JSON.stringify(dosh));
+                }
+            }
+        }
 
         return definedRows;
     }
@@ -221,10 +238,10 @@ export function openHBook(fileName) {
             // EXAM-X
 
 
-async function writeTable(filePath,csvTable) {
+async function writeTable(filePath,strRisks) {
   try {
     console.log("0470 writeTable to "+filePath);
-    await writeFile(filePath, csvTable);
+    await writeFile(filePath, strRisks);
   } catch (err) {
         console.log("0471 writeTable to "+filePath+":"+err);
   }
