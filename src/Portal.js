@@ -952,7 +952,7 @@ export function Portal({portalFileName, view}) {
 
             { (focus!==FCS_FILES) ? // show SAVE buttons for DOMAIN / RISKS
             (<div className="KNTABLE" key="buttonCaption">      
-                <div className="FIELD" key="buttonbox">
+                <div key="buttonbox">
                     <div className="FIELD MOAM" key="buttons"></div>
 
 
@@ -976,7 +976,7 @@ export function Portal({portalFileName, view}) {
                     (
                     <div>
                         <button key="Download" id={KN_DOWNLOAD} className="RISKBACK WIDEBUTTON" >
-                            <div key="button" className="FIELD" 
+                            <div key="button"  
                                 onClick={(() => { return makeRiskTable(KN_DOWNLOAD,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get risk table for 
                             </div>
@@ -984,7 +984,7 @@ export function Portal({portalFileName, view}) {
                         </button>                                
                           
                         <button key="DHazards" id={KN_DHAZARDS} className="RISKBACK WIDEBUTTON" >
-                            <div key="button" className="FIELD" 
+                            <div key="button" 
                                 onClick={(() => { return makeDomainJSON(KN_DHAZARDS,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get domain hazards
                             </div>
@@ -992,7 +992,7 @@ export function Portal({portalFileName, view}) {
                         </button>                                
 
                         <button key="Internal" id={KN_INTERNAL} className="RISKBACK WIDEBUTTON" >
-                            <div key="button" className="FIELD" 
+                            <div key="button" 
                                 onClick={(() => { return makeInternalFile(repository[SCR_COR],KN_INTERNAL,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Get Internal File for 
                             </div>
@@ -1000,7 +1000,7 @@ export function Portal({portalFileName, view}) {
                         </button>          
                          
                         <button key="Export" id={KN_EXPORT} className="RISKBACK WIDEBUTTON" >
-                            <div key="button" className="FIELD" 
+                            <div key="button" 
                                 onClick={(() => { return makeExportFile(repository[SCR_COR],KN_EXPORT,repository[SCR_DOMAIN],getFile('manufacturer'),getFile('project'),getFile('version')) })}  >
                                     Export VDE File for 
                             </div>
