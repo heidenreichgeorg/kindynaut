@@ -27,7 +27,10 @@ export async function downloadHBook(
 
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
-        let arrLines = openHBook(file);
+        const allowRisk=true;
+        const allowMeasures=true;
+
+        let arrLines = openHBook(file,allowRisk,allowMeasures);
         res.write(arrLines.join('\n')); // better put it all in req.end in one go 
      
         console.dir ( "0632 DOWNLOAD FILE with "+arrLines.length+" lines.");
@@ -44,9 +47,10 @@ export async function downloadHBook(
 
 //module.exports = { handler };
 
+/*
+
 function handleJSONSave(jContent) {
         
-  /*
   const  b64encoded= Buffer.from(strJustification,"utf8").toString('base64');
 
   let anchor = document.getElementById('table0');
@@ -57,7 +61,7 @@ function handleJSONSave(jContent) {
 
       anchor.appendChild(newDiv);
   }
-  */
+  
   const manufacturer="manufacturer";
   const product="product";
   const version="version"
@@ -77,3 +81,4 @@ function handleJSONSave(jContent) {
   } catch(err) { console.log("0767 GET /EXCEL handleJSONSave:"+err);}
   console.log("0878 handleJSONSave EXIT");
 }
+*/

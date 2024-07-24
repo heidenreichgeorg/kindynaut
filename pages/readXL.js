@@ -25,7 +25,14 @@ let tableMap={};
 let cor=[];
 let headers=null;
 
-export function openHBook(fileName) {
+let flagRisk=false;
+let flagMeasures=false;
+
+export function openHBook(fileName,allowRisk,allowMeasures) {
+
+    flagRisk=allowRisk;
+    flagMeasures=allowMeasures;
+
 
     // does not sanitize XLSX file content
 
@@ -174,8 +181,13 @@ export function openHBook(fileName) {
 
             // show each risk
             if(check[0] && check[1]) {  // check[0] can be numeric
+                // this indicates beginning of a new risk
                 let risk={};
-                cor.forEach((cell,index)=>{ risk[headers[index]]=cell })                
+                cor.forEach((cell,index)=>{ risk[headers[index]]=cell })      
+
+                cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
+                console.log();
+      
                 cor=[];
 
                 if(risk.Function==='RiskManagement') console.log("0423 REST "+JSON.stringify(check))
@@ -197,18 +209,21 @@ export function openHBook(fileName) {
 
                         managedRisk.subjectGroups=risk.Target.split(SLS);
 
-                        // risk vectors are combined with dash -
-                        let initial = risk.Initial.split('-');
-                        managedRisk.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+                        if(flagRisk) {
+                            // risk vectors are combined with dash -
+                            let initial = risk.Initial.split('-');
+                            managedRisk.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
 
-                        let residual = risk.Residual.split('-');
-                        managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
-
+                            let residual = risk.Residual.split('-');
+                            managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+                        }
                         dosh.managedRisks=[managedRisk]
+
+                        //dosh.source=JSON.stringify(check))
                     } catch(e) {}
 
                     result.push(dosh);
-                    console.log(JSON.stringify(dosh));
+                    //console.log(JSON.stringify(dosh));
                 }
             }
         }
