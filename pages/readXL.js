@@ -15,7 +15,7 @@ const { readFile,utils } = pkg;
 
 
 
-const SYS_ROWS=4; // top of each new page
+const SYS_ROWS=3; // lines in table headers
 
 
 const SLS = ';';
@@ -71,11 +71,16 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
                         const keyNames = Object.keys(jLine);
                         //console.log("0406 READ workbook line"+row+"/("+sheetNumber+") ["+keyNames.join(' ')+"] "+JSON.stringify(jLine));
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
-                        if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
+
+                        //if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
+                        comps.unshift(" "+sheetNumber+"/"+row);
+                        console.log(grid(comps));
+                        comps.shift();
+
                         definedRows=transferLine(comps,definedRows);
                     });
                 }
-                transferLine([99999,"RiskManagement","End of File"],SYS_ROWS+1)
+                transferLine([99999,"PageOverflow","Rest of Risk"],SYS_ROWS+1)
             } //else console.log("0403 READ workbook sheet("+i+")"");
         })            
     } catch(err) {
@@ -123,7 +128,7 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
                         if(column.startsWith('Measure')) tableMap.Measures=col;
                         if(column.startsWith('Residual')) tableMap.Residual=col;
                     });
-                     console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+                     //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
                      definedRows=0;
                 }
 
@@ -167,7 +172,9 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
                 check[index]=comps[col]
             })
 
+
             documentRisk(check);
+            //console.log("0423 store "+grid(check))
 
             check.forEach((cell,index)=>{
                 if(cell && cell.length>0) {
@@ -185,13 +192,12 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
                 let risk={};
                 cor.forEach((cell,index)=>{ risk[headers[index]]=cell })      
 
+                console.log("--------->");
                 cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
                 console.log();
       
                 cor=[];
-
-                if(risk.Function==='RiskManagement') console.log("0423 REST "+JSON.stringify(check))
-                else {
+                {
                     // VDE SPEC 90025 convention
                     let managedRisk={'name':risk.HazardousSituation};
                     let dosh={ 'id':riskNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
@@ -263,7 +269,7 @@ async function writeTable(filePath,strRisks) {
 }
 
 function grid(arrStr) {
-    return arrStr.map((col)=>((col+'                ').substring(0,15))).join('|').substring(0,255);
+    return arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+'                ').substring(0,14))).join('|').substring(0,235);
 }
 
 // OLD
