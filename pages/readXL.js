@@ -25,14 +25,8 @@ let tableMap={};
 let cor=[];
 let headers=null;
 
-let flagRisk=false;
-let flagMeasures=false;
 
-export function openHBook(fileName,allowRisk,allowMeasures) {
-
-    flagRisk=allowRisk;
-    flagMeasures=allowMeasures;
-
+export function openHBook(fileName,createItem) {
 
     // does not sanitize XLSX file content
 
@@ -40,12 +34,12 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
 
     // colBuffer represents the current logical line, may span across pages
     // colBuffer is the list of columns of the current RISK
-    const columnsHBook=['','','','','','','','','','','','','','','','','','','']
-    let colBuffer=columnsHBook;
+    //const columnsHBook=['','','','','','','','','','','','','','','','','','','']
+    //let colBuffer=columnsHBook;
 
     // list of consolidated colBuffer values
     let result = []; 
-    let riskNumber=0;
+    let itemNumber=0;
 
     console.log("0400 READ openHBook "+saneFileName)
     try { 
@@ -71,18 +65,20 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
                         const keyNames = Object.keys(jLine);
                         //console.log("0406 READ workbook line"+row+"/("+sheetNumber+") ["+keyNames.join(' ')+"] "+JSON.stringify(jLine));
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
-
                         //if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
-                        comps.unshift(" "+sheetNumber+"/"+row);
-                        console.log(grid(comps));
-                        comps.shift();
 
                         definedRows=transferLine(comps,definedRows);
+                        
+                        comps.unshift("P"+sheetNumber+"L"+row+"#"+itemNumber);
+                        console.log(grid(comps));
+                        comps.shift();
                     });
                 }
-                transferLine([99999,"PageOverflow","Rest of Risk"],SYS_ROWS+1)
+                transferLine(["","","",""],SYS_ROWS+1)
             } //else console.log("0403 READ workbook sheet("+i+")"");
         })            
+        transferLine([9999999,"EndOfFile",666666,"RestOfRisk"],SYS_ROWS+1)
+
     } catch(err) {
         console.log("0401 READ workbook from  "+saneFileName+ "  "+err)
        
@@ -97,13 +93,8 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
 
 
 
-    function transferLine(comps,definedRows) {
-        //console.log("  0420 RISK "+line)
-        //const comps=line.split(SEP);
-
+    function transferLine(comps,definedRows) {        
         let first = comps[0];
-        //console.log("0422 "+comps.map((col)=>((col+'             ').substring(0,12))).join('|').substring(0,230));
-
         if(first) {
             if(isNaN(first)) {
                 // (A) sheet caption 
@@ -137,16 +128,15 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
 
 
             } else {
+                // comps[0] exists AND is numeric
                 // (C) new risk line
-                // comps[0] is numeric
-                // get rid of previous risk data, save existing colBuffer, count new risk, initialize colBuffer with value of columnsHBook 
-                //result.push(colBuffer.join(';')); // GH20240514 sane() function ??
                 
-                riskNumber++;
-                colBuffer=JSON.parse(JSON.stringify(columnsHBook))
+                itemNumber++;
+                //colBuffer=JSON.parse(JSON.stringify(columnsHBook))
                 
                 definedRows++;
-                store(comps)
+
+                store(comps,itemNumber)
             }
         }
 
@@ -156,25 +146,23 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
             // empty comps0
             // other text    
             if(definedRows>SYS_ROWS) store(comps);
-            //else console.log("0424 "+JSON.stringify(comps))
         }
     
 
-        function store(comps) {
+        function store(comps,itemNumber) {
             let check=[];
 
             headers = Object.keys(tableMap);
             // sort each line into colBuffer	   
             headers.forEach((key,index)=>{
                 let col=tableMap[key];
-                let prev = colBuffer[index]+' ';
-                colBuffer[index]=comps[col]?prev+comps[col]:prev;
+                //let prev = colBuffer[index]+' ';
+                //colBuffer[index]=comps[col]?prev+comps[col]:prev;
                 check[index]=comps[col]
             })
 
 
-            documentRisk(check);
-            //console.log("0423 store "+grid(check))
+            documentItem(check,itemNumber);
 
             check.forEach((cell,index)=>{
                 if(cell && cell.length>0) {
@@ -184,60 +172,29 @@ export function openHBook(fileName,allowRisk,allowMeasures) {
             })
         }
 
-        function documentRisk(check) {
+        function documentItem(check,itemNumber) {
 
             // show each risk
-            if(check[0] && check[1]) {  // check[0] can be numeric
+            if(!isNaN(check[0]) && check[1] && !isNaN(check[2])) {  // check[0,2] numeric 
+                console.log("0423 "+check[0]+check[1]+check[2])
                 // this indicates beginning of a new risk
-                let risk={};
-                cor.forEach((cell,index)=>{ risk[headers[index]]=cell })      
+                let item={ 'itemNumber':itemNumber };
+                cor.forEach((cell,index)=>{ item[headers[index]]=cell })      
 
-                console.log("--------->");
                 cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
                 console.log();
       
                 cor=[];
-                {
-                    // VDE SPEC 90025 convention
-                    let managedRisk={'name':risk.HazardousSituation};
-                    let dosh={ 'id':riskNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
-                    try {
-
-                        // Siemens Healthineers combine Harm and Generic Hazards with GHx#
-                        let hazards = risk.Hazard
-                        let hazardsHarm=hazards.split("Generic Hazards");
-                        let harmName = hazardsHarm.shift();
-                        dosh.harm={ 'name': harmName }
-                        dosh.genericHazards=hazardsHarm[0].split('GH');
-
-                        // VDE SPEC 90025 convention
-                        dosh.hazard = { 'name':risk.Function+' '+harmName }
-
-                        managedRisk.subjectGroups=risk.Target.split(SLS);
-
-                        if(flagRisk) {
-                            // risk vectors are combined with dash -
-                            let initial = risk.Initial.split('-');
-                            managedRisk.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
-
-                            let residual = risk.Residual.split('-');
-                            managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
-                        }
-                        dosh.managedRisks=[managedRisk]
-
-                        //dosh.source=JSON.stringify(check))
-                    } catch(e) {}
-
-                    result.push(dosh);
-                    //console.log(JSON.stringify(dosh));
-                }
+                
+                result.push(createItem(item,itemNumber));
             }
         }
-
         return definedRows;
     }
-
 }
+
+
+
 
 
 // STEP 1 - map concepts to columns

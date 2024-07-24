@@ -27,10 +27,7 @@ export async function downloadHBook(
 
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
-        const allowRisk=true;
-        const allowMeasures=true;
-
-        let arrLines = openHBook(file,allowRisk,allowMeasures);
+        let arrLines = openHBook(file,createItem);
         res.write(arrLines.join('\n')); // better put it all in req.end in one go 
      
         console.dir ( "0632 DOWNLOAD FILE with "+arrLines.length+" lines.");
@@ -43,7 +40,48 @@ export async function downloadHBook(
     res.write('\n\n');
     res.write('\n\n');
     res.end(); 
+
+
+
+      
+  function createItem(risk) {
+    // VDE SPEC 90025 convention
+    let managedRisk={'name':risk.HazardousSituation};
+    let dosh={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
+    try {
+
+        // Siemens Healthineers combine Harm and Generic Hazards with GHx#
+        let hazards = risk.Hazard
+        let hazardsHarm=hazards.split("Generic Hazards");
+        let harmName = hazardsHarm.shift();
+        dosh.harm={ 'name': harmName }
+        dosh.genericHazards=hazardsHarm[0].split('GH');
+
+        // VDE SPEC 90025 convention
+        dosh.hazard = { 'name':risk.Function+' '+harmName }
+
+        managedRisk.subjectGroups=risk.Target.split(SLS);
+
+        if(flagRisk) {
+            // risk vectors are combined with dash -
+            let initial = risk.Initial.split('-');
+            managedRisk.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+
+            let residual = risk.Residual.split('-');
+            managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+        }
+        dosh.managedRisks=[managedRisk]
+
+        //dosh.source=JSON.stringify(check))
+    } catch(e) {}
+    
+    return dosh;
+  }
+
 }
+
+
+
 
 //module.exports = { handler };
 
