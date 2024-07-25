@@ -3,6 +3,7 @@
 
 import { writeFile } from 'node:fs/promises'
 
+import { processRiskTable } from "./generateInternalFile"
 
 // load an XLSX file from the server storage
 
@@ -58,6 +59,8 @@ export async function downloadHBook(
         rTable.justification = mari
         writeTable('c:/temp/csvTable.json',JSON.stringify(jFile))
         
+        writeTable('c:/temp/InternalFile.json',processRiskTable(jFile))
+
         res.write(""+mari.length+"\n"); // better put it all in req.end in one go 
      
         console.dir ( "0632 DOWNLOAD FILE with "+mari.length+" lines.");

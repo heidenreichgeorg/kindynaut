@@ -131,38 +131,19 @@ function start() {
     var fr = new FileReader();
 	  csvLines=[];
     fr.onload = function () {
-        init();
+        
         
         let strSnippet = splitLines(this.result+" \n").join('');
         console.log("RISK FILE CONTENT as a string");
         console.log();
 
-
         jSnippetDRMF = JSON.parse(strSnippet);
         console.log("RISK FILE CONTENT from JSON");
         console.log();
 
+        let strInternalFile = processRiskTable(jSnippetDRMF);
 
-        // strip header
-        if(jSnippetDRMF.justification) jSnippetDRMF=jSnippetDRMF.justification;
-
-
-        // DEVICE INFO
-        if(jSnippetDRMF.manufacturer) jRiskFile.device.entity=jSnippetDRMF.manufacturer;
-        if(jSnippetDRMF.project)      jRiskFile.device.project=jSnippetDRMF.project;
-        if(jSnippetDRMF.version)      jRiskFile.device.version=jSnippetDRMF.version;
-        
-
-		    if(jSnippetDRMF.justification) 
-  			  jSnippetDRMF.justification.forEach((jRIT) => {addRawRIT2InternalFile(jRIT);})
-
-        
-        let strInternalFile = JSON.stringify(jRiskFile);
-        console.log("RISK FILE CONTENT as Internal file");
-        console.log();
-        console.log("string file is "+strInternalFile.length+" characters long."); 
         saveString("./InternalFile.json",strInternalFile);
-
       };
 
       filename=this.files[0].name;
@@ -171,6 +152,32 @@ function start() {
       fr.readAsText(this.files[0]);
     });   
 }
+
+
+export function processRiskTable(jSnippetDRMF) {
+    init();
+
+    // strip header
+    if(jSnippetDRMF.justification) jSnippetDRMF=jSnippetDRMF.justification;
+
+
+    // DEVICE INFO
+    if(jSnippetDRMF.manufacturer) jRiskFile.device.entity=jSnippetDRMF.manufacturer;
+    if(jSnippetDRMF.project)      jRiskFile.device.project=jSnippetDRMF.project;
+    if(jSnippetDRMF.version)      jRiskFile.device.version=jSnippetDRMF.version;
+    
+    if(jSnippetDRMF && jSnippetDRMF.justification) 
+      jSnippetDRMF.justification.forEach((jRIT) => {addRawRIT2InternalFile(jRIT);})
+
+    let strInternalFile = JSON.stringify(jRiskFile);
+
+    console.log("RISK FILE CONTENT as Internal file");
+    console.log();
+    console.log("string file is "+strInternalFile.length+" characters long."); 
+
+    return strInternalFile;
+}
+
 
 
 function internComponent(strComponent) {
