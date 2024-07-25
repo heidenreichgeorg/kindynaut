@@ -238,6 +238,8 @@ function internFunction(strFunction,strNotes) {
 
 
  function internHazSit(strHazSit) {
+  if(!strHazSit)  return { 'id':-1, 'name':'no situation', 'cause':'no cause' }
+
    console.log("HazardousSituation: "+strHazSit); // CSV string
    let arrHazSit = strHazSit.split(DELIM);
    let strHazSitName=arrHazSit.shift();
@@ -272,21 +274,21 @@ function addRawRIT2InternalFile(jCORI) {
 
   // extract all genericHazards from DSH and intern them
   console.log("hazards: "+JSON.stringify(jCORI.genericHazards)); // array
-  // 20340706 use href for references
+  // 20230706 use href for references
   let relGenericHazards = [];
-  jCORI.genericHazards.forEach((genHazardName) =>{ 
+  if(jCORI.genericHazards) jCORI.genericHazards.forEach((genHazardName) =>{ 
     if(genHazardName && genHazardName.length>0) {
         let gHaz=internGenericHazard(genHazardName); 
         if (gHaz) relGenericHazards.push({"href":gHaz.id, "name":gHaz.name}); 
       }
     });
-  // 20230803 fixed empty GenHaz issue
+  // 20230803,20240725 fixed empty GenHaz issue
 
 
   // extract all encodedHazards from DSH 
   console.log("encoded hazards: "+JSON.stringify(jCORI.encodedHazards)); // array
   let regEncodedHazards = [];
-  jCORI.encodedHazards.forEach((encHazardName) =>{ 
+  if(jCORI.encodedHazards) jCORI.encodedHazards.forEach((encHazardName) =>{ 
     if(encHazardName && encHazardName.length>0) {
         let parts=encHazardName.split('#');
         if(parts[0]=='C1' && parts.length>1) {
@@ -294,37 +296,52 @@ function addRawRIT2InternalFile(jCORI) {
         }
       }
   });
+  // 20240725 fixed empty encHaz issue
   
+
   // extract Function, internalize and store id 
   console.log("function: "+JSON.stringify(jCORI.function)); // CSV string
-  let arrFunction = jCORI.function.name.split(DELIM);
-  let strFunction=arrFunction[0];
-  arrFunction.shift();
-  let strNotes=arrFunction.join(DELIM);
-  let jFunction = internFunction(strFunction,strNotes);
-  console.log("Function: "+JSON.stringify(jFunction)); 
+  let jFunction = { 'id':-1 }
+  if(jCORI.function.name) {
+    let arrFunction = jCORI.function.name.split(DELIM);
+    let strFunction=arrFunction[0];
+    arrFunction.shift();
+    let strNotes=arrFunction.join(DELIM);
+    jFunction = internFunction(strFunction,strNotes);
+    console.log("Function: "+JSON.stringify(jFunction)); 
+  }
+  else console.log("NO Function in CORI="+JSON.stringify(jCORI)); 
   
 
 
-  // 20230708
+  // 20230708 was hazard 202040725
   // extract DomainSpecificHazard identification, internalize and store id 
-  let strDosh = jCORI.dosh.name;
-  let jDosh = internDosh(strDosh);
-  console.log("DSH: "+JSON.stringify(jDosh)); // { id name }
-  
+  let jDosh = { 'id':-1 }
+    if(jCORI.dosh && jCORI.dosh.name) {
+    let strDosh = jCORI.dosh.name;
+    jDosh = internDosh(strDosh);
+    console.log("DSH: "+JSON.stringify(jDosh)); // { id name }
+  } else console.log("NO DoSH in CORI="+JSON.stringify(jCORI)); 
+    
+
+
 
   // 20240123
-  let strHarm = jCORI.harm.name;
-  let jHarm = internHarm(strHarm);
-
+  let jHarm = { 'id':-1, 'harm':666 }
+  if(jCORI.dosh && jCORI.dosh.name) {
+    let strHarm = jCORI.harm.name;
+    jHarm = internHarm(strHarm);
+  } else console.log("There is no harm in CORI="+JSON.stringify(jCORI)); 
 
 
   // 20230731
-  // extract Hazard, internalize and store id 
-  let strComponent = jCORI.component;
-  let jComponent = internComponent(strComponent);
-  console.log("Component: "+JSON.stringify(jComponent)); // { id name }
-  
+  let jComponent = { 'id':-1, 'name':'System '}
+  if(jCORI.component) {
+    // extract Hazard, internalize and store id 
+    let strComponent = jCORI.component;
+    jComponent = internComponent(strComponent);
+    console.log("Component: "+JSON.stringify(jComponent)); // { id name }
+  } else console.log("NO Component in DOSH="+JSON.stringify(jCORI)); // { id name }
 
 
 
@@ -372,7 +389,8 @@ function addRawRIT2InternalFile(jCORI) {
 
   
 
-  let managedRisks = jCORI.managedRisks.map((jMAR)=>( 
+  let managedRisks = [];
+  if(jCORI.managedRisks) managedRisks=jCORI.managedRisks.map((jMAR)=>( 
      (refHS = internHazSit(jMAR.name).id)
      ?
       { 'id':"ARI"+next(),
@@ -387,11 +405,14 @@ function addRawRIT2InternalFile(jCORI) {
       } : {}
     ));
 
+
   managedRisks.forEach((jMAR)=>{targetRisk.regAnalyzedRisk.push(jMAR)});
 
 }
 
 function createPreventiveSDA(jRiskFile,jHarm,refHS,strHazSit,regAssurance) {
+  if(!strHazSit)  return { 'id':-1, 'goal':'no goal', 'cause':'no cause', 'problem':'no problem','solution':'no solution','regAssurance':[] }
+
   let analysis = strHazSit.split(';');
   let strCause=analysis.shift();
   let imdrfAETA = analysis.pop();

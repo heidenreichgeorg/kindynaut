@@ -3,7 +3,7 @@
 
 import { writeFile } from 'node:fs/promises'
 
-import { processRiskTable } from "./generateInternalFile"
+import { processRiskTable } from "./generateInternalFile.js"
 
 // load an XLSX file from the server storage
 
