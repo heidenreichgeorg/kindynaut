@@ -18,10 +18,12 @@ var jFile = {
       "file": "risktable.json",
       "manufacturer": "Illuminati",
       "project": "HOROSKOP",
-      "version": "VA01",      
+      "version": "VA01"      
   }
 }
- 
+
+const flagRisk=true;
+const SLS = ';';
 
 import { readHBook } from "./readXL.js"
 
@@ -67,8 +69,9 @@ export async function downloadHBook(
 
       
   function createItem(risk) {
-    // VDE SPEC 90025 convention
-    let managedRisk={'name':risk.HazardousSituation};
+    
+    // VDE SPEC 90025 convention for riskTable
+    let managedRisks={ 'name':risk.HazardousSituation };
     let mari={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
     try {
 
@@ -79,23 +82,25 @@ export async function downloadHBook(
         mari.harm={ 'name': harmName }
         mari.genericHazards=hazardsHarm[0].split('GH');
 
-        // VDE SPEC 90025 convention
-        mari.hazard = { 'name':risk.Function+' '+harmName }
+        // riskTable generator GH20240725
+        mari.dosh = { 'name':risk.Function+' '+harmName }
 
-        managedRisk.subjectGroups=risk.Target.split(SLS);
+        managedRisks.subjectGroups=risk.Target.split(SLS);
 
-        if(flagRisk) {
-            // risk vectors are combined with dash -
-            let initial = risk.Initial.split('-');
-            managedRisk.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+        try {
+          if(flagRisk) {
+              // risk vectors are combined with dash -
+              let initial = risk.Initial.split('-');
+              managedRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
 
-            let residual = risk.Residual.split('-');
-            managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
-        }
-        mari.managedRisks=[managedRisk]
-
+              let residual = risk.Residual.split('-');
+              managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+          }
+          mari.managedRisks=[managedRisks]
+        } catch(e) { console.log("createItem managedRisk failed: "+e) }
         //mari.source=JSON.stringify(check))
-    } catch(e) {}
+
+    } catch(e) { console.log("createItem main failed: "+e) }
     
     return mari;
   }
