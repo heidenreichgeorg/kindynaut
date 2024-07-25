@@ -6,6 +6,10 @@ import { writeFile } from 'node:fs/promises'
 
 // load an XLSX file from the server storage
 
+// creates a iskTable format
+
+// next step: save in InternalFile format
+
 const HTTP_OK     = 200;
 const HTTP_WRONG  = 400;
 
@@ -23,6 +27,8 @@ var jFile = {
 }
 
 const flagRisk=true;
+const flagMitigations=true;
+
 const SLS = ';';
 
 import { readHBook } from "./readXL.js"
@@ -87,19 +93,25 @@ export async function downloadHBook(
 
         managedRisks.subjectGroups=risk.Target.split(SLS);
 
-        try {
-          if(flagRisk) {
-              // risk vectors are combined with dash -
-              let initial = risk.Initial.split('-');
-              managedRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+        
+        if(flagRisk) try {
+            // risk vectors are combined with dash -
+            let initial = risk.Initial.split('-');
+            managedRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+        } catch(e) { console.log("createItem managedRisk INITIAL failed: "+e) }
 
-              let residual = risk.Residual.split('-');
-              managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
-          }
-          mari.managedRisks=[managedRisks]
-        } catch(e) { console.log("createItem managedRisk failed: "+e) }
-        //mari.source=JSON.stringify(check))
+        if(flagRisk) try {
 
+            let residual = risk.Residual.split('-');
+            managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+        } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
+        
+        if(flagMitigations) try { managedRisks.mitigations = risk.Measures.split(SLS); } catch(e) {}
+
+
+        mari.managedRisks=[managedRisks]
+      
+      
     } catch(e) { console.log("createItem main failed: "+e) }
     
     return mari;
