@@ -1,6 +1,5 @@
     // NODE ONLY
 
-import { writeFile } from 'node:fs/promises'
 
 import { sane } from './node_utils.js'
 
@@ -26,7 +25,7 @@ let cor=[];
 let headers=null;
 
 
-export function openHBook(fileName,createItem) {
+export function readHBook(fileName,createItem) {
 
     // does not sanitize XLSX file content
 
@@ -70,7 +69,7 @@ export function openHBook(fileName,createItem) {
                         definedRows=transferLine(comps,definedRows);
                         
                         comps.unshift("P"+sheetNumber+"L"+row+"#"+itemNumber);
-                        console.log(grid(comps));
+                        console.log(grid(14,comps));
                         comps.shift();
                     });
                 }
@@ -84,8 +83,8 @@ export function openHBook(fileName,createItem) {
        
     }
     
-    writeTable('c:/temp/csvTable.csv',result.join('\n'));
-    return result; // missing previous risk only
+    //writeTable('c:/temp/csvTable.json',result.join('\n'));
+    return result; 
 
 
 
@@ -186,7 +185,8 @@ export function openHBook(fileName,createItem) {
       
                 cor=[];
                 
-                result.push(createItem(item,itemNumber));
+                result.push(createItem(item));
+                //result.push(grid(40,Object.keys(item).map((key)=>(item[key]))))
             }
         }
         return definedRows;
@@ -216,17 +216,10 @@ export function openHBook(fileName,createItem) {
             // EXAM-X
 
 
-async function writeTable(filePath,strRisks) {
-  try {
-    console.log("0470 writeTable to "+filePath);
-    await writeFile(filePath, strRisks);
-  } catch (err) {
-        console.log("0471 writeTable to "+filePath+":"+err);
-  }
-}
-
-function grid(arrStr) {
-    return arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+'                ').substring(0,14))).join('|').substring(0,235);
+function grid(width,arrStr) {
+    if(width>150) width=150;
+let base="                                                                                                                                                             ".substring(0,width)
+    return arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+base).substring(0,width))).join('|')
 }
 
 // OLD

@@ -1,12 +1,29 @@
 // START FROM PROJECT ROOT WITH
 // node pages/server.js 
 
+import { writeFile } from 'node:fs/promises'
+
+
 // load an XLSX file from the server storage
 
 const HTTP_OK     = 200;
 const HTTP_WRONG  = 400;
 
-import { openHBook } from "./readXL.js"
+var jFile = {
+  "id": 1,
+  "name": "DeviceAssurance",
+  "justification": {
+      "id": 2,
+      "name": "Safety",
+      "file": "risktable.json",
+      "manufacturer": "Illuminati",
+      "project": "HOROSKOP",
+      "version": "VA01",      
+  }
+}
+ 
+
+import { readHBook } from "./readXL.js"
 
 import { getURLParams, timeSymbol } from './node_utils.js'
 
@@ -27,10 +44,15 @@ export async function downloadHBook(
 
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
-        let arrLines = openHBook(file,createItem);
-        res.write(arrLines.join('\n')); // better put it all in req.end in one go 
+        let rTable = jFile.justification;
+        let mari = readHBook(file,createItem);
+
+        rTable.justification = mari
+        writeTable('c:/temp/csvTable.json',JSON.stringify(jFile))
+        
+        res.write(""+mari.length+"\n"); // better put it all in req.end in one go 
      
-        console.dir ( "0632 DOWNLOAD FILE with "+arrLines.length+" lines.");
+        console.dir ( "0632 DOWNLOAD FILE with "+mari.length+" lines.");
 
     } else {
       console.dir ( "0631 DOWNLOAD EMPTY FILE "+file);
@@ -47,18 +69,18 @@ export async function downloadHBook(
   function createItem(risk) {
     // VDE SPEC 90025 convention
     let managedRisk={'name':risk.HazardousSituation};
-    let dosh={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
+    let mari={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
     try {
 
         // Siemens Healthineers combine Harm and Generic Hazards with GHx#
         let hazards = risk.Hazard
         let hazardsHarm=hazards.split("Generic Hazards");
         let harmName = hazardsHarm.shift();
-        dosh.harm={ 'name': harmName }
-        dosh.genericHazards=hazardsHarm[0].split('GH');
+        mari.harm={ 'name': harmName }
+        mari.genericHazards=hazardsHarm[0].split('GH');
 
         // VDE SPEC 90025 convention
-        dosh.hazard = { 'name':risk.Function+' '+harmName }
+        mari.hazard = { 'name':risk.Function+' '+harmName }
 
         managedRisk.subjectGroups=risk.Target.split(SLS);
 
@@ -70,16 +92,26 @@ export async function downloadHBook(
             let residual = risk.Residual.split('-');
             managedRisk.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
         }
-        dosh.managedRisks=[managedRisk]
+        mari.managedRisks=[managedRisk]
 
-        //dosh.source=JSON.stringify(check))
+        //mari.source=JSON.stringify(check))
     } catch(e) {}
     
-    return dosh;
+    return mari;
   }
 
 }
 
+
+
+async function writeTable(filePath,strRisks) {
+  try {
+    console.log("0470 writeTable to "+filePath);
+    await writeFile(filePath, strRisks);
+  } catch (err) {
+        console.log("0471 writeTable to "+filePath+":"+err);
+  }
+}
 
 
 
