@@ -11,13 +11,12 @@ const { readFile,utils } = pkg;
 
 const SYS_ROWS=3; // lines in table headers
 
-const SLS = ';';
-const SEP = ',';
+const SLS = ';'
+const HEAD="--------------"
+
 let tableMap={};
 
 let cor=[];
-let headers=null;
-
 
 export function readHBook(fileName,createItem) {
 
@@ -48,8 +47,6 @@ export function readHBook(fileName,createItem) {
         const s2j_options={ 'blankrows':true, 'defval':'', 'skipHidden':false };
         sheetNames.forEach((name,sheetNumber)=>{ 
             let definedRows=0;
-
-            headers=null;
             const jTable = utils.sheet_to_json(workbook.Sheets[name],s2j_options);  
             // each sheet in jTable is an array of line objects with markup defined in the first line
             if(jTable){
@@ -63,9 +60,10 @@ export function readHBook(fileName,createItem) {
                         definedRows=transferLine(comps,definedRows);
                         
                         comps.unshift("P"+sheetNumber+"L"+row+"#"+itemNumber);
-                        console.log(grid(14,comps));
+                        grid("1",14,comps);
                         comps.shift();
                     });
+                    console.log("1"+Array(16).fill(HEAD).join('|'))
                 }
                 transferLine(["","","",""],SYS_ROWS+1)
             } //else console.log("0403 READ workbook sheet("+i+")"");
@@ -77,12 +75,13 @@ export function readHBook(fileName,createItem) {
        
     }
     
-    //writeTable('c:/temp/csvTable.json',result.join('\n'));
-    return result; 
+    //writeTable('c:/temp/csvTable.txt',result.join('\n'));
+    return null; // to start making an InternalFile return result; 
 
 
 
-    function transferLine(comps,definedRows) {        
+    function transferLine(comps,definedRows) {    
+        
         let first = comps[0];
         if(first) {
             if(isNaN(first)) {
@@ -125,7 +124,7 @@ export function readHBook(fileName,createItem) {
                 
                 definedRows++;
 
-                store(comps,itemNumber)
+                cor = store(cor,comps,itemNumber)
             }
         }
 
@@ -134,51 +133,71 @@ export function readHBook(fileName,createItem) {
         if(first.length==0 && (comps.join('').length>0)) {
             // empty comps0
             // other text    
-            if(definedRows>SYS_ROWS) store(comps);
+            if(definedRows>SYS_ROWS) cor=store(cor,comps,itemNumber);
         }
     
 
-        function store(comps,itemNumber) {
-            let check=[];
+        function store(cor,comps,itemNumber) {
 
-            headers = Object.keys(tableMap);
+            // split item
+            let check=[];
+            let headers = Object.keys(tableMap);
             // sort each line into colBuffer	   
             headers.forEach((key,index)=>{
                 let col=tableMap[key];
-                //let prev = colBuffer[index]+' ';
-                //colBuffer[index]=comps[col]?prev+comps[col]:prev;
                 check[index]=comps[col]
             })
 
 
-            documentItem(check,itemNumber);
+            
+            // detect next item
+            if((check[0]>=0) && check[1] && (check[2]>=0)) {  // check[0,2] numeric 
+                    documentItem(cor,itemNumber,tableMap);
+                    cor=[];
 
+            }
+
+
+            // continue collecting more item input
             check.forEach((cell,index)=>{
                 if(cell && cell.length>0) {
                     cor[index]=(cor[index] && cor[index].length>0)  ? (cor[index]+SLS+cell)
                                                                     : cell
                 }
             })
+
+            return cor;
         }
 
-        function documentItem(check,itemNumber) {
+        function documentItem(cor,itemNumber,tableMap) {
 
-            // show each risk
-            if(!isNaN(check[0]) && check[1] && !isNaN(check[2])) {  // check[0,2] numeric 
-                console.log("0423 "+check[0]+check[1]+check[2])
-                // this indicates beginning of a new risk
-                let item={ 'itemNumber':itemNumber };
-                cor.forEach((cell,index)=>{ item[headers[index]]=cell })      
+            let headers = Object.keys(tableMap);
+            //console.log("0423 "+check[0]+check[1]+check[2])
+            // this indicates beginning of a new item
+            let item={ 'itemNumber':itemNumber };
+            cor.forEach((cell,index)=>{ item[headers[index]]=(""+cell) })      
 
-                cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
-                console.log();
-      
-                cor=[];
-                
-                result.push(createItem(item));
-                //result.push(grid(40,Object.keys(item).map((key)=>(item[key]))))
-            }
+            // logical output
+            //cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
+    
+        
+            // document each item
+            grid("2",14,headers)
+            //let max=0; Object.keys(tableMap).forEach((key)=>{if(tableMap[key]>max) max=tableMap[key]})
+            //let phase2=Array(max).fill(" ")
+            //Object.keys(tableMap).forEach((key,index)=>{phase2[tableMap[key]]=cor[index]})
+            let phase2=Object.keys(item).map((key,num)=>(item[key]))
+            for(let i=0;i<42 && phase2;i++) phase2=grid("2",26,phase2)
+            console.log();
+            console.log();
+
+            // process the item
+            // result.push(createItem(item));
+            
         }
+
+
+
         return definedRows;
     }
 }
@@ -200,9 +219,14 @@ export function readHBook(fileName,createItem) {
 // for multiple lines referring to the same risk
 
 
-function grid(width,arrStr) {
+function grid(prefix,width,arrStr) {
     if(width>150) width=150;
-let base="                                                                                                                                                             ".substring(0,width)
-    return arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+base).substring(0,width))).join('|')
-}
+    
+    let flag=false;
+    arrStr.map((col)=>((col && col.length>0 && (flag=true)) ? 1:2))
 
+    let arrRest=arrStr.map((col)=>((col && col.length>width) ? col.substring(width):""))
+    let base="                                                                                                                                                             ".substring(0,width)
+    console.log(prefix+arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+base).substring(0,width))).join('|'))
+    return flag ? arrRest : null;
+}
