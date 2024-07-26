@@ -1,15 +1,13 @@
-// START FROM PROJECT ROOT WITH
+// START this backend server FROM PROJECT ROOT WITH command:
 // node pages/server.js 
 
 import { writeFile } from 'node:fs/promises'
 
 import { processRiskTable } from "./generateInternalFile.js"
 
-// load an XLSX file from the server storage
-
-// creates a iskTable format
-
-// next step: save in InternalFile format
+// server responsds to downloadHBook with loading an XLSX file from the server storage
+// server will then create a RiskTable format
+// and in a next step save this in InternalFile format as per VDE SPEC 90025
 
 const HTTP_OK     = 200;
 const HTTP_WRONG  = 400;
@@ -75,54 +73,45 @@ export async function downloadHBook(
     res.end(); 
 
 
+    function createItem(risk) {    
+      // VDE SPEC 90025 convention for riskTable
+      let managedRisks={ 'name':risk.HazardousSituation };
+      let mari={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
+      try {
+          // Siemens Healthineers combine Harm and Generic Hazards with GHx#
+          let hazards = risk.Hazard
+          let hazardsHarm=hazards.split("Generic Hazards");
+          let harmName = hazardsHarm.shift();
+          mari.harm={ 'name': harmName }
+          mari.genericHazards=hazardsHarm[0].split('GH');
 
+          // riskTable generator GH20240725
+          mari.dosh = { 'name':risk.Function+' '+harmName }
+
+          managedRisks.subjectGroups=risk.Target.split(SLS);
+          
+          if(flagRisk) try {
+              // risk vectors are combined with dash -
+              let initial = risk.Initial.split('-');
+              managedRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+          } catch(e) { console.log("createItem managedRisk INITIAL failed: "+e) }
+
+          if(flagRisk) try {
+
+              let residual = risk.Residual.split('-');
+              managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+          } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
+          
+          if(flagMitigations) try { managedRisks.mitigations = risk.Measures.split(SLS); } catch(e) {}
+
+          mari.managedRisks=[managedRisks]
+              
+      } catch(e) { console.log("createItem main failed: "+e) }
       
-  function createItem(risk) {
-    
-    // VDE SPEC 90025 convention for riskTable
-    let managedRisks={ 'name':risk.HazardousSituation };
-    let mari={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
-    try {
-
-        // Siemens Healthineers combine Harm and Generic Hazards with GHx#
-        let hazards = risk.Hazard
-        let hazardsHarm=hazards.split("Generic Hazards");
-        let harmName = hazardsHarm.shift();
-        mari.harm={ 'name': harmName }
-        mari.genericHazards=hazardsHarm[0].split('GH');
-
-        // riskTable generator GH20240725
-        mari.dosh = { 'name':risk.Function+' '+harmName }
-
-        managedRisks.subjectGroups=risk.Target.split(SLS);
-
-        
-        if(flagRisk) try {
-            // risk vectors are combined with dash -
-            let initial = risk.Initial.split('-');
-            managedRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
-        } catch(e) { console.log("createItem managedRisk INITIAL failed: "+e) }
-
-        if(flagRisk) try {
-
-            let residual = risk.Residual.split('-');
-            managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
-        } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
-        
-        if(flagMitigations) try { managedRisks.mitigations = risk.Measures.split(SLS); } catch(e) {}
-
-
-        mari.managedRisks=[managedRisks]
-      
-      
-    } catch(e) { console.log("createItem main failed: "+e) }
-    
-    return mari;
-  }
+      return mari;
+      } 
 
 }
-
-
 
 async function writeTable(filePath,strRisks) {
   try {
@@ -133,42 +122,3 @@ async function writeTable(filePath,strRisks) {
   }
 }
 
-
-
-//module.exports = { handler };
-
-/*
-
-function handleJSONSave(jContent) {
-        
-  const  b64encoded= Buffer.from(strJustification,"utf8").toString('base64');
-
-  let anchor = document.getElementById('table0');
-  if(anchor) {
-      const newDiv = document.createElement('div');
-      newDiv.innerText = b64encoded;
-      newDiv.className = "FIELD MOAM";
-
-      anchor.appendChild(newDiv);
-  }
-  
-  const manufacturer="manufacturer";
-  const product="product";
-  const version="version"
-
-  const rqHeaders = {  'Accept': 'application/octet-stream',
-                          'Access-Control-Allow-Origin':'*',
-                          'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
-
-  
-  const rqOptions = { method: 'GET', headers: rqHeaders, mode:'cors'};
-  try {                
-      fetch(`${REACT_APP_API_HOST}/RISKTABLE?manufacturer=${manufacturer}&product=${product}&version=${version}`, rqOptions)
-      .then((response) => response.blob())
-      .then((blob) => URL.createObjectURL(blob))
-      .then((url) => console.log("0766 handleJSONSave URL= "+ makeURLButton(url,manufacturer,product,version)))
-      .catch((err) => console.error("0765 handleJSONSave fetch ERR "+err));           
-  } catch(err) { console.log("0767 GET /EXCEL handleJSONSave:"+err);}
-  console.log("0878 handleJSONSave EXIT");
-}
-*/

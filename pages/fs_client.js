@@ -121,3 +121,40 @@ function fs_delete() {
 }
 
 */
+
+
+/*
+
+function handleJSONSave(jContent) {
+        
+  const  b64encoded= Buffer.from(strJustification,"utf8").toString('base64');
+
+  let anchor = document.getElementById('table0');
+  if(anchor) {
+      const newDiv = document.createElement('div');
+      newDiv.innerText = b64encoded;
+      newDiv.className = "FIELD MOAM";
+
+      anchor.appendChild(newDiv);
+  }
+  
+  const manufacturer="manufacturer";
+  const product="product";
+  const version="version"
+
+  const rqHeaders = {  'Accept': 'application/octet-stream',
+                          'Access-Control-Allow-Origin':'*',
+                          'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content-Type, Accept, Authorization' };
+
+  
+  const rqOptions = { method: 'GET', headers: rqHeaders, mode:'cors'};
+  try {                
+      fetch(`${REACT_APP_API_HOST}/RISKTABLE?manufacturer=${manufacturer}&product=${product}&version=${version}`, rqOptions)
+      .then((response) => response.blob())
+      .then((blob) => URL.createObjectURL(blob))
+      .then((url) => console.log("0766 handleJSONSave URL= "+ makeURLButton(url,manufacturer,product,version)))
+      .catch((err) => console.error("0765 handleJSONSave fetch ERR "+err));           
+  } catch(err) { console.log("0767 GET /EXCEL handleJSONSave:"+err);}
+  console.log("0878 handleJSONSave EXIT");
+}
+*/

@@ -1,5 +1,4 @@
-    // NODE ONLY
-
+// NODE ONLY
 
 import { sane } from './node_utils.js'
 
@@ -7,15 +6,10 @@ import { sane } from './node_utils.js'
 import pkg from 'xlsx'; // CommonJS
 const { readFile,utils } = pkg;
 
-
 // consumes and HBOOK.xlsx
-
 // generates a Risk Table as of CRAFTS-MD
 
-
-
 const SYS_ROWS=3; // lines in table headers
-
 
 const SLS = ';';
 const SEP = ',';
@@ -85,10 +79,6 @@ export function readHBook(fileName,createItem) {
     
     //writeTable('c:/temp/csvTable.json',result.join('\n'));
     return result; 
-
-
-
-    
 
 
 
@@ -194,11 +184,6 @@ export function readHBook(fileName,createItem) {
 }
 
 
-
-
-
-// STEP 1 - map concepts to columns
-// so for each tab a column map is created and columns are translated
 //
 // In column-1 text is only used at the beginning end end of paging (tabs)
 // while numerics indicate the begin of an analyzed risk
@@ -207,13 +192,12 @@ export function readHBook(fileName,createItem) {
 // i.e. in the same column between words of the same terms
 //
 
-// lines are not being received by the assigned Portal client
+// req/res: lines are not being received by the assigned Portal client
 
 
 
-// each line in RESULT is a consolidated block from Excel, 
+// each line in RESULT is a consolidated logical item (risk)  from Excel, starting with a number in column 0
 // for multiple lines referring to the same risk
-            // EXAM-X
 
 
 function grid(width,arrStr) {
@@ -222,6 +206,3 @@ let base="                                                                      
     return arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+base).substring(0,width))).join('|')
 }
 
-// OLD
-    // return one list of CSV-strings (one string per data line, CSV breaks columns for commas)
-    // CSV support for ca 120 columns
