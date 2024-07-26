@@ -57,11 +57,9 @@ export function readHBook(fileName,createItem) {
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
                         //if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
 
-                        definedRows=transferLine(comps,definedRows);
+                        let ident="P"+sheetNumber+"#"+itemNumber+"L"+(row-1)
+                        definedRows=transferLine(comps,definedRows,ident);
                         
-                        comps.unshift("P"+sheetNumber+"L"+row+"#"+itemNumber);
-                        grid("1",14,comps);
-                        comps.shift();
                     });
                     console.log("1"+Array(16).fill(HEAD).join('|'))
                 }
@@ -80,7 +78,8 @@ export function readHBook(fileName,createItem) {
 
 
 
-    function transferLine(comps,definedRows) {    
+    function transferLine(comps,definedRows,ident) {    
+        let decision='?'
         
         let first = comps[0];
         if(first) {
@@ -109,6 +108,7 @@ export function readHBook(fileName,createItem) {
                     });
                      //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
                      definedRows=0;
+                     decision='0'
                 }
 
                 // (B) else other text line
@@ -119,12 +119,9 @@ export function readHBook(fileName,createItem) {
                 // comps[0] exists AND is numeric
                 // (C) new risk line
                 
-                itemNumber++;
-                //colBuffer=JSON.parse(JSON.stringify(columnsHBook))
-                
                 definedRows++;
-
-                cor = store(cor,comps,itemNumber)
+                decision='*'
+                cor = store(cor,comps,ident)
             }
         }
 
@@ -133,11 +130,19 @@ export function readHBook(fileName,createItem) {
         if(first.length==0 && (comps.join('').length>0)) {
             // empty comps0
             // other text    
-            if(definedRows>SYS_ROWS) cor=store(cor,comps,itemNumber);
+            
+            if(definedRows>SYS_ROWS) {
+                decision='+';
+                cor=store(cor,comps,ident);
+            } else decision='-';
         }
     
+        
+        comps.unshift(ident+decision);
+        grid("1",14,comps);
+        comps.shift();
 
-        function store(cor,comps,itemNumber) {
+        function store(cor,comps,ident) {
 
             // split item
             let check=[];
@@ -151,8 +156,9 @@ export function readHBook(fileName,createItem) {
 
             
             // detect next item
-            if((check[0]>0) && check[1] && (check[2]>0)) {  // check[0,2] numeric 
-                    documentItem(cor,itemNumber,tableMap);
+            if((check[0]>0) && check[1]) {  // check[0] numeric 
+
+                    documentItem(cor,tableMap,ident);
                     cor=[];
                     console.log("NEXT "+(0+check[0])+"-"+check[1]+"-"+(0+check[2]))
 
@@ -170,12 +176,14 @@ export function readHBook(fileName,createItem) {
             return cor;
         }
 
-        function documentItem(cor,itemNumber,tableMap) {
+        function documentItem(cor,tableMap,ident) {
+
+            itemNumber++;
 
             let headers = Object.keys(tableMap);
             //console.log("0423 "+check[0]+check[1]+check[2])
             // this indicates beginning of a new item
-            let item={ 'itemNumber':itemNumber };
+            let item={ 'itemNumber':ident };
             cor.forEach((cell,index)=>{ item[headers[index]]=(""+cell) })      
 
             // logical output
@@ -235,6 +243,6 @@ function grid(prefix,width,arrStr) {
 
     let arrRest=arrStr.map((col)=>((col && col.length>width) ? col.substring(width):""))
     let base="                                                                                                                                                             ".substring(0,width)
-    console.log(prefix+arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):"")+base).substring(0,width))).join('|'))
+    console.log(prefix+arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):(""+col))+base).substring(0,width))).join('|'))
     return flag ? arrRest : null;
 }
