@@ -151,9 +151,10 @@ export function readHBook(fileName,createItem) {
 
             
             // detect next item
-            if((check[0]>=0) && check[1] && (check[2]>=0)) {  // check[0,2] numeric 
+            if((check[0]>0) && check[1] && (check[2]>0)) {  // check[0,2] numeric 
                     documentItem(cor,itemNumber,tableMap);
                     cor=[];
+                    console.log("NEXT "+(0+check[0])+"-"+check[1]+"-"+(0+check[2]))
 
             }
 
@@ -182,17 +183,24 @@ export function readHBook(fileName,createItem) {
     
         
             // document each item
-            grid("2",14,headers)
-            //let max=0; Object.keys(tableMap).forEach((key)=>{if(tableMap[key]>max) max=tableMap[key]})
-            //let phase2=Array(max).fill(" ")
-            //Object.keys(tableMap).forEach((key,index)=>{phase2[tableMap[key]]=cor[index]})
-            let phase2=Object.keys(item).map((key,num)=>(item[key]))
-            for(let i=0;i<42 && phase2;i++) phase2=grid("2",26,phase2)
             console.log();
-            console.log();
+            //grid("2",14,headers)
+            //let phase2=Object.keys(cor).map((key,num)=>(cor[key]))
+            //for(let i=0;i<42 && phase2;i++) phase2=grid("2",26,phase2)
+            //console.log();
 
+            //let phase3=Object.keys(item).map((key,num)=>(item[key]))
+            //for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
+            //console.log();
+
+
+            let jItem = createItem(item);
+            Object.keys(jItem).forEach((key)=>console.log(key+":"+JSON.stringify(jItem[key])))
             // process the item
-            // result.push(createItem(item));
+            // result.push(jItem);
+
+            console.log();
+            console.log();
             
         }
 
