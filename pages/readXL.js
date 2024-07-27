@@ -11,14 +11,18 @@ const { readFile,utils } = pkg;
 
 const SYS_ROWS=3; // lines in table headers
 
-const SLS = ';'
+const SLS = '|'
+const SEP = ';'
 const HEAD="--------------"
 
-let tableMap={};
 
+let tableMap={};
 let cor=[];
+let prevComps="";
 
 export function readHBook(fileName,createItem) {
+
+    if(!fileName || fileName.length<2) return null;
 
     // does not sanitize XLSX file content
 
@@ -102,8 +106,8 @@ export function readHBook(fileName,createItem) {
                         if(column.startsWith('Effect')) tableMap.Target=col;
                         if(column.startsWith('Pre/Post')) tableMap.PrePost=col;
                         if(column.startsWith('Initial')) tableMap.Initial=col;
-                        if(column.startsWith('M#')) tableMap.MeasNum=col;
-                        if(column.startsWith('Measure')) tableMap.Measures=col;
+                        if(column.startsWith('M#')) { tableMap.MeasNum=col; tableMap.lMeasure=(col+1); tableMap.rMeasure=(col+2); } // double XLSX column GH20240727
+                        //if(column.startsWith('Measure')) 
                         if(column.startsWith('Residual')) tableMap.Residual=col;
                     });
                      //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
@@ -140,7 +144,9 @@ export function readHBook(fileName,createItem) {
         
         comps.unshift(ident+decision);
         grid("1",14,comps);
+        prevComps=comps.join(SEP)
         comps.shift();
+
 
         function store(cor,comps,ident) {
 
@@ -160,6 +166,7 @@ export function readHBook(fileName,createItem) {
 
                     documentItem(cor,tableMap,ident);
                     cor=[];
+                    console.log(cor.join("  "));
                     console.log("NEXT "+(0+check[0])+"-"+check[1]+"-"+(0+check[2]))
 
             }
@@ -179,7 +186,6 @@ export function readHBook(fileName,createItem) {
         function documentItem(cor,tableMap,ident) {
 
             itemNumber++;
-
             let headers = Object.keys(tableMap);
             //console.log("0423 "+check[0]+check[1]+check[2])
             // this indicates beginning of a new item
@@ -189,7 +195,6 @@ export function readHBook(fileName,createItem) {
             // logical output
             //cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
     
-        
             // document each item
             console.log();
             //grid("2",14,headers)
@@ -201,18 +206,13 @@ export function readHBook(fileName,createItem) {
             //for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
             //console.log();
 
-
             let jItem = createItem(item);
             Object.keys(jItem).forEach((key)=>console.log(key+":"+JSON.stringify(jItem[key])))
             // process the item
-            // result.push(jItem);
 
             console.log();
-            console.log();
-            
+            console.log();            
         }
-
-
 
         return definedRows;
     }

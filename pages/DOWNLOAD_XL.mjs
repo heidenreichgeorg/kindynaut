@@ -102,7 +102,18 @@ export async function downloadHBook(
               managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
           } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
           
-          if(flagMitigations) try { managedRisks.mitigations = risk.Measures.split(SLS); } catch(e) {}
+          if(flagMitigations)  { 
+            managedRisks.mitigations = risk.lMeasure+risk.rMeasure
+            let leftCol = []; try { leftCol=risk.lMeasure.split(SEP); } catch(e) {}
+             let rightCol =[]; try { rightCol=risk.rMeasure.split(SEP) } catch(e) {}
+             let delta=leftCol.length-rightCol.length;
+             try {
+                if(delta>0)  rightCol.concat(Array(delta).fill(""))
+                if(delta<0)  leftCol.concat(Array(-delta).fill(""))
+             } catch(e) {}
+             //managedRisks.mitigations = []
+             //leftCol.forEach((leftCell,i)=>managedRisks.mitigations.push(leftCell))
+          }
 
           mari.managedRisks=[managedRisks]
               
