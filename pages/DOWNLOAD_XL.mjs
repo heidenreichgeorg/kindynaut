@@ -103,7 +103,7 @@ export async function downloadHBook(
           } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
           
           if(flagMitigations)  { 
-            managedRisks.mitigations = risk.lMeasure+risk.rMeasure
+            managedRisks.mitigations = risk.Measure
             let leftCol = []; try { leftCol=risk.lMeasure.split(SEP); } catch(e) {}
              let rightCol =[]; try { rightCol=risk.rMeasure.split(SEP) } catch(e) {}
              let delta=leftCol.length-rightCol.length;

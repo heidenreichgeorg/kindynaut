@@ -106,8 +106,8 @@ export function readHBook(fileName,createItem) {
                         if(column.startsWith('Effect')) tableMap.Target=col;
                         if(column.startsWith('Pre/Post')) tableMap.PrePost=col;
                         if(column.startsWith('Initial')) tableMap.Initial=col;
-                        if(column.startsWith('M#')) { tableMap.MeasNum=col; tableMap.lMeasure=(col+1); tableMap.rMeasure=(col+2); } // double XLSX column GH20240727
-                        //if(column.startsWith('Measure')) 
+                        if(column.startsWith('M#')) tableMap.MeasNum=col;
+                        if(column.startsWith('Measure')) tableMap.Measure=col;
                         if(column.startsWith('Residual')) tableMap.Residual=col;
                     });
                      //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
@@ -156,7 +156,11 @@ export function readHBook(fileName,createItem) {
             // sort each line into colBuffer	   
             headers.forEach((key,index)=>{
                 let col=tableMap[key];
-                check[index]=comps[col]
+                let colText=(comps[col]?comps[col]:'');
+
+                // take preceding column if it is text, otherwise take current column GH20240729
+                if(col>0 && !(comps[col-1]>-1) && isNaN(comps[col-1]) && comps[col-1].length>0) check[index]=comps[col-1]+' '+colText
+                else check[index]=colText       // also take preceding column text GH20240729
             })
 
 
@@ -197,14 +201,18 @@ export function readHBook(fileName,createItem) {
     
             // document each item
             console.log();
+
+            // log incoming risk columns
             //grid("2",14,headers)
             //let phase2=Object.keys(cor).map((key,num)=>(cor[key]))
             //for(let i=0;i<42 && phase2;i++) phase2=grid("2",26,phase2)
             //console.log();
 
-            //let phase3=Object.keys(item).map((key,num)=>(item[key]))
-            //for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
-            //console.log();
+            // log incoming risk structure
+            let phase3=Object.keys(item).map((key,num)=>(item[key]))
+            for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
+            console.log();
+
 
             let jItem = createItem(item);
             Object.keys(jItem).forEach((key)=>console.log(key+":"+JSON.stringify(jItem[key])))
