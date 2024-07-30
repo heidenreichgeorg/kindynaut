@@ -9,7 +9,7 @@ const { readFile,utils } = pkg;
 // consumes and HBOOK.xlsx
 // generates a Risk Table as of CRAFTS-MD
 
-const SYS_ROWS=3; // lines in table headers
+const SYS_ROWS=4; // lines in table headers
 
 const SLS = '|'
 const SEP = ';'
@@ -18,9 +18,8 @@ const HEAD="--------------"
 
 let tableMap={};
 let cor=[];
-let prevComps="";
 
-export function readHBook(fileName,createItem) {
+export function readHBook(fileName,mapCaption,createItem) {
 
     if(!fileName || fileName.length<2) return null;
 
@@ -34,7 +33,6 @@ export function readHBook(fileName,createItem) {
     //let colBuffer=columnsHBook;
 
     // list of consolidated colBuffer values
-    let result = []; 
     let itemNumber=0;
 
     console.log("0400 READ openHBook "+saneFileName)
@@ -88,44 +86,23 @@ export function readHBook(fileName,createItem) {
         let first = comps[0];
         if(first) {
             if(isNaN(first)) {
-                // (A) sheet caption 
-                if(first.startsWith('F#')) {            
-                    tableMap={};
-                    comps.forEach((strColumn,col) => {
-                        let column=strColumn.trim();
-                        // remember column index for each defined columns
-                        if(column.startsWith('F#')) tableMap.FuncNum=col;
-                        if(column.startsWith('Function')) tableMap.Function=col;
-                        if(column.startsWith('H#')) tableMap.HarmNum=col;                        
-                        if(column.startsWith('C#')) tableMap.CauseNum=col;
-
-                        if(column.startsWith('Hazardous')) tableMap.HazardousSituation=col;
-                        else // prefix
-                            if(column.startsWith('Hazard')) tableMap.Hazard=col; 
-
-                        if(column.startsWith('Effect')) tableMap.Target=col;
-                        if(column.startsWith('Pre/Post')) tableMap.PrePost=col;
-                        if(column.startsWith('Initial')) tableMap.Initial=col;
-                        if(column.startsWith('M#')) tableMap.MeasNum=col;
-                        if(column.startsWith('Measure')) tableMap.Measure=col;
-                        if(column.startsWith('Residual')) tableMap.Residual=col;
-                    });
-                     //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
-                     definedRows=0;
-                     decision='0'
+                let result=null;
+                if(result=mapCaption(comps)) {
+                    // learn tableMap
+                    tableMap=result;
+                    definedRows=0;
+                    decision='0'
                 }
-
-                // (B) else other text line
-                // comps0 is text--> don't use this
-
 
             } else {
                 // comps[0] exists AND is numeric
                 // (C) new risk line
                 
                 definedRows++;
-                decision='*'
-                cor = store(cor,comps,ident)
+                decision='>'
+                documentItem(cor,tableMap,ident);
+                cor=[];
+                cor = store(cor,comps)
             }
         }
 
@@ -137,43 +114,35 @@ export function readHBook(fileName,createItem) {
             
             if(definedRows>SYS_ROWS) {
                 decision='+';
-                cor=store(cor,comps,ident);
+                cor=store(cor,comps);
             } else decision='-';
         }
     
         
         comps.unshift(ident+decision);
         grid("1",14,comps);
-        prevComps=comps.join(SEP)
         comps.shift();
 
 
-        function store(cor,comps,ident) {
+
+
+
+
+        function store(cor,comps) {
 
             // split item
             let check=[];
             let headers = Object.keys(tableMap);
             // sort each line into colBuffer	   
             headers.forEach((key,index)=>{
-                let col=tableMap[key];
-                let colText=(comps[col]?comps[col]:'');
-
-                // take preceding column if it is text, otherwise take current column GH20240729
-                if(col>0 && !(comps[col-1]>-1) && isNaN(comps[col-1]) && comps[col-1].length>0) check[index]=comps[col-1]+' '+colText
-                else check[index]=colText       // also take preceding column text GH20240729
+                let from=tableMap[key].from;
+                let to=tableMap[key].to;
+                let colText=comps[from]; // initialize data type, e.g. numeric 
+                for(let i=from+1;i<=to;i++) {
+                    if(comps[i]) colText=colText+comps[i];
+                }
+                check[index]=colText;
             })
-
-
-            
-            // detect next item
-            if((check[0]>0) && check[1]) {  // check[0] numeric 
-
-                    documentItem(cor,tableMap,ident);
-                    cor=[];
-                    console.log(cor.join("  "));
-                    console.log("NEXT "+(0+check[0])+"-"+check[1]+"-"+(0+check[2]))
-
-            }
 
 
             // continue collecting more item input

@@ -52,7 +52,7 @@ export async function downloadHBook(
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
         let rTable = jFile.justification;
-        let mari = readHBook(file,createItem);
+        let mari = readHBook(file,mapCaption,createItem);
 
         rTable.justification = mari
         writeTable('c:/temp/csvTable.json',JSON.stringify(jFile))
@@ -71,6 +71,42 @@ export async function downloadHBook(
     res.write('\n\n');
     res.write('\n\n');
     res.end(); 
+
+    
+    function mapCaption(comps)  {
+        let tableMap=null;
+      // isNaN comps[0]
+
+          // (A) sheet caption 
+          if(comps[0].startsWith('F#')) {            
+          comps.forEach((strColumn,col) => {
+              let column=strColumn.trim();
+              // remember column index for each defined columns
+              tableMap={};
+              if(column.startsWith('F#')) tableMap.FuncNum={'from':col,'to':col};
+              if(column.startsWith('Function')) tableMap.Function={'from':col,'to':col};
+              if(column.startsWith('H#')) tableMap.HarmNum={'from':col,'to':col};                        
+              if(column.startsWith('C#')) tableMap.CauseNum={'from':col,'to':col};
+
+              if(column.startsWith('Hazardous')) tableMap.HazardousSituation={'from':col,'to':col};
+              else // prefix
+                  if(column.startsWith('Hazard')) tableMap.Hazard={'from':col,'to':col}; 
+
+              if(column.startsWith('Effect')) tableMap.Target={'from':col,'to':col};
+              if(column.startsWith('Pre/Post')) tableMap.PrePost={'from':col,'to':col};
+              if(column.startsWith('Initial')) tableMap.Initial={'from':col,'to':col};
+              if(column.startsWith('M#')) tableMap.MeasNum={'from':col,'to':col};
+              if(column.startsWith('Measure')) tableMap.Measure={'from':col-1,'to':col};
+              if(column.startsWith('Residual')) tableMap.Residual={'from':col,'to':col};
+          });
+          //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+          return tableMap;
+        }
+
+        return null;
+        // (B) else other text line
+       // comps0 is text--> don't use this
+    }
 
 
     function createItem(risk) {    
