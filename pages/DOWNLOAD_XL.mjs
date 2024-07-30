@@ -33,6 +33,7 @@ const SLS = ';';
 import { readHBook } from "./readXL.js"
 
 import { getURLParams, timeSymbol } from './node_utils.js'
+import { stringify } from 'node:querystring';
 
 export async function downloadHBook(
     req, //: NextApiRequest,
@@ -75,32 +76,33 @@ export async function downloadHBook(
     
     function mapCaption(comps)  {
         let tableMap=null;
-      // isNaN comps[0]
+        // isNaN comps[0]
 
-          // (A) sheet caption 
-          if(comps[0].startsWith('F#')) {            
+        // (A) sheet caption 
+        if(comps[0].startsWith('F#')) {            
+          tableMap={};
           comps.forEach((strColumn,col) => {
-              let column=strColumn.trim();
-              // remember column index for each defined columns
-              tableMap={};
-              if(column.startsWith('F#')) tableMap.FuncNum={'from':col,'to':col};
-              if(column.startsWith('Function')) tableMap.Function={'from':col,'to':col};
-              if(column.startsWith('H#')) tableMap.HarmNum={'from':col,'to':col};                        
-              if(column.startsWith('C#')) tableMap.CauseNum={'from':col,'to':col};
+                  let column=strColumn.trim();
+                  // remember column index for each defined columns
+                  if(column.startsWith('F#')) tableMap.FuncNum={'from':col,'to':col};
+                  if(column.startsWith('Function')) tableMap.Function={'from':col,'to':col};
+                  if(column.startsWith('H#')) tableMap.HarmNum={'from':col,'to':col};                        
+                  if(column.startsWith('C#')) tableMap.CauseNum={'from':col,'to':col};
 
-              if(column.startsWith('Hazardous')) tableMap.HazardousSituation={'from':col,'to':col};
-              else // prefix
-                  if(column.startsWith('Hazard')) tableMap.Hazard={'from':col,'to':col}; 
+                  if(column.startsWith('Hazardous')) tableMap.HazardousSituation={'from':col,'to':col};
+                  else // prefix
+                      if(column.startsWith('Hazard')) tableMap.Hazard={'from':col,'to':col}; 
 
-              if(column.startsWith('Effect')) tableMap.Target={'from':col,'to':col};
-              if(column.startsWith('Pre/Post')) tableMap.PrePost={'from':col,'to':col};
-              if(column.startsWith('Initial')) tableMap.Initial={'from':col,'to':col};
-              if(column.startsWith('M#')) tableMap.MeasNum={'from':col,'to':col};
-              if(column.startsWith('Measure')) tableMap.Measure={'from':col-1,'to':col};
-              if(column.startsWith('Residual')) tableMap.Residual={'from':col,'to':col};
-          });
-          //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
-          return tableMap;
+                  if(column.startsWith('Effect')) tableMap.Target={'from':col,'to':col};
+                  if(column.startsWith('Pre/Post')) tableMap.PrePost={'from':col,'to':col};
+                  if(column.startsWith('Initial')) tableMap.Initial={'from':col,'to':col};
+                  if(column.startsWith('M#')) tableMap.MeasNum={'from':col,'to':col};
+                  if(column.startsWith('Measure')) tableMap.Measure={'from':col-1,'to':col};
+                  if(column.startsWith('Residual')) tableMap.Residual={'from':col,'to':col};
+            });
+
+            //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+            return tableMap;
         }
 
         return null;
@@ -113,6 +115,7 @@ export async function downloadHBook(
       // VDE SPEC 90025 convention for riskTable
       let managedRisks={ 'name':risk.HazardousSituation };
       let mari={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
+      console.log("createItem ENTER risk: "+JSON.stringify(risk)) 
       try {
           // Siemens Healthineers combine Harm and Generic Hazards with GHx#
           let hazards = risk.Hazard

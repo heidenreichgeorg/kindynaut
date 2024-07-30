@@ -60,7 +60,7 @@ export function readHBook(fileName,mapCaption,createItem) {
                         //if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
 
                         let ident="P"+sheetNumber+"#"+itemNumber+"L"+(row-1)
-                        definedRows=transferLine(comps,definedRows,ident);
+                        definedRows=transferLine(comps,definedRows,ident,createItem);
                         
                     });
                     console.log("1"+Array(16).fill(HEAD).join('|'))
@@ -80,14 +80,14 @@ export function readHBook(fileName,mapCaption,createItem) {
 
 
 
-    function transferLine(comps,definedRows,ident) {    
+    function transferLine(comps,definedRows,ident,createItem) {    
         let decision='?'
         
         let first = comps[0];
         if(first) {
             if(isNaN(first)) {
-                let result=null;
-                if(result=mapCaption(comps)) {
+                let result=mapCaption(comps);
+                if(result) {
                     // learn tableMap
                     tableMap=result;
                     definedRows=0;
@@ -98,11 +98,14 @@ export function readHBook(fileName,mapCaption,createItem) {
                 // comps[0] exists AND is numeric
                 // (C) new risk line
                 
+                documentItem(cor,tableMap,ident,createItem);
+
+                cor=[];
+                itemNumber++;
                 definedRows++;
                 decision='>'
-                documentItem(cor,tableMap,ident);
-                cor=[];
-                cor = store(cor,comps)
+
+                cor = store(cor,comps,tableMap)
             }
         }
 
@@ -114,7 +117,7 @@ export function readHBook(fileName,mapCaption,createItem) {
             
             if(definedRows>SYS_ROWS) {
                 decision='+';
-                cor=store(cor,comps);
+                cor=store(cor,comps,tableMap);
             } else decision='-';
         }
     
@@ -127,73 +130,68 @@ export function readHBook(fileName,mapCaption,createItem) {
 
 
 
-
-        function store(cor,comps) {
-
-            // split item
-            let check=[];
-            let headers = Object.keys(tableMap);
-            // sort each line into colBuffer	   
-            headers.forEach((key,index)=>{
-                let from=tableMap[key].from;
-                let to=tableMap[key].to;
-                let colText=comps[from]; // initialize data type, e.g. numeric 
-                for(let i=from+1;i<=to;i++) {
-                    if(comps[i]) colText=colText+comps[i];
-                }
-                check[index]=colText;
-            })
-
-
-            // continue collecting more item input
-            check.forEach((cell,index)=>{
-                if(cell && cell.length>0) {
-                    cor[index]=(cor[index] && cor[index].length>0)  ? (cor[index]+SLS+cell)
-                                                                    : cell
-                }
-            })
-
-            return cor;
-        }
-
-        function documentItem(cor,tableMap,ident) {
-
-            itemNumber++;
-            let headers = Object.keys(tableMap);
-            //console.log("0423 "+check[0]+check[1]+check[2])
-            // this indicates beginning of a new item
-            let item={ 'itemNumber':ident };
-            cor.forEach((cell,index)=>{ item[headers[index]]=(""+cell) })      
-
-            // logical output
-            //cor.forEach((attribute)=>console.log(JSON.stringify(attribute)))
-    
-            // document each item
-            console.log();
-
-            // log incoming risk columns
-            //grid("2",14,headers)
-            //let phase2=Object.keys(cor).map((key,num)=>(cor[key]))
-            //for(let i=0;i<42 && phase2;i++) phase2=grid("2",26,phase2)
-            //console.log();
-
-            // log incoming risk structure
-            let phase3=Object.keys(item).map((key,num)=>(item[key]))
-            for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
-            console.log();
-
-
-            let jItem = createItem(item);
-            Object.keys(jItem).forEach((key)=>console.log(key+":"+JSON.stringify(jItem[key])))
-            // process the item
-
-            console.log();
-            console.log();            
-        }
-
         return definedRows;
     }
 }
+
+
+
+
+
+
+function store(cor,comps,tableMap) {
+
+    // split item
+    let check=[];
+    let headers = Object.keys(tableMap);
+    // sort each line into colBuffer	   
+    headers.forEach((key,index)=>{
+        let from=tableMap[key].from;
+        let colText=comps[from]; // initialize data type, e.g. numeric 
+
+        let to=tableMap[key].to;
+        for(let i=from+1;i<=to;i++) {
+            if(comps[i]) colText=colText+comps[i];
+        }
+
+        
+        check[index]=colText;
+    })
+
+
+    // continue collecting more item input
+    check.forEach((cell,index)=>{
+        if(cell && cell.length>0) {
+            cor[index]=(cor[index] && cor[index].length>0)  ? (cor[index]+SLS+cell)
+                                                            : cell
+        }
+    })
+
+    return cor;
+}
+
+function documentItem(cor,tableMap,ident,createItem) {
+
+    let headers = Object.keys(tableMap);
+    // this indicates beginning of a new item
+    let item={ 'itemNumber':ident };
+    cor.forEach((cell,index)=>{ item[headers[index]]=(""+cell) })      
+
+
+    // log incoming risk structure
+    let phase3=Object.keys(item).map((key,num)=>(item[key]))
+    for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
+    console.log();
+
+
+    let jItem = createItem(item);
+    Object.keys(jItem).forEach((key)=>console.log(key+":"+JSON.stringify(jItem[key])))
+    // process the item
+
+    console.log();
+    console.log();            
+}
+
 
 
 //
