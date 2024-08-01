@@ -15,7 +15,7 @@ const SLS = '|'
 const SEP = ';'
 const HEAD="--------------"
 
-
+let fileContent=[];
 let tableMap={};
 let cor=[];
 
@@ -75,8 +75,9 @@ export function readHBook(fileName,mapCaption,createItem) {
        
     }
     
-    //writeTable('c:/temp/csvTable.txt',result.join('\n'));
-    return null; // to start making an InternalFile return result; 
+    
+    // to start making an InternalFile return fileContent; 
+    return fileContent; 
 
 
 
@@ -98,7 +99,14 @@ export function readHBook(fileName,mapCaption,createItem) {
                 // comps[0] exists AND is numeric
                 // (C) new risk line
                 
-                documentItem(cor,tableMap,ident,createItem);
+
+                // save accumulated risk texts to fileContent
+                try {
+                    let str = documentItem(cor,tableMap,ident,createItem);
+                    fileContent.push( str );
+                } catch(e) { console.log("0421 save "+JSON.stringify(cor)+" -->"+e) }
+                
+
 
                 cor=[];
                 itemNumber++;
@@ -153,22 +161,32 @@ function store(cor,comps,tableMap) {
         for(let i=from+1;i<=to;i++) {
             if(comps[i]) colText=colText+comps[i];
         }
-
-        
+  
         check[index]=colText;
     })
 
+    // console.log("0420 STORE ->"+JSON.stringify(check))
 
     // continue collecting more item input
     check.forEach((cell,index)=>{
-        if(cell && cell.length>0) {
-            cor[index]=(cor[index] && cor[index].length>0)  ? (cor[index]+SLS+cell)
-                                                            : cell
+        if(cell) { 
+            if(isNaN(cell)) { 
+                // text cell    
+                cor[index]=cor[index] ? (""+cor[index]+SLS+cell)
+                                                         : cell
+            }
+            else {
+                // numeric cell
+                cor[index]=cor[index] ? (cor[index]+cell)
+                                                  : cell
+            }
         }
     })
 
     return cor;
 }
+
+
 
 function documentItem(cor,tableMap,ident,createItem) {
 
@@ -189,7 +207,9 @@ function documentItem(cor,tableMap,ident,createItem) {
     // process the item
 
     console.log();
-    console.log();            
+    console.log();        
+    
+    return JSON.stringify(jItem);
 }
 
 

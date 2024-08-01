@@ -84,11 +84,13 @@ export async function downloadHBook(
           comps.forEach((strColumn,col) => {
                   let column=strColumn.trim();
                   // remember column index for each defined columns
-                  if(column.startsWith('F#')) tableMap.FuncNum={'from':col,'to':col};
+                  if(column.startsWith('F#')) { tableMap.FuncNum={'from':col,'to':col}; //console.log("0480F NEXT COLUMN("+col+") with tableMap="+JSON.stringify(tableMap)); 
+                }
                   if(column.startsWith('Function')) tableMap.Function={'from':col,'to':col};
-                  if(column.startsWith('H#')) tableMap.HarmNum={'from':col,'to':col};                        
-                  if(column.startsWith('C#')) tableMap.CauseNum={'from':col,'to':col};
-
+                  if(column.startsWith('H#')) { tableMap.HarmNum={'from':col,'to':col}; //console.log("0480H NEXT COLUMN("+col+") with tableMap="+JSON.stringify(tableMap)); 
+                  }
+                  if(column.startsWith('C#')) { tableMap.CauseNum={'from':col,'to':col}; //console.log("0480C NEXT COLUMN("+col+") with tableMap="+JSON.stringify(tableMap)); 
+                  }
                   if(column.startsWith('Hazardous')) tableMap.HazardousSituation={'from':col,'to':col};
                   else // prefix
                       if(column.startsWith('Hazard')) tableMap.Hazard={'from':col,'to':col}; 
@@ -96,12 +98,15 @@ export async function downloadHBook(
                   if(column.startsWith('Effect')) tableMap.Target={'from':col,'to':col};
                   if(column.startsWith('Pre/Post')) tableMap.PrePost={'from':col,'to':col};
                   if(column.startsWith('Initial')) tableMap.Initial={'from':col,'to':col};
-                  if(column.startsWith('M#')) tableMap.MeasNum={'from':col,'to':col};
+                  if(column.startsWith('M#')) { tableMap.MeasNum={'from':col,'to':col}; //console.log("0480M NEXT COLUMN("+col+") with tableMap="+JSON.stringify(tableMap)); 
+                  }
                   if(column.startsWith('Measure')) tableMap.Measure={'from':col-1,'to':col};
                   if(column.startsWith('Residual')) tableMap.Residual={'from':col,'to':col};
+
+                  
             });
 
-            //console.log("0480 NEXT PAGE with map="+JSON.stringify(tableMap));
+            
             return tableMap;
         }
 
@@ -113,9 +118,16 @@ export async function downloadHBook(
 
     function createItem(risk) {    
       // VDE SPEC 90025 convention for riskTable
-      let managedRisks={ 'name':risk.HazardousSituation };
-      let mari={ 'id':risk.itemNumber, 'name':"DomainSpecificHazard", 'function':{'name':risk.Function }}
       console.log("createItem ENTER risk: "+JSON.stringify(risk)) 
+      let managedRisks={ 'name':risk.HazardousSituation };
+      let mari={ 'id':risk.itemNumber, 
+                'name':"DomainSpecificHazard", 
+                'function':{'name':risk.Function },
+                'funcNum': risk.FuncNum,
+                'harmNum': risk.HarmNum,
+                'causeNum': risk.CauseNum
+              }
+      console.log("createItem ENTER risk: "+JSON.stringify(mari)) 
       try {
           // Siemens Healthineers combine Harm and Generic Hazards with GHx#
           let hazards = risk.Hazard
@@ -124,8 +136,9 @@ export async function downloadHBook(
           mari.harm={ 'name': harmName }
           mari.genericHazards=hazardsHarm[0].split('GH');
 
-          // riskTable generator GH20240725
-          mari.dosh = { 'name':risk.Function+' '+harmName }
+          // see riskTable generator GH20240725
+          mari.risk = { 'name':risk.Function+' '+harmName+' '+ managedRisks.name,   'id':"F"+risk.FuncNum+"H"+risk.HarmNum+"C"+risk.CauseNum   } 
+          
 
           managedRisks.subjectGroups=risk.Target.split(SLS);
           
