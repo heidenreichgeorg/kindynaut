@@ -871,13 +871,14 @@ export function Portal({portalFileName, view}) {
                         fLoadRiskInfo(fPush(filterInstance(ticket,area),EMPTY_ARIS)).map((aris,line)=>( 
                             (<div className="KNLINE NONE" key={"domainrisk"+area+line} onLoad={()=>editRiskStart()}>
                                 {(currentCID===aris.corID) ?  "" :   (<div className={currentCID.length>0 ? "KNLINE NONE":"NOTABLE"} key={"CORID"+aris.corID} corid={currentCID}>                                    
-                                        <div className="RISKCOLOR FIELD LTXT">{currentCID}</div>
+                                        <div className="RISKCOLOR FIELD DATE">Risk Target:</div>
                                         <input id={"TGT"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("TGT",currentCID)} tag="TGT" />
-                                        <div className="RISKCOLOR FIELD SEP"></div>
+                                        <div className="RISKCOLOR FIELD DATE">Initial SLA</div>
                                         <input id={"URS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URS",currentCID)} tag="URS"/>
                                         <input id={"URL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URL",currentCID)} tag="URL"/>
                                         <input id={"URA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("URA",currentCID)} tag="URA"/>
-                                        <div className="RISKCOLOR FIELD SEP"></div>
+                                        <div className="RISKCOLOR FIELD DATE"></div>
+                                        <div className="RISKCOLOR FIELD DATE">Residual SLA</div>
                                         <input id={"MRS"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRS",currentCID)} tag="MRS"/>
                                         <input id={"MRL"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRL",currentCID)} tag="MRL"/>
                                         <input id={"MRA"+currentCID} type="edit" className="RISKCOLOR NOTE DATE" onChange={(e)=>(editRisk(e.target))} defaultValue={getRiskField("MRA",currentCID)} tag="MRA"/>
