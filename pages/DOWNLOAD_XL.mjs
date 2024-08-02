@@ -58,9 +58,10 @@ export async function downloadHBook(
         safetyClaim.justification = jArrManagedRisk;
         writeTable('c:/temp/riskTable.json',JSON.stringify(jFile))
         
-        writeTable('c:/temp/InternalFile.json',processRiskTable(jFile))
+        let strInternalFile=processRiskTable(jFile)
+        writeTable('c:/temp/InternalFile.json',strInternalFile)
 
-        res.write(""+Object.keys(jArrManagedRisk).length+"\n"); // better put it all in req.end in one go 
+        res.write(strInternalFile+"\n"); // better put it all in req.end in one go 
      
         console.dir ( "0632 DOWNLOAD FILE with"+(jArrManagedRisk ? (" "+Object.keys(jArrManagedRisk).length) : "out any")+" risks.");
 
