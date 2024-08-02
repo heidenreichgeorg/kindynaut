@@ -28,7 +28,8 @@ var jFile = {
 const flagRisk=true;
 const flagMitigations=true;
 
-const SLS = ';';
+const SEP = ';';
+const SPC = ' ';
 
 import { readHBook } from "./readXL.js"
 
@@ -137,12 +138,13 @@ export async function downloadHBook(
           let harmName = hazardsHarm.shift();
           mari.harm={ 'name': harmName }
           mari.genericHazards=hazardsHarm[0].split('GH');
+                mari.genericHazards.shift() // GH20240802 
 
           // see riskTable generator GH20240725
           mari.risk = { 'name':risk.Function+' '+harmName+' '+ managedRisks.name,   'id':"F"+risk.FuncNum+"H"+risk.HarmNum+"C"+risk.CauseNum   } 
           
 
-          managedRisks.subjectGroups=risk.Target.split(SLS);
+          managedRisks.subjectGroups=risk.Target.split(SPC).map((target)=>target.replace(/\|/g, ''))
           
           if(flagRisk) try {
               // risk vectors are combined with dash -
@@ -178,7 +180,7 @@ export async function downloadHBook(
 
 }
 
-async function writeTable(filePath,strRisks) {
+export async function writeTable(filePath,strRisks) {
   try {
     console.log("0470 writeTable to "+filePath);
     await writeFile(filePath, strRisks);

@@ -1,4 +1,6 @@
+import { writeFile } from 'node:fs/promises'
 
+import { grid } from './readXL.js'
 
 // generates json according to VDE SPEC 90025 Abstract File format from json RISK TABLE
 
@@ -176,12 +178,40 @@ export function processRiskTable(jSnippetDRMF) {
       strInternalFile = JSON.stringify(jRiskFile);
 
       console.log("RETURN RISK FILE CONTENT as Internal file");
-      console.log();
+      console.log(strInternalFile);
       console.log("string file is "+strInternalFile.length+" characters long."); 
+
+      examine(jRiskFile);
     }
     return strInternalFile;
 }
 
+
+async function examine(jRiskFile) {
+  console.log(JSON.stringify(jRiskFile.device))
+  let arrFunction = jRiskFile.regFunction;
+  let arrCORI = jRiskFile.regControlledRisk;
+
+  function getF(fNum) {
+    let result="F?";
+    arrFunction.forEach((func)=>{if(fNum===func.id) result=func.name})
+    return result;
+  }
+
+  let arrStrDebug=[];
+  arrCORI.forEach((cori)=>{let aris = cori.regAnalyzedRisk[0]; let strAris=JSON.stringify(aris); 
+    
+    grid("",16,[
+      cori.id,
+      cori.refFunction,
+      getF(cori.refFunction),
+      cori.harm.name,
+      cori.regHazard.map((jhaz)=>jhaz.name)],
+      arrStrDebug)
+  })
+
+  await writeFile("c:/temp/debugFile.txt",arrStrDebug.join('\n'))
+}
 
 
 function internComponent(strComponent) {

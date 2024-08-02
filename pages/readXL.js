@@ -131,7 +131,9 @@ export function readHBook(fileName,mapCaption,createItem) {
     
         
         comps.unshift(ident+decision);
-        grid("1",14,comps);
+        let arrOut=[];
+        grid("1",14,comps,arrOut);
+        console.log(arrOut.join('\n'));
         comps.shift();
 
 
@@ -197,9 +199,10 @@ function documentItem(cor,tableMap,ident,createItem) {
 
 /*
     // log incoming risk structure
+    let arrOut=[];
     let phase3=Object.keys(item).map((key,num)=>(item[key]))
-    for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
-    console.log();
+    for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3,arrOut)
+    console.log(arrOut.join('\n'));
 */
 
     let jItem = createItem(item);
@@ -230,7 +233,7 @@ function documentItem(cor,tableMap,ident,createItem) {
 // for multiple lines referring to the same risk
 
 
-function grid(prefix,width,arrStr) {
+export function grid(prefix,width,arrStr,line) {
     if(width>150) width=150;
     
     let flag=false;
@@ -238,6 +241,6 @@ function grid(prefix,width,arrStr) {
 
     let arrRest=arrStr.map((col)=>((col && col.length>width) ? col.substring(width):""))
     let base="                                                                                                                                                             ".substring(0,width)
-    console.log(prefix+arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):(""+col))+base).substring(0,width))).join('|'))
+    line.push(prefix+arrStr.map(((col)=>(((col&&col.replace)?col.replace(/[\r\n]/g,""):(""+col))+base).substring(0,width))).join('|'))
     return flag ? arrRest : null;
 }
