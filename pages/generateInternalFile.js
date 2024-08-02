@@ -156,25 +156,29 @@ function start() {
 
 export function processRiskTable(jSnippetDRMF) {
     init();
+    let strInternalFile="";
+    console.log("ENTER processRiskTable() into Internal file");
+    let drmfClaim=null;
 
     // strip header
-    if(jSnippetDRMF.justification) jSnippetDRMF=jSnippetDRMF.justification;
+    if(jSnippetDRMF.claim) {
+      drmfClaim=jSnippetDRMF.claim;
 
 
-    // DEVICE INFO
-    if(jSnippetDRMF.manufacturer) jRiskFile.device.entity=jSnippetDRMF.manufacturer;
-    if(jSnippetDRMF.project)      jRiskFile.device.project=jSnippetDRMF.project;
-    if(jSnippetDRMF.version)      jRiskFile.device.version=jSnippetDRMF.version;
-    
-    if(jSnippetDRMF && jSnippetDRMF.justification) 
-      jSnippetDRMF.justification.forEach((jRIT) => {addRawRIT2InternalFile(jRIT);})
+      // DEVICE INFO
+      if(drmfClaim.manufacturer) jRiskFile.device.entity=drmfClaim.manufacturer;
+      if(drmfClaim.project)      jRiskFile.device.project=drmfClaim.project;
+      if(drmfClaim.version)      jRiskFile.device.version=drmfClaim.version;
+      
+      if(drmfClaim && drmfClaim.justification) 
+        drmfClaim.justification.forEach((jRIT) => {addRawRIT2InternalFile(jRIT);})
 
-    let strInternalFile = JSON.stringify(jRiskFile);
+      strInternalFile = JSON.stringify(jRiskFile);
 
-    console.log("RISK FILE CONTENT as Internal file");
-    console.log();
-    console.log("string file is "+strInternalFile.length+" characters long."); 
-
+      console.log("RETURN RISK FILE CONTENT as Internal file");
+      console.log();
+      console.log("string file is "+strInternalFile.length+" characters long."); 
+    }
     return strInternalFile;
 }
 
@@ -272,7 +276,7 @@ function addRawRIT2InternalFile(jCORI) {
   // integrate snippet into risk management Internal file
 
   console.log();
-  console.log(JSON.stringify(jCORI.id)+"=>"+docu);
+  console.log("addRawRIT2InternalFile "+JSON.stringify(jCORI));
 
 
   // extract all genericHazards from DSH and intern them
@@ -333,9 +337,10 @@ function addRawRIT2InternalFile(jCORI) {
 
   // 20240123
   let jHarm = { 'id':-1, 'harm':666 }
-  if(jCORI.dosh && jCORI.dosh.name) {
-    let strHarm = jCORI.harm.name;
-    jHarm = internHarm(strHarm);
+  if(jCORI.harm && jCORI.harm.name) {
+      
+      jHarm = internHarm(jCORI.harm.name);
+      
   } else console.log("There is no harm in CORI="+JSON.stringify(jCORI)); 
 
 

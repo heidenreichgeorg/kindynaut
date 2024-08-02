@@ -418,7 +418,7 @@ export function makeDomainJSON(idButton,arrListDoSH,rt_manufacturer,rt_project,r
     let riskTable =  {
         "id":1,
         "name":"DeviceAssurance",
-        "justification":
+        "claim":
         {   "id":2,
             "name":"Safety",
             "file":fileName,

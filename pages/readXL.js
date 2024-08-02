@@ -195,12 +195,12 @@ function documentItem(cor,tableMap,ident,createItem) {
     let item={ 'itemNumber':ident };
     cor.forEach((cell,index)=>{ item[headers[index]]=(""+cell) })      
 
-
+/*
     // log incoming risk structure
     let phase3=Object.keys(item).map((key,num)=>(item[key]))
     for(let i=0;i<42 && phase3;i++) phase3=grid("3",26,phase3)
     console.log();
-
+*/
 
     let jItem = createItem(item);
     Object.keys(jItem).forEach((key)=>console.log(key+":"+JSON.stringify(jItem[key])))
