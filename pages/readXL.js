@@ -15,7 +15,7 @@ const SLS = '|'
 const SEP = ';'
 const HEAD="--------------"
 
-let fileContent=[];
+let jArrManagedRisks=[];
 let tableMap={};
 let cor=[];
 
@@ -76,8 +76,8 @@ export function readHBook(fileName,mapCaption,createItem) {
     }
     
     
-    // to start making an InternalFile return fileContent; 
-    return fileContent; 
+    // to start making an InternalFile return jArrManagedRisks; 
+    return jArrManagedRisks; 
 
 
 
@@ -100,10 +100,10 @@ export function readHBook(fileName,mapCaption,createItem) {
                 // (C) new risk line
                 
 
-                // save accumulated risk texts to fileContent
+                // save accumulated risk texts to jArrManagedRisks
                 try {
-                    let str = documentItem(cor,tableMap,ident,createItem);
-                    fileContent.push( str );
+                    let jMR = documentItem(cor,tableMap,ident,createItem);
+                    jArrManagedRisks.push( jMR );
                 } catch(e) { console.log("0421 save "+JSON.stringify(cor)+" -->"+e) }
                 
 
@@ -209,7 +209,7 @@ function documentItem(cor,tableMap,ident,createItem) {
     console.log();
     console.log();        
     
-    return JSON.stringify(jItem);
+    return jItem;
 }
 
 

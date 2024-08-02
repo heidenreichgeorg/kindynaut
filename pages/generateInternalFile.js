@@ -199,10 +199,13 @@ function internGenericHazard(genHazardName) {
     return entry;
 }
 
-function internDosh(doshName) {
+// PENDING
+// MODIFICATION OF VDE SPEC 90025
+// regHazard to regRisk
+function internRisk(riskName) { // F * H * C
   let entry=null;
-    if(entry=findByKey(jRiskFile.regHazard,"name",doshName)) {} else  {
-      entry = {"id":"DSH"+next(),  'title':'Hazard',  "name":doshName};
+    if(entry=findByKey(jRiskFile.regHazard,"name",riskName)) {} else  {
+      entry = {"id":"DSH"+next(),  'title':'Risk',  "name":riskName}; // GH 20240802 was 'title':'Hazard',
       jRiskFile.regHazard.push(entry);
     }
     return entry;
@@ -314,14 +317,16 @@ function addRawRIT2InternalFile(jCORI) {
   
 
 
-  // 20230708 was hazard 202040725
-  // extract DomainSpecificHazard identification, internalize and store id 
-  let jDosh = { 'id':-1 }
-    if(jCORI.dosh && jCORI.dosh.name) {
-    let strDosh = jCORI.dosh.name;
-    jDosh = internDosh(strDosh);
-    console.log("DSH: "+JSON.stringify(jDosh)); // { id name }
-  } else console.log("NO DoSH in CORI="+JSON.stringify(jCORI)); 
+  // 20230708 was jCORI.hazard 202040725
+  // extract ControlledRisk identification, internalize and store id 
+    let jRisk = { 'id':-1 }
+    if(jCORI.risk && jCORI.risk.name) {
+    let strRisk = jCORI.risk.name;
+    jRisk = internRisk(strRisk);
+    if(jCORI.risk.id) jRisk.fhc=jCORI.risk.id;
+
+    console.log("Risk: "+JSON.stringify(jRisk)); // { id name }
+  } else console.log("NO risk in CORI="+JSON.stringify(jCORI)); 
     
 
 
@@ -349,10 +354,10 @@ function addRawRIT2InternalFile(jCORI) {
 
 
   // internalize DomainSpecificHazard by harm id HRM...
-  let targetRisk =findByKey(jRiskFile.regControlledRisk,"hazard",jDosh.name);
+  let targetRisk =findByKey(jRiskFile.regControlledRisk,"hazard",jRisk.name);
   // 20230708 let targetRisk =findByKey(jRiskFile.relDomainSpecificHazard,"harm",jHarm.name);
   if(targetRisk) {
-    console.log("DSH found:  "+JSON.stringify(jHarm.name)+"   "+JSON.stringify(jDosh.name));
+    console.log("DSH found:  "+JSON.stringify(jHarm.name)+"   "+JSON.stringify(jRisk.name));
   }
   else {
     targetRisk = { 
@@ -361,7 +366,7 @@ function addRawRIT2InternalFile(jCORI) {
         'refComponent':jComponent.id,
         'refFunction':jFunction.id, 
         'harm':jHarm, // 20240124 v3 harm is at DSH-level
-        'refHazard':jDosh.id , // GH20240725 was hazard, should be refDOSH
+        'refHazard':jRisk.id , // F * H * C, GH20240725 was hazard, should be refRISK
         'regHazard':relGenericHazards, 
         'regEncodedHazard':regEncodedHazards, 
         'regAnalyzedRisk':[]

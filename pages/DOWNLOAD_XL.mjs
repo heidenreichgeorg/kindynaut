@@ -15,7 +15,7 @@ const HTTP_WRONG  = 400;
 var jFile = {
   "id": 1,
   "name": "DeviceAssurance",
-  "justification": {
+  "claim": {
       "id": 2,
       "name": "Safety",
       "file": "risktable.json",
@@ -52,17 +52,17 @@ export async function downloadHBook(
 
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
-        let rTable = jFile.justification;
-        let mari = readHBook(file,mapCaption,createItem);
+        let jArrManagedRisk = readHBook(file,mapCaption,createItem);
 
-        rTable.justification = mari
-        writeTable('c:/temp/csvTable.json',JSON.stringify(jFile))
+        let safetyClaim = jFile.claim;
+        safetyClaim.justification = jArrManagedRisk;
+        writeTable('c:/temp/riskTable.json',JSON.stringify(jFile))
         
         writeTable('c:/temp/InternalFile.json',processRiskTable(jFile))
 
-        res.write(""+mari.length+"\n"); // better put it all in req.end in one go 
+        res.write(""+Object.keys(jArrManagedRisk).length+"\n"); // better put it all in req.end in one go 
      
-        console.dir ( "0632 DOWNLOAD FILE with "+mari.length+" lines.");
+        console.dir ( "0632 DOWNLOAD FILE with"+(jArrManagedRisk ? (" "+Object.keys(jArrManagedRisk).length) : "out any")+" risks.");
 
     } else {
       console.dir ( "0631 DOWNLOAD EMPTY FILE "+file);
@@ -78,7 +78,7 @@ export async function downloadHBook(
         let tableMap=null;
         // isNaN comps[0]
 
-        // (A) sheet caption 
+        // (A) sheet caption - F# H# C# M# are of numeric data type and need careful handling
         if(comps[0].startsWith('F#')) {            
           tableMap={};
           comps.forEach((strColumn,col) => {
@@ -118,7 +118,8 @@ export async function downloadHBook(
 
     function createItem(risk) {    
       // VDE SPEC 90025 convention for riskTable
-      console.log("createItem ENTER risk: "+JSON.stringify(risk)) 
+
+      //console.log("createItem ENTER risk: "+JSON.stringify(risk)) 
       let managedRisks={ 'name':risk.HazardousSituation };
       let mari={ 'id':risk.itemNumber, 
                 'name':"DomainSpecificHazard", 
@@ -127,7 +128,7 @@ export async function downloadHBook(
                 'harmNum': risk.HarmNum,
                 'causeNum': risk.CauseNum
               }
-      console.log("createItem ENTER risk: "+JSON.stringify(mari)) 
+      //console.log("createItem ENTER mari: "+JSON.stringify(mari)) 
       try {
           // Siemens Healthineers combine Harm and Generic Hazards with GHx#
           let hazards = risk.Hazard
