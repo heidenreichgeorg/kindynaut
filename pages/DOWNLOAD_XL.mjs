@@ -55,12 +55,35 @@ export async function downloadHBook(
 
         let jArrManagedRisk = readHBook(file,mapCaption,createItem);
 
+        // make risk table (FORMAT 1)
         let safetyClaim = jFile.claim;
         safetyClaim.justification = jArrManagedRisk;
         writeTable('c:/temp/riskTable.json',JSON.stringify(jFile))
         
+        // make internal file (VDE SPEC 90025)
         let strInternalFile=processRiskTable(jFile)
         writeTable('c:/temp/InternalFile.json',strInternalFile)
+
+
+        // generate a domain-specific table of hazards
+        let jArrDOSH=[];
+        jArrManagedRisk.forEach((mari)=>{
+          let hazards=mari.genericHazards;
+          if(Array.isArray(hazards)) hazards.forEach((strHaz)=>{
+            let hazSit=(mari.managedRisks && Array.isArray(mari.managedRisks) && mari.managedRisks[0].name) ? mari.managedRisks[0].name : "?hz";
+            jArrDOSH.push({
+              'func':mari.function.name,
+              'comp':"System",
+              'hazard':strHaz,
+              'cause':hazSit,
+              'harm':mari.harm.name,
+              'hazardousSituation':hazSit
+            })
+          })
+        })
+        writeTable('c:/temp/domain.json',JSON.stringify(jArrDOSH))
+
+
 
         res.write(strInternalFile+"\n"); // better put it all in req.end in one go 
      
