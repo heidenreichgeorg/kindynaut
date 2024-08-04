@@ -53,11 +53,13 @@ export async function downloadHBook(
 
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
-        let jArrManagedRisk = readHBook(file,mapCaption,createItem);
-
+        let jClaim =readHBook(file,mapCaption,createItem);
+        let jArrManagedRisk=jClaim.justification;
+        jFile.claim=jClaim;
+        
         // make risk table (FORMAT 1)
-        let safetyClaim = jFile.claim;
-        safetyClaim.justification = jArrManagedRisk;
+        //let safetyClaim = jFile.claim;
+        //safetyClaim.justification = jArrManagedRisk;
         writeTable('c:/temp/riskTable.json',JSON.stringify(jFile))
         
         // make internal file (VDE SPEC 90025)
@@ -148,7 +150,7 @@ export async function downloadHBook(
       let managedRisks={ 'name':risk.HazardousSituation };
       let mari={ 'id':risk.itemNumber, 
                 'name':"DomainSpecificHazard", 
-                'function':{'name':risk.Function },
+                'function':{'name':bar2space(risk.Function) },
                 'funcNum': risk.FuncNum,
                 'harmNum': risk.HarmNum,
                 'causeNum': risk.CauseNum
@@ -156,7 +158,7 @@ export async function downloadHBook(
       //console.log("createItem ENTER mari: "+JSON.stringify(mari)) 
       try {
           // Siemens Healthineers combine Harm and Generic Hazards with GHx#
-          let hazards = risk.Hazard
+          let hazards = bar2space(risk.Hazard)
           let hazardsHarm=hazards.split("Generic Hazards");
           let harmName = hazardsHarm.shift();
           mari.harm={ 'name': harmName }
@@ -164,7 +166,7 @@ export async function downloadHBook(
                 mari.genericHazards.shift() // GH20240802 
 
           // see riskTable generator GH20240725
-          mari.risk = { 'name':risk.Function+' '+harmName+' '+ managedRisks.name,   'id':"F"+risk.FuncNum+"H"+risk.HarmNum+"C"+risk.CauseNum   } 
+          mari.risk = { 'name':bar2space(risk.Function)+' '+harmName+' '+ bar2space(managedRisks.name),   'id':"F"+risk.FuncNum+"H"+risk.HarmNum+"C"+risk.CauseNum   } 
           
 
           managedRisks.subjectGroups=risk.Target.split(SPC).map((target)=>target.replace(/\|/g, ''))
@@ -182,7 +184,8 @@ export async function downloadHBook(
           } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
           
           if(flagMitigations)  { 
-            managedRisks.mitigations = risk.Measure
+            managedRisks.mitigations = bar2space(risk.Measure)
+            /*
             let leftCol = []; try { leftCol=risk.lMeasure.split(SEP); } catch(e) {}
              let rightCol =[]; try { rightCol=risk.rMeasure.split(SEP) } catch(e) {}
              let delta=leftCol.length-rightCol.length;
@@ -190,8 +193,9 @@ export async function downloadHBook(
                 if(delta>0)  rightCol.concat(Array(delta).fill(""))
                 if(delta<0)  leftCol.concat(Array(-delta).fill(""))
              } catch(e) {}
-             //managedRisks.mitigations = []
-             //leftCol.forEach((leftCell,i)=>managedRisks.mitigations.push(leftCell))
+             managedRisks.mitigations = []
+             leftCol.forEach((leftCell,i)=>managedRisks.mitigations.push(leftCell))
+             */
           }
 
           mari.managedRisks=[managedRisks]
@@ -212,3 +216,4 @@ export async function writeTable(filePath,strRisks) {
   }
 }
 
+function bar2space(str) { return str ? str.replace(/\|/g,' '):'' }

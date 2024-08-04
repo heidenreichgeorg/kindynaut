@@ -15,6 +15,17 @@ const SLS = '|'
 const SEP = ';'
 const HEAD="--------------"
 
+let claim= {
+      "id": 2,
+      "name": "Safety",
+      "file": "risktable.json",
+      "manufacturer": "Illuminati",
+      "project": "HOROSKOP",
+      "version": "VA01"      
+  }
+
+let product="Product"
+
 let jArrManagedRisks=[];
 let tableMap={};
 let cor=[];
@@ -55,9 +66,15 @@ export function readHBook(fileName,mapCaption,createItem) {
                 if(sheetNumber>=0) { 
                     jTable.forEach((jLine,row)=>{
                         const keyNames = Object.keys(jLine);
-                        //console.log("0406 READ workbook line"+row+"/("+sheetNumber+") ["+keyNames.join(' ')+"] "+JSON.stringify(jLine));
+                        if(row==0) {
+                            //console.log("0406 #"+row+"  "+JSON.stringify(keyNames))
+                            let title = keyNames.map((key)=>key)
+                            console.log("0406 "+title.join('|'))
+                            product=title[0];
+                        }
+                            //console.log("0408 READ workbook line"+row+"/("+sheetNumber+") ["+keyNames.join(' ')+"] "+JSON.stringify(jLine));
                         const comps=keyNames.map((key)=>(((typeof jLine[key]) === 'string')?jLine[key].replaceAll('\n',' '):(jLine[key]?jLine[key]:'')))    
-                        //if(definedRows<=SYS_ROWS) console.log("0408 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
+                        //if(definedRows<=SYS_ROWS) console.log("0410 READ workbook line"+row+" in ("+sheetNumber+")  "+JSON.stringify(comps));
 
                         let ident="P"+sheetNumber+"#"+itemNumber+"L"+(row-1)
                         definedRows=transferLine(comps,definedRows,ident,createItem);
@@ -75,9 +92,19 @@ export function readHBook(fileName,mapCaption,createItem) {
        
     }
     
+    let arrProduct = product.split(',')
+
+    let jClaim = {
+        "id": 2,
+        "name": "Safety",
+        "file": "risktable.json",
+        "manufacturer": "Illuminati",
+        "project": arrProduct[0],
+        "version": arrProduct.length>1?arrProduct[1]:"VA00",
+        "justification":jArrManagedRisks
+    }
     
-    // to start making an InternalFile return jArrManagedRisks; 
-    return jArrManagedRisks; 
+    return jClaim;
 
 
 
@@ -93,6 +120,10 @@ export function readHBook(fileName,mapCaption,createItem) {
                     tableMap=result;
                     definedRows=0;
                     decision='0'
+                }
+                else if(definedRows<=SYS_ROWS) {
+                    product=comps.join('P')
+                    console.log(ident+"P "+product) // other non-risk info
                 }
 
             } else {
