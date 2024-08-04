@@ -25,6 +25,7 @@ let claim= {
   }
 
 let product="Product"
+let entity="Entity"
 
 let jArrManagedRisks=[];
 let tableMap={};
@@ -68,7 +69,7 @@ export function readHBook(fileName,mapCaption,createItem) {
                         const keyNames = Object.keys(jLine);
                         if(row==0) {
                             //console.log("0406 #"+row+"  "+JSON.stringify(keyNames))
-                            let title = keyNames.map((key)=>key)
+                            let title = keyNames.map((key)=>key) // different order...
                             console.log("0406 "+title.join('|'))
                             product=title[0];
                         }
@@ -98,7 +99,7 @@ export function readHBook(fileName,mapCaption,createItem) {
         "id": 2,
         "name": "Safety",
         "file": "risktable.json",
-        "manufacturer": "Illuminati",
+        "manufacturer": entity?entity:"Illuminati",
         "project": arrProduct[0],
         "version": arrProduct.length>1?arrProduct[1]:"VA00",
         "justification":jArrManagedRisks
@@ -122,8 +123,9 @@ export function readHBook(fileName,mapCaption,createItem) {
                     decision='0'
                 }
                 else if(definedRows<=SYS_ROWS) {
-                    product=comps.join('P')
-                    console.log(ident+"P "+product) // other non-risk info
+                    //product=comps.join(',')
+                    //console.log(ident+"# "+comps.join('|')) 
+                    decision='#' // other non-risk info with first column
                 }
 
             } else {
@@ -146,7 +148,7 @@ export function readHBook(fileName,mapCaption,createItem) {
 
                 cor = store(cor,comps,tableMap)
             }
-        }
+        } else decision='~' // other non-risk info without first column
 
         definedRows++
 
@@ -159,7 +161,19 @@ export function readHBook(fileName,mapCaption,createItem) {
                 cor=store(cor,comps,tableMap);
             } else decision='-';
         }
-    
+        else if (decision==='?') {
+            let line=" "+first
+            decision='^'; // definedRows>SYS_ROWS, other notes at end of sheet
+            //console.log("4"+ident+decision+first);
+            if(line.includes("Copyright")) {
+                let arrCopyright=first.split(' ');
+                arrCopyright.shift()
+                arrCopyright.shift()
+                entity=arrCopyright.join(' ')
+            }
+
+        }
+
         
         comps.unshift(ident+decision);
         let arrOut=[];
