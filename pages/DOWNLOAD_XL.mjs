@@ -54,12 +54,12 @@ export async function downloadHBook(
         res.writeHead(HTTP_OK, {"Content-Type": "text/plain;charset=utf-8"});
 
         let jClaim =readHBook(file,mapCaption,createItem);
-        let jArrManagedRisk=jClaim.justification;
+        let jArrControlledRisk=jClaim.justification;
         jFile.claim=jClaim;
         
         // make risk table (FORMAT 1)
         //let safetyClaim = jFile.claim;
-        //safetyClaim.justification = jArrManagedRisk;
+        //safetyClaim.justification = jArrControlledRisk;
         writeTable('c:/temp/riskTable.json',JSON.stringify(jFile))
         
         // make internal file (VDE SPEC 90025)
@@ -69,10 +69,10 @@ export async function downloadHBook(
 
         // generate a domain-specific table of hazards
         let jArrDOSH=[];
-        jArrManagedRisk.forEach((mari)=>{
+        jArrControlledRisk.forEach((mari)=>{
           let hazards=mari.genericHazards;
           if(Array.isArray(hazards)) hazards.forEach((strHaz)=>{
-            let hazSit=(mari.managedRisks && Array.isArray(mari.managedRisks) && mari.managedRisks[0].name) ? mari.managedRisks[0].name : "?hz";
+            let hazSit=(mari.controlledRisks && Array.isArray(mari.controlledRisks) && mari.controlledRisks[0].name) ? mari.controlledRisks[0].name : "?hz";
             jArrDOSH.push({
               'func':mari.function.name,
               'comp':"System",
@@ -89,7 +89,7 @@ export async function downloadHBook(
 
         res.write(strInternalFile+"\n"); // better put it all in req.end in one go 
      
-        console.dir ( "0632 DOWNLOAD FILE with"+(jArrManagedRisk ? (" "+Object.keys(jArrManagedRisk).length) : "out any")+" risks.");
+        console.dir ( "0632 DOWNLOAD FILE with"+(jArrControlledRisk ? (" "+Object.keys(jArrControlledRisk).length) : "out any")+" risks.");
 
     } else {
       console.dir ( "0631 DOWNLOAD EMPTY FILE "+file);
@@ -147,60 +147,59 @@ export async function downloadHBook(
       // VDE SPEC 90025 convention for riskTable
 
       //console.log("createItem ENTER risk: "+JSON.stringify(risk)) 
-      let managedRisks={ 'name':risk.HazardousSituation };
-      let mari={ 'id':risk.itemNumber, 
-                'name':"DomainSpecificHazard", 
-                'function':{'name':bar2space(risk.Function) },
-                'funcNum': risk.FuncNum,
-                'harmNum': risk.HarmNum,
-                'causeNum': risk.CauseNum
-              }
-      //console.log("createItem ENTER mari: "+JSON.stringify(mari)) 
+      let controlledRisks={ 'hazardousSituation':risk.HazardousSituation };
+     
+      let mari=null;
       try {
-          // Siemens Healthineers combine Harm and Generic Hazards with GHx#
+
+          mari={ 'id':risk.itemNumber, 
+            'name':"RiskItem", 
+            'function':{'name':bar2space(risk.Function) },
+            'funcNum': risk.FuncNum,
+            'harmNum': risk.HarmNum,
+            'causeNum': risk.CauseNum
+          }
+          //console.log("createItem ENTER mari: "+JSON.stringify(mari)) 
+
+
+          // Siemens Healthineers HBooks combine Harm and Generic Hazards with GHx#
           let hazards = bar2space(risk.Hazard)
           let hazardsHarm=hazards.split("Generic Hazards");
           let harmName = hazardsHarm.shift();
           mari.harm={ 'name': harmName }
           mari.genericHazards=hazardsHarm[0].split('GH');
                 mari.genericHazards.shift() // GH20240802 
+          mari.encodedHazards=[]; // GH20240805
 
           // see riskTable generator GH20240725
-          mari.risk = { 'name':bar2space(risk.Function)+' '+harmName+' '+ bar2space(managedRisks.name),   'id':"F"+risk.FuncNum+"H"+risk.HarmNum+"C"+risk.CauseNum   } 
+          mari.riskItem = { 'name':bar2space(risk.Function)+' '+harmName /*+' '+ bar2space(controlledRisks.hazardousSituation)*/,
+                           'id':"F"+risk.FuncNum+"H"+risk.HarmNum /*+"C"+risk.CauseNum*/   } 
           
 
-          managedRisks.subjectGroups=risk.Target.split(SPC).map((target)=>target.replace(/\|/g, ''))
+            
+
+          controlledRisks.subjectGroups=risk.Target.split(SPC).map((target)=>target.replace(/\|/g, ''))
           
           if(flagRisk) try {
               // risk vectors are combined with dash -
               let initial = risk.Initial.split('-');
-              managedRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
-          } catch(e) { console.log("createItem managedRisk INITIAL failed: "+e) }
+              controlledRisks.preRiskEvaluation = { 'severity':initial[0],'probability':initial[1],'riskRegion':initial[2]}
+          } catch(e) { console.log("createItem controlledRisk INITIAL failed: "+e) }
 
           if(flagRisk) try {
 
               let residual = risk.Residual.split('-');
-              managedRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
-          } catch(e) { console.log("createItem managedRisk RESIDUAL failed: "+e) }
+              controlledRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
+          } catch(e) { console.log("createItem controlledRisk RESIDUAL failed: "+e) }
           
           if(flagMitigations)  { 
-            managedRisks.mitigations = bar2space(risk.Measure)
-            /*
-            let leftCol = []; try { leftCol=risk.lMeasure.split(SEP); } catch(e) {}
-             let rightCol =[]; try { rightCol=risk.rMeasure.split(SEP) } catch(e) {}
-             let delta=leftCol.length-rightCol.length;
-             try {
-                if(delta>0)  rightCol.concat(Array(delta).fill(""))
-                if(delta<0)  leftCol.concat(Array(-delta).fill(""))
-             } catch(e) {}
-             managedRisks.mitigations = []
-             leftCol.forEach((leftCell,i)=>managedRisks.mitigations.push(leftCell))
-             */
+            controlledRisks.mitigations = bar2space(risk.Measure)
+            // MUST BE AN ARRAY OF MULTIPLE MEASURES
           }
 
-          mari.managedRisks=[managedRisks]
+          mari.controlledRisks=[controlledRisks]
               
-      } catch(e) { console.log("createItem main failed: "+e) }
+      } catch(e) { console.log("createItem from ("+JSON.stringify(risk)+") failed: "+e) }
       
       return mari;
       } 

@@ -29,7 +29,7 @@ let entity="Entity"
 
 let jArrManagedRisks=[];
 let tableMap={};
-let cor=[];
+let cor=null;
 
 export function readHBook(fileName,mapCaption,createItem) {
 
@@ -136,7 +136,7 @@ export function readHBook(fileName,mapCaption,createItem) {
                 // save accumulated risk texts to jArrManagedRisks
                 try {
                     let jMR = documentItem(cor,tableMap,ident,createItem);
-                    jArrManagedRisks.push( jMR );
+                    if(jMR) jArrManagedRisks.push( jMR );
                 } catch(e) { console.log("0421 save "+JSON.stringify(cor)+" -->"+e) }
                 
 
@@ -215,6 +215,7 @@ function store(cor,comps,tableMap) {
     // console.log("0420 STORE ->"+JSON.stringify(check))
 
     // continue collecting more item input
+    if(cor) // GH20240805
     check.forEach((cell,index)=>{
         if(cell) { 
             if(isNaN(cell)) { 
