@@ -396,7 +396,7 @@ export function makeDomainJSON(idButton,arrListDoSH,rt_manufacturer,rt_project,r
 
     let justification=Object.keys(jControlled).map((key,aris)=>({
         'id':aris,
-        'name':'DomainSpecificHazard',
+        'name':'RiskItem',
         'component':jControlled[key][0].comp,
         'function':{
             'id':functionId,
@@ -582,7 +582,7 @@ function processInternalFile(jListCORs,idButton,arrListDoSH,if_manufacturer,if_p
     return  functionButton(idButton,strTable,fileName,action,(strTable)=>{  converter(strTable,(if_manufacturer+'_'+if_project),idButton) }) 
 }
 
-// refHazard in reality is the key made of C * F * Hm
+// refHazard in reality is the key made of F * Hm * C
 
 function initCOR(jAris,rit_id,idCOR,jComponent,jFunction,jHarm) {
 
