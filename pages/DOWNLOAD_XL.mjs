@@ -193,7 +193,9 @@ export async function downloadHBook(
           } catch(e) { console.log("createItem controlledRisk RESIDUAL failed: "+e) }
           
           if(flagMitigations)  { 
-            controlledRisks.mitigations = bar2space(risk.Measure)
+            let measures=bar2space(risk.Measure).split("#:")
+            measures.shift(); // first element is empty
+            controlledRisks.mitigations = measures;
             // MUST BE AN ARRAY OF MULTIPLE MEASURES
           }
 
