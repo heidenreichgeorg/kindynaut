@@ -192,12 +192,12 @@ export async function downloadHBook(
               controlledRisks.postRiskEvaluation = { 'severity':residual[0],'probability':residual[1],'riskRegion':residual[2]}
           } catch(e) { console.log("createItem controlledRisk RESIDUAL failed: "+e) }
           
-          if(flagMitigations)  { 
+          if(flagMitigations)  try { 
             let measures=bar2space(risk.Measure).split("#:")
             measures.shift(); // first element is empty
-            controlledRisks.mitigations = measures;
+            controlledRisks.mitigations = buildAssurance(measures.map((m)=>m.split('  ')),mari.riskItem.id)
             // MUST BE AN ARRAY OF MULTIPLE MEASURES
-          }
+          } catch(e) { console.log("createItem from ["+JSON.stringify(risk)+"] failed: "+e) }
 
           mari.controlledRisks=[controlledRisks]
               
@@ -207,6 +207,21 @@ export async function downloadHBook(
       } 
 
 }
+
+
+
+function buildAssurance(aoaMeasures,strFH) {  
+  return aoaMeasures.map((measures,index)=>(
+    {   'id':strFH+'M'+measures.shift().trim(),
+        'measureId':(index+1),
+        'sdaAssurance':{
+          'name':measures.shift().trim(),
+          'text':measures.join('\n').trim()
+        }
+    }
+  ))
+}
+  
 
 export async function writeTable(filePath,strRisks) {
   try {

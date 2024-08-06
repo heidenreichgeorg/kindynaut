@@ -205,7 +205,7 @@ function store(cor,comps,tableMap) {
         let colText=comps[from]; // initialize data type, e.g. numeric 
 
         let to=tableMap[key].to;
-        if(colText>0 && from<to) colText= ("#: "+colText+" ") // 20240805 try to split numbers from text
+        if(colText>0 && from<to) colText= ("#: "+colText+"  ") // 20240805 try to split numbers from text
 
         for(let i=from+1;i<=to;i++) {
             if(comps[i]) colText=colText+comps[i];
