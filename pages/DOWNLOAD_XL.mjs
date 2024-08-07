@@ -154,6 +154,7 @@ export async function downloadHBook(
 
           mari={ 'id':risk.itemNumber, 
             'name':"RiskItem", 
+            'component':risk.Component ? risk.Component:'System',
             'function':{'name':bar2space(risk.Function) },
             'funcNum': risk.FuncNum,
             'harmNum': risk.HarmNum,

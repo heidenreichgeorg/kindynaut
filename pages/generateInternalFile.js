@@ -22,7 +22,7 @@ var jRiskFile = {
         "version":"0"
     },
 
-  "regComponent":[], 
+  "regComponent":[{"id": "COM0","title": "Component","name": "System"}], 
   "regContext":[],  // 20230708
   "regFunction":[], 
   "regHazard":[],  // 20230708
@@ -375,7 +375,7 @@ function addRawRIT2InternalFile(jCORI) {
 
 
   // 20230731
-  let jComponent = { 'id':-1, 'name':'System '}
+  let jComponent = { 'id':'COM0', 'title':'Component', 'name':'System '}
   if(jCORI.component) {
     // extract Hazard, internalize and store id 
     let strComponent = jCORI.component;
