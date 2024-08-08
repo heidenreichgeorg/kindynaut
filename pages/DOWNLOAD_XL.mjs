@@ -12,6 +12,7 @@ import { processRiskTable } from "./generateInternalFile.js"
 const HTTP_OK     = 200;
 const HTTP_WRONG  = 400;
 
+
 var jFile = {
   "id": 1,
   "name": "DeviceAssurance",
@@ -28,8 +29,11 @@ var jFile = {
 const flagRisk=true;
 const flagMitigations=true;
 
-const SEP = ';';
-const SPC = ' ';
+
+const DBL = ':'
+const SEP = ';'
+const SPC = ' '
+const BAR = '|'
 
 import { readHBook } from "./readXL.js"
 
@@ -64,22 +68,41 @@ export async function downloadHBook(
         
         // make internal file (VDE SPEC 90025)
         let strInternalFile=processRiskTable(jFile)
-        writeTable('c:/temp/InternalFile.json',strInternalFile)
+        writeTable('c:/temp/XL2InternalFile.json',strInternalFile)
 
 
         // generate a domain-specific table of hazards
         let jArrDOSH=[];
         jArrControlledRisk.forEach((mari)=>{
+          let func=mari.function.name
+          let harm=mari.harm.name
           let hazards=mari.genericHazards;
-          if(Array.isArray(hazards)) hazards.forEach((strHaz)=>{
-            let hazSit=(mari.controlledRisks && Array.isArray(mari.controlledRisks) && mari.controlledRisks[0].name) ? mari.controlledRisks[0].name : "?hz";
+          
+          if(Array.isArray(hazards)) hazards.forEach((numHaz)=>{
+            
+            let hazSit=(mari.controlledRisks && Array.isArray(mari.controlledRisks) && mari.controlledRisks[0].hazardousSituation) ? 
+              mari.controlledRisks[0].hazardousSituation :
+              JSON.stringify(mari.controlledRisks);
+
+              // break GHx#: from Generic Hazard text
+            let strHaz=numHaz;
+            let arrHaz = numHaz.split(DBL)
+            if(arrHaz && Array.isArray(arrHaz) && arrHaz.length>1) strHaz=arrHaz[1].trim();
+
+            // break code from Cause text
+            let arrHazSit = hazSit.split(BAR)
+            let code = arrHazSit.pop()
+            let cause = arrHazSit.join(' ')
+
+            
             jArrDOSH.push({
-              'func':mari.function.name,
+              'func':func,
               'comp':"System",
               'hazard':strHaz,
-              'cause':hazSit,
-              'harm':mari.harm.name,
-              'hazardousSituation':hazSit
+              'code':code,
+              'cause':cause,
+              'harm':harm,
+              'hazardousSituation':cause
             })
           })
         })
