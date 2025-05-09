@@ -1,0 +1,55 @@
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;  margin: 0;  font-family: Bahnschrift, monospace, sans-serif; }
+
+.BORDER {  padding: 1px; max-width:53rem; border-style: solid; border-radius: 3px; border-width: 1px; border-color: #F0D0C0;  background-color: #FFF; color: #0F0F0F; }
+
+.KNMAIN    { display:table;       margin: 4px;  min-height: 20px;  font-family :inherit; font-size: 11px; font-weight:400; border-color: #817137; border-style: solid; } 
+.KNSEP     { display:table-cell; min-width:30px; max-width:30px; float:left; }
+.KNCOL     { display:table-cell; min-width:107px; max-width:107px; float:left; border-color: #817137; border-style: solid; padding: 2px; }
+.KNBUTTON  { display:table-cell; min-width:107px; max-width:107px; float:left; border-color: #D0C070; border-style: solid; padding: 2px; text-align:center; }
+
+
+.KNTABLE  {  display:table; color:#423C57; font-family: Bahnschrift,monospace; font-size: 11px; height: 18px;  page-break-after: always  }
+.NOTABLE  { display:none; }
+
+.KNLINE    { display:table-row; vertical-align: top;  width:75rem; padding: 1px; float: left;  min-height: 20px;  font-family :inherit; font-size: 11px; font-weight:400; text-align: center; } 
+.KNPROJ    { color:#602848; vertical-align: top;  width:75rem; padding: 1px; float: left;  min-height: 20px;  font-family :inherit; font-size: 11px; font-weight:400; text-align: center;}
+.KNFILE    { color:#907040; vertical-align: top;  width:75rem; padding: 1px; float: left;  min-height: 20px;  font-family :inherit; font-size: 11px; font-weight:400; text-align: center;}
+
+.RIM      {  height: 1px; margin: 2px; text-align:center; border-color: #817137; border-style: solid; float: left; background-color:transparent; font-family: inherit; font-size: inherit; font-weight:600; color: #c9a935; }
+.box      {  height:40px; margin: 2px; text-align:center; border-color: #817137; border-style: solid; float: left; background-color:transparent; font-family: inherit; font-size: inherit; font-weight:600; color: #c9a935; }
+
+
+.SWITCH   {                   padding: 1px; border: none; font-size: 1em; font-weight:400;  } 
+.BIGCELL  {                   padding: 1px;               float: left; color:inherit;min-height: 48px; font-family: inherit; font-size: 0.8em; font-weight:400; text-align: center; background-color: inherit; } 
+.FIELD    { display:table-cell; overflow:hidden;  padding: 1px; border: none; float: left;                                  font-family: inherit; font-size: inherit; font-weight:inherit; color: inherit;} 
+.BUTTON   { color: white; border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); background: #817137; padding: 2px; border: solid 2px; font-size : 1.1em;
+			text-align: center;	width : 328px; height : 30px; }
+.HIDE	  { display:none; }
+.FONT24   { font-size: 24px; }
+.PAGE     { break-before: always;  page-break-before: always; display: block; } 
+
+.NOTE     { padding: 1px; border-color: #817137; border-style: solid; border-width: 1px ; float: left; text-align: left;  font-family: inherit; font-size: 9px; font-weight:inherit; color: inherit;} 
+
+.DASH     { width: 0.8rem; text-align: center; border-left-color: #817137; border-left-style: solid; border-left-width: 1px; }		
+.SEP      { width: 0.8rem; text-align: center; }		
+.TRASH    { width: 1rem; text-align: center; font-size:2em; height:17px; vertical-align: top;}		
+.TAG      { width: 1.8rem; text-align: left;  }		
+.SYMB     { width: 3rem;  text-align: left; }		
+.DATE     { width: 4rem;  text-align: center; }		
+.MOAM     { width: 5.2rem; text-align: right; font-family:monospace; font-size:1.3em;}
+.TEAM     { width: 5.3rem; text-align: right; }
+.SNAM     { width: 5.8rem; text-align: left; }		
+.C100     { width: 6rem; }
+.R105     { width: 6rem; text-align: right; }
+.TENY     { width: 7rem;  text-align: right; }
+.MONY     { width: 7rem; text-align: right; font-family:monospace; font-size:1.3em; }
+.NAME     { width: 7rem; text-align: left;  }
+.CNAM     { width: 7rem; text-align: center;  }
+.CNAMF    { width: 7.3rem; text-align: center;  }
+.IDNT     { width: 8rem; text-align: right; }
+.LNAM     { width: 9rem; text-align: left;}
+.XFER     { width: 9rem; text-align: left;  }
+.L280     { width:12rem; text-align: left;} 
+.LTXT     { width:14rem; text-align: left;}
+.FLEX     { width:52rem; text-align: left; } 
+

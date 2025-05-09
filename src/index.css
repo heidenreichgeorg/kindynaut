@@ -1,0 +1,78 @@
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;  margin: 0;  font-family: Bahnschrift, monospace, sans-serif; }
+
+.BORDER {  padding: 1px; max-width:955px; border-style: solid; border-radius: 4px; border-width: 1px; border-color: #EEEEEE;  background-color: #FFF; color: #00FF00; }
+
+.KNMAIN    { display:table;       margin: 4px;  min-height: 20px;  font-family :inherit; font-size: 11px; font-weight:400; border-color: #F0D0A0; border-style: solid; } 
+.KNSEP     { display: table-cell; min-width:30px; max-width:30px; float:left; }
+
+
+
+.KNTABLE  {  display:table; color:#000000; font-family: Bahnschrift,monospace; font-size: 11px; height: 18px;  page-break-after: always; border-color: #EEEEEE; }
+.NOTABLE  { display:none; }
+
+.KNLINE    { display:table-cell; vertical-align: top;  width:950px; padding: 1px; float: left;  min-height: 20px;  font-family :inherit; font-size: 11px; font-weight:400; text-align: center; } 
+.NONE      { color:#000000;  }
+.BRIGHT    { color:#000000; border-color: #F0D0A0; border-style:solid; }
+
+
+
+
+
+
+.NOTE     { padding: 1px; border-color: inherit; border-style: solid; border-width: 1px ; float: left; text-align: left;  font-family: inherit; font-size: 9px; font-weight:inherit; } 
+.FIELD    { max-width: 120px; overflow:hidden;  padding: 1px; border: none; float: left;                                  font-family: inherit; font-size: inherit; font-weight:inherit; } 
+.RIM      {  height: 0px; margin: 2px; text-align:center; border-color: #CED1D3; border-style: solid; float: left; background-color:transparent; }
+.KNBUTTON  { display: table-cell; min-width:170px; max-width:170px; float:left; border-style: solid; padding: 2px; text-align:center;border-color:inherit }
+
+
+.DOMCOLOR { color: #978a49; border-color: #91854d; } 
+
+
+.RISKEDIT  { color:#716230; border-color: #A19046; border-style:solid; background:#D0C070 }
+.RISKBACK  { background: #817137; border-color: #817137; color:white;} 
+.RISKCOLOR { color: #817137; border-color: #817137; } 
+
+.FILEBACK  { background: #503609; border-color: #503609; color:white;} 
+.FILECOLOR { color: #503609; border-color: #503609; } 
+.FILEBOX   { color: white; background: #503609; padding: 2px; border: solid 2px; font-size : 1.1em;	text-align: center;	width : 290px; height : 30px; }
+
+.DROP      {  height:40px; margin: 2px; text-align:center; border-color: #CED1D3; border-style: solid; float: left; background-color:transparent; font-family: inherit; font-size: inherit; font-weight:600; color: #CED1D3; }
+
+
+
+
+
+.SWITCH   {                   padding: 1px; border: none; font-size: 1em; font-weight:400;  } 
+.BIGCELL  {                   padding: 1px;               float: left; color:inherit;min-height: 48px; font-family: inherit; font-size: 0.8em; font-weight:400; text-align: center; background-color: inherit; } 
+.BUTTON   { color: white; border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); padding: 2px; border: solid 2px; font-size : 1.1em;
+			text-align: center;	width : 255px; height : 30px; }
+.WIDEBUTTON   { color: white; border-radius: 4px; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); padding: 2px; border: solid 2px; font-size : 1.1em;
+				text-align: center;	width : 200px; height : 50px; }
+.HIDE	  { display:none; }
+.FONT24   { font-size: 24px; }
+.PAGE     { break-before: always;  page-break-before: always; display: block; } 
+
+
+.DASH     { width: 0.8rem; text-align: center; border-left-color: #F0D0A0; border-left-style: solid; border-left-width: 1px; }		
+.SEP      { width: 0.8rem; text-align: center; }		
+.TRASH    { width: 1rem; text-align: center; font-size:2em; height:17px; vertical-align: top;}		
+.TAG      { width: 1.8rem; text-align: left;  }		
+.SYMB     { width: 3rem;  text-align: left; }		
+.DATE     { width: 4rem;  text-align: center; }		
+.MOAM     { width: 5.2rem; text-align: right; font-family:monospace; font-size:1.3em;}
+.TEAM     { width: 5.3rem; text-align: right; }
+.SNAM     { width: 5.8rem; text-align: left; }		
+.C100     { width: 6rem; }
+.R105     { width: 6rem; text-align: right; }
+.LNAM     { width: 7rem; text-align: left;  }
+.TENY     { width: 7rem;  text-align: right; }
+.MONY     { width: 7rem; text-align: right; font-family:monospace; font-size:1.3em; }
+.CNAM     { width: 7rem; text-align: center;  }
+.CNAMF    { width: 7.3rem; text-align: center;  }
+.NAME     { width: 7.6rem; text-align: left;  }
+.IDNT     { width: 8rem; text-align: right; }
+.LNAM     { width: 9rem; text-align: left;}
+.L280     { width:12rem; text-align: left;} 
+.LTXT     { width:14rem; text-align: left;}
+.FLEX     { width:890px; text-align: left; } 
+

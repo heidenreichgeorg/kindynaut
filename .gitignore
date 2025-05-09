@@ -1,6 +1,7 @@
 
 #Environment
 .env
+.env.local
 
 
 #Local Examples
@@ -11,4 +12,4 @@ examples
 node_modules
 
 
-
+src/Portal_js.txt
