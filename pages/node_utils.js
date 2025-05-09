@@ -10,6 +10,7 @@ export function clearDOSH() {
 }
 
 export function sane(input){
+    if(!input) return "null";
     let str=input.toString();
     str = str.replace(/[^a-z0-9/ äöüß:\.,_-]/gim,"");
     return str.trim();

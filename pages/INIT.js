@@ -57,7 +57,7 @@ export async function initDomain(
         console.dir ( "0542 INIT FILE with "+arrLines.length+" lines.");
 
     } else {
-      console.dir ( "0541 INIT EMPTY FILE "+domainPath);
+      console.dir ( "0541 INIT EMPTY FILE  FROM domainPath "+domainPath);
       res.writeHead(HTTP_WRONG, {"Content-Type": "text/html"});
       res.end("EMPTY FILE"); 
     }
