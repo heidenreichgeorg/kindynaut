@@ -126,6 +126,8 @@ function addProjAris(jAris,strMessage) {
 
 
 
+// MAIN PAGE BUILDER 
+
 export function Portal({portalFileName, view}) {
 
     const MINUTE_MS = 60000;

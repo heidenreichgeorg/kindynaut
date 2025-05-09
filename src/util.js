@@ -579,7 +579,7 @@ function processInternalFile(jListCORs,idButton,arrListDoSH,if_manufacturer,if_p
     const strTable  = JSON.stringify(internalFile);
     console.log("0762 makeInternalFile strTable="+strTable)
 
-    return  functionButton(idButton,strTable,fileName,action,(strTable)=>{  converter(strTable,(if_manufacturer+'_'+if_project),idButton) }) 
+    return  functionButton(idButton,strTable,fileName,action,(strTable)=>{  converter(strTable,fileName,idButton) }) 
 }
 
 // refHazard in reality is the key made of F * Hm * C
