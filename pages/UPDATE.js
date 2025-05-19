@@ -4,7 +4,7 @@ import { writeFile } from "fs/promises"
 
 
 
-export async function updateDomain(req,res) {
+export async function updateDomainServer(req,res) {
     let strTimeSymbol = timeSymbol();
     let strDateSymbol = dateSymbol();
     console.log("\n\n0900 UPDATE at "+strTimeSymbol+" on "+strDateSymbol);
@@ -18,7 +18,7 @@ export async function updateDomain(req,res) {
         console.log("0912 app.post UPDATE receives req.body #"+rawData.length);
 
         const params = getURLParams(req);
-        console.log("0914 app.post DOWNLOAD with "+JSON.stringify(params));
+        console.log("0914 app.post updateDomainServer with "+JSON.stringify(params));
         const domain = params.domain;
                    
         // server must be exclusive owner of DOMAINROOT content
@@ -29,7 +29,7 @@ export async function updateDomain(req,res) {
             let domainData = JSON.parse(rawData)
 
             let total = domainData.length;
-            console.log("0916 domainData= #"+total)
+            console.log("0916 updateDomainServer domainData= #"+total)
 
             let domainObject={};
             domainData.forEach((dosh,i)=>{
@@ -39,13 +39,13 @@ export async function updateDomain(req,res) {
             })
 
 
-            console.log("0918 domainData#-domainObject#="+(total-Object.keys(domainObject).length))
+            console.log("0918 updateDomainServer domainData#-domainObject#="+(total-Object.keys(domainObject).length))
 
 
 
             Object.keys(domainObject).forEach((key)=>{
                 let arrDOSH=domainObject[key];
-                console.log("  0920 "+key+" "+arrDOSH.length+
+                console.log("  0920 updateDomainServer "+key+" "+arrDOSH.length+
                     arrDOSH.map((dosh)=>("\n      "+dosh.hazard+"/"+dosh.harm+"/"+dosh.hazardousSituation)).join(' '))
             })
           
@@ -64,10 +64,10 @@ export async function updateDomain(req,res) {
                     readFileSync(domainPath)); 
         
             } catch (err) { 
-                console.error(err); 
+                console.error("0925 updateDomainServer"+err); 
             } 
 
-            console.log("  0930 writeFile completed.");
+            console.log("  0930 updateDomainServer writeFile completed.");
             
             res.write('<DIV class="attrRow"><H1>KindyNaut&nbsp;&nbsp;</H1>'
                 +'<DIV class="KNLINE">'
@@ -79,11 +79,11 @@ export async function updateDomain(req,res) {
                 );
             res.end();
             
-        } catch(err) { console.log ( "0913 UPDATE VOID "+err); }
+        } catch(err) { console.log ( "0913 updateDomainServer UPDATE VOID "+err); }
 
         return;
     } else {
-        console.error ( "0909 UPDATE RECEIVES EMPTY BODY " );
+        console.error ( "0909 updateDomainServer UPDATE RECEIVES EMPTY BODY " );
     }
     // send back sessionId to client browser or file
     //res.writeHead(HTTP_WRONG, {"Content-Type": "text/html"});

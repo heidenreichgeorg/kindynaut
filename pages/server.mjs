@@ -10,7 +10,7 @@ const SERVER_PORT= 8080;
 
 import { downloadHBook } from './DOWNLOAD_XL.mjs';
 import { initDomainServer } from './INIT.js';
-import { updateDomain } from './UPDATE.js';
+import { updateDomainServer } from './UPDATE.js';
 import { storeFile } from './fs_client.js'
 
 const app = express()
@@ -21,7 +21,7 @@ app.use(express.text({ 'defaultCharset':'utf-8' }))
 app.get('/INIT', initDomainServer );
 app.get('/DOWNLOAD', downloadHBook );
 
-app.post('/UPDATE', updateDomain );
+app.post('/UPDATE', updateDomainServer );
 app.post('/STORE', storeFile );
 
 app.listen(SERVER_PORT, () => {
