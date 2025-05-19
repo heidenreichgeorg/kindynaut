@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 
 // UP_ARROW &#x21d1;
 
-const LEARN_DOMAIN = false;
+const LEARN_DOMAIN = (process.env.REACT_APP_LEARN==="DOMAIN");
 
 const KN_DOWNLOAD="KN_DOWNLOAD" // DOM button id: download to client as a device risk table, for re-editing
 const KN_DHAZARDS="KN_DHAZARDS" // DOM button id: download to client as a dosh list, for re-loading
