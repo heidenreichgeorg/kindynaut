@@ -1,4 +1,7 @@
 import { Buffer } from 'buffer';
+
+const MINTEXT = 2 
+
 import { arisIdentifier, corIdentifier, dragOverHandler, dropHandler, initDomain, jGrid, updateDomain, 
      handleHBook, handleStore, makeDomainJSON, makeExportFile, makeInternalFile, makeRiskTable, receiveLetter, showLetter, SOME } from './util.js'
 
@@ -137,10 +140,14 @@ export function Portal({portalFileName, view}) {
         console.log('Logs every minute');
 
 
-        if(repository[SCR_DOMAIN] && repository[SCR_DOMAIN].length>2) {
+        if(repository[SCR_DOMAIN] && repository[SCR_DOMAIN].length>MINTEXT) {
             console.log('Logs every minute and  finds '+(repository[SCR_DOMAIN].length)+' dosh');            
 
-        } else initDomain(getFile('domain'),updateDomainWindow)
+        } else {
+            let domain = getFile('domain');
+            console.log("send INIT for domain="+domain);
+            initDomain(domain,updateDomainWindow)
+        }
 
 
       }, MINUTE_MS);

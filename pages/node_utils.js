@@ -1,7 +1,10 @@
 export const FILE_SLASH = '/';
+export const MINTEXT = 2;
+
 export const HTTP_OK     = 200;
 export const HTTP_WRONG  = 400;
-export const BASE_FILE = "/base.txt"
+
+export const BASE_FILE = "/base.json"
 
 export var arrDOSH=[];
 
@@ -28,7 +31,7 @@ export function getURLParams(req) {
     let result={};
     let url = JSON.stringify(req.url).replace(/[\",;]/g, '');
     console.log("0210 getURLParams from "+url);
-    if(url && url.length>0) (url.split('?')[1]).split('&').forEach((entry)=>{let aE=entry.split('=');result[sane(aE[0])]=sane(aE[1])});
+    if(url && url.length>0 && url.split('?').length>1) (url.split('?')[1]).split('&').forEach((entry)=>{let aE=entry.split('=');result[sane(aE[0])]=sane(aE[1])});
     return result;
 }
 

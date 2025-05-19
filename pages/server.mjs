@@ -9,7 +9,7 @@ import express from "express";
 const SERVER_PORT= 8080;
 
 import { downloadHBook } from './DOWNLOAD_XL.mjs';
-import { initDomain } from './INIT.js';
+import { initDomainServer } from './INIT.js';
 import { updateDomain } from './UPDATE.js';
 import { storeFile } from './fs_client.js'
 
@@ -18,7 +18,7 @@ const app = express()
 // content-type2 app.use(express.json({type: 'application/json', strict: false }))
 app.use(express.text({ 'defaultCharset':'utf-8' }))
 
-app.get('/INIT', initDomain );
+app.get('/INIT', initDomainServer );
 app.get('/DOWNLOAD', downloadHBook );
 
 app.post('/UPDATE', updateDomain );
